@@ -14,7 +14,6 @@
         body { background-color: #0f172a; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         
-        /* Sistema de pantallas ocultas ARREGLADO */
         .page-slide { 
             position: absolute; inset: 0; z-index: 50;
             transform: translateX(100%); 
@@ -169,7 +168,7 @@
                             <h3 class="font-bold text-xl mb-1 text-slate-800">Horarios para el <span id="selected-date-display" class="text-blue-600"></span></h3>
                             <p class="text-xs text-slate-500 mb-6">* Las reservas de madrugada requieren 3h de antelación y las de día normal 30 min.</p>
                             
-                            <!-- SELECTOR NATIVO DE HORA (TIPO RUEDECITA) -->
+                            <!-- SELECTOR NATIVO DE HORA (REDISEÑADO PARA OCULTAR EL PASADO) -->
                             <div id="time-slots-container" class="mb-6"></div>
 
                             <div id="client-info-section" class="hidden mt-4 space-y-4 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
@@ -321,7 +320,7 @@
             await renderTimeSlots(dateStr);
         }
 
-        // RENDERIZAR HORAS CLIENTE (SELECTOR NATIVO)
+        // RENDERIZAR HORAS CLIENTE (SELECTOR NATIVO INTELIGENTE)
         async function renderTimeSlots(dateStr) {
             const container = document.getElementById('time-slots-container');
             container.innerHTML = '<div class="text-center py-6 text-slate-400"><i class="ph-bold ph-spinner animate-spin text-2xl"></i></div>';
@@ -335,24 +334,44 @@
             let htmlFinal = `
             <div class="relative bg-white border border-slate-300 rounded-xl px-4 py-4 shadow-sm">
                 <select id="native-time-select" class="w-full bg-transparent text-slate-800 font-bold text-lg focus:outline-none appearance-none cursor-pointer" onchange="onTimeSelected(this.value)">
-                    <option value="">-- Toca aquí para elegir hora --</option>
+                    <option value="" selected disabled>-- Toca aquí para elegir hora --</option>
             `;
+
+            let hasRenderedOptions = false;
 
             ALL_HOURS.forEach(time => {
                 const [h, m] = time.split(':'); const slotDate = new Date(`${dateStr}T${time}:00`);
-                let isBlocked = false;
+                let isOccupied = false;
                 
-                if (occupiedData.find(row => row.hora === time)) isBlocked = true;
+                if (occupiedData.find(row => row.hora === time)) isOccupied = true;
 
                 const diffMs = slotDate - now; const diffMinutes = diffMs / (1000 * 60); const hourNum = parseInt(h);
 
-                if (diffMs < 0) isBlocked = true; 
-                else if (hourNum >= 1 && hourNum <= 9) { if (diffMinutes < 180) isBlocked = true; } 
-                else { if (diffMinutes < 30) isBlocked = true; }
+                let isPastOrTooEarly = false;
+                if (diffMs < 0) {
+                    isPastOrTooEarly = true; 
+                } else if (hourNum >= 1 && hourNum <= 9) {
+                    if (diffMinutes < 180) isPastOrTooEarly = true; 
+                } else {
+                    if (diffMinutes < 30) isPastOrTooEarly = true; 
+                }
                 
-                if (isBlocked) htmlFinal += `<option value="${time}" disabled>${time} (No disponible)</option>`;
-                else htmlFinal += `<option value="${time}">${time}</option>`;
+                // MAGIA: Si ya pasó la hora o es demasiado pronto, no la pintamos en el desplegable.
+                if (isPastOrTooEarly) return; 
+                
+                hasRenderedOptions = true;
+
+                // DISTINCIÓN VISUAL: Emojis para que sea súper claro qué está libre y qué ocupado
+                if (isOccupied) {
+                    htmlFinal += `<option value="${time}" disabled>❌ ${time} - Reservada</option>`;
+                } else {
+                    htmlFinal += `<option value="${time}">✅ ${time} - Libre</option>`;
+                }
             });
+
+            if (!hasRenderedOptions) {
+                htmlFinal += `<option value="" disabled>No quedan horas disponibles hoy</option>`;
+            }
 
             htmlFinal += `</select><i class="ph-bold ph-caret-down absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none text-xl"></i></div>`;
             container.innerHTML = htmlFinal;

@@ -20,9 +20,24 @@
             -webkit-tap-highlight-color: transparent;
             overflow-x: hidden;
         }
+        
+        /* Scrollbar invisible pero funcional */
         ::-webkit-scrollbar { width: 0px; background: transparent; }
-        .page-slide { transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .page-slide.open { transform: translateX(0); }
+        
+        /* ARREGLO DE BOTONES: Añadimos visibility y pointer-events para que no tapen al estar cerradas */
+        .page-slide { 
+            transform: translateX(100%); 
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .page-slide.open { 
+            transform: translateX(0); 
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Estilos del slider */
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%;
             background: #2563eb; cursor: pointer; margin-top: -8px; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
@@ -49,24 +64,11 @@
                 <p class="text-lg text-slate-300 mb-10 leading-relaxed">
                     Reserva tu cita de forma rápida y sencilla. Nos dedicamos a devolverle a tu vehículo ese brillo del primer día con los mejores productos y la máxima atención al detalle.
                 </p>
-                
                 <div class="grid grid-cols-2 gap-6">
-                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
-                        <div class="bg-amber-500/20 p-3 rounded-xl"><i class="ph-fill ph-sparkle text-2xl text-amber-400"></i></div>
-                        <span class="font-medium text-slate-100">Acabado Premium</span>
-                    </div>
-                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
-                        <div class="bg-blue-500/20 p-3 rounded-xl"><i class="ph-fill ph-clock text-2xl text-blue-400"></i></div>
-                        <span class="font-medium text-slate-100">Ahorra Tiempo</span>
-                    </div>
-                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
-                        <div class="bg-emerald-500/20 p-3 rounded-xl"><i class="ph-fill ph-shield-check text-2xl text-emerald-400"></i></div>
-                        <span class="font-medium text-slate-100">Máxima Calidad</span>
-                    </div>
-                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
-                        <div class="bg-purple-500/20 p-3 rounded-xl"><i class="ph-fill ph-handshake text-2xl text-purple-400"></i></div>
-                        <span class="font-medium text-slate-100">Compraventas</span>
-                    </div>
+                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10"><div class="bg-amber-500/20 p-3 rounded-xl"><i class="ph-fill ph-sparkle text-2xl text-amber-400"></i></div><span class="font-medium text-slate-100">Acabado Premium</span></div>
+                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10"><div class="bg-blue-500/20 p-3 rounded-xl"><i class="ph-fill ph-clock text-2xl text-blue-400"></i></div><span class="font-medium text-slate-100">Ahorra Tiempo</span></div>
+                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10"><div class="bg-emerald-500/20 p-3 rounded-xl"><i class="ph-fill ph-shield-check text-2xl text-emerald-400"></i></div><span class="font-medium text-slate-100">Máxima Calidad</span></div>
+                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10"><div class="bg-purple-500/20 p-3 rounded-xl"><i class="ph-fill ph-handshake text-2xl text-purple-400"></i></div><span class="font-medium text-slate-100">Compraventas</span></div>
                 </div>
             </div>
 
@@ -81,9 +83,7 @@
                     <div class="bg-white p-6 rounded-3xl shadow-2xl w-full transform transition-all scale-95 opacity-0" id="custom-modal-box">
                         <h3 class="text-xl font-bold text-slate-800 mb-2" id="modal-title">Título</h3>
                         <p class="text-slate-600 text-sm mb-6 leading-relaxed" id="modal-message">Mensaje...</p>
-                        <div class="flex gap-3" id="modal-buttons">
-                            <!-- JS inserta aquí los botones -->
-                        </div>
+                        <div class="flex gap-3" id="modal-buttons"></div>
                     </div>
                 </div>
 
@@ -130,7 +130,7 @@
                                 <i class="ph-fill ph-handshake text-2xl text-emerald-400"></i>
                                 <div class="text-left">
                                     <span class="font-semibold text-sm block">Soy Profesional</span>
-                                    <span class="text-xs text-slate-400">Tarifas especiales volumen</span>
+                                    <span class="text-xs text-slate-400">Tarifas especiales</span>
                                 </div>
                             </div>
                             <i class="ph-bold ph-caret-right text-lg opacity-50"></i>
@@ -161,57 +161,32 @@
                             <h2 class="text-2xl font-bold">Acceso Admin</h2>
                             <p class="text-slate-400 text-sm mt-2">Solo personal autorizado</p>
                         </div>
-                        
                         <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Correo Electrónico</label>
-                                <input type="email" id="admin-email" placeholder="tu@correo.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Contraseña</label>
-                                <input type="password" id="admin-pass" placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500">
-                            </div>
-                            
+                            <div><label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Correo Electrónico</label><input type="email" id="admin-email" placeholder="tu@correo.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500"></div>
+                            <div><label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Contraseña</label><input type="password" id="admin-pass" placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500"></div>
                             <div id="login-error" class="hidden text-red-400 text-sm text-center font-medium py-2"></div>
-                            
-                            <button onclick="loginAdmin()" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg mt-4 active:scale-95 transition-transform flex items-center justify-center gap-2">
-                                Iniciar Sesión
-                            </button>
+                            <button onclick="loginAdmin()" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg mt-4 active:scale-95 transition-transform flex items-center justify-center gap-2">Iniciar Sesión</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- PÁGINA: PANEL ADMIN (BLOQUEAR CITAS) -->
+                <!-- PÁGINA: PANEL ADMIN -->
                 <div id="admin-view" class="page-slide absolute inset-0 bg-slate-800 z-40 flex flex-col pt-4 lg:pt-8 text-white">
                     <div class="bg-slate-950 px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow-md">
-                        <div class="flex items-center">
-                            <button onclick="closePage('admin-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-800 transition-colors text-white">
-                                <i class="ph-bold ph-arrow-left text-2xl"></i>
-                            </button>
-                            <h2 class="text-lg font-bold ml-2">Panel Admin</h2>
-                        </div>
-                        <button onclick="logoutAdmin()" class="text-red-400 text-sm font-bold flex items-center gap-1 hover:text-red-300">
-                            <i class="ph-bold ph-sign-out"></i> Salir
-                        </button>
+                        <div class="flex items-center"><button onclick="closePage('admin-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-800 transition-colors text-white"><i class="ph-bold ph-arrow-left text-2xl"></i></button><h2 class="text-lg font-bold ml-2">Panel Admin</h2></div>
+                        <button onclick="logoutAdmin()" class="text-red-400 text-sm font-bold flex items-center gap-1 hover:text-red-300"><i class="ph-bold ph-sign-out"></i> Salir</button>
                     </div>
                     <div class="flex-1 overflow-y-auto p-5 pb-12 bg-slate-900">
-                        <p class="text-slate-400 text-sm mb-4">Selecciona un día para bloquear o liberar horas de forma inmediata.</p>
-
                         <div class="bg-slate-800 p-4 rounded-2xl shadow-sm mb-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="font-bold text-lg capitalize" id="admin-calendar-month-text">Cargando...</h3>
-                            </div>
-                            <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500 mb-2">
-                                <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
-                            </div>
+                            <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg capitalize" id="admin-calendar-month-text">Cargando...</h3></div>
+                            <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500 mb-2"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div>
                             <div id="admin-calendar-days" class="grid grid-cols-7 gap-2 text-center text-sm"></div>
                         </div>
-
                         <div id="admin-time-selection" class="hidden">
                             <h3 class="font-bold text-md mb-2">Horas para el <span id="admin-selected-date-display" class="text-blue-400"></span></h3>
-                            <p class="text-[11px] text-slate-400 mb-4 uppercase tracking-wider font-bold">Verde = Libre | Rojo = Ocupada / Bloqueada</p>
-                            
-                            <div id="admin-time-slots-container" class="grid grid-cols-3 gap-3 mb-6 max-h-72 overflow-y-auto pr-2"></div>
+                            <p class="text-[11px] text-slate-400 mb-6 uppercase tracking-wider font-bold">Verde = Libre | Rojo = Bloqueada</p>
+                            <!-- Contenedor Admin de Horas rediseñado -->
+                            <div id="admin-time-slots-container" class="mb-6"></div>
                         </div>
                     </div>
                 </div>
@@ -223,34 +198,18 @@
                         <h2 class="text-lg font-bold ml-2">Planes Compraventa</h2>
                     </div>
                     <div class="flex-1 overflow-y-auto p-5 pb-10">
-                        <div class="text-center mb-6 mt-2">
-                            <i class="ph-fill ph-handshake text-5xl text-emerald-500 mb-2"></i>
-                            <h3 class="text-xl font-bold text-slate-800">Suscripción Mensual</h3>
-                            <p class="text-xs text-slate-500 mt-2">¿Tienes volumen de stock? Ahorra dinero fijando tus lavados al mes. Tarifa pública normal: 11 €/coche.</p>
-                        </div>
+                        <div class="text-center mb-6 mt-2"><i class="ph-fill ph-handshake text-5xl text-emerald-500 mb-2"></i><h3 class="text-xl font-bold text-slate-800">Suscripción Mensual</h3><p class="text-xs text-slate-500 mt-2">¿Tienes volumen de stock? Ahorra dinero fijando tus lavados al mes. Tarifa pública normal: 11 €/coche.</p></div>
                         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 text-center">¿Coches a la semana? (Máx. 20)</label>
-                            <div class="flex items-center gap-4 mb-5">
-                                <span class="text-slate-400 text-sm font-bold">2</span>
-                                <input type="range" id="cars-slider" min="2" max="20" value="2" class="w-full appearance-none bg-transparent" oninput="calculateProPrice()">
-                                <span class="text-slate-400 text-sm font-bold">20</span>
-                            </div>
-                            <div class="text-center mb-5">
-                                <div class="inline-block bg-blue-50 px-4 py-1.5 rounded-xl border border-blue-100">
-                                    <span class="text-blue-800 font-bold text-xl" id="cars-count">2</span> 
-                                    <span class="text-blue-600 text-xs font-semibold">coches / sem</span>
-                                </div>
-                            </div>
+                            <div class="flex items-center gap-4 mb-5"><span class="text-slate-400 text-sm font-bold">2</span><input type="range" id="cars-slider" min="2" max="20" value="2" class="w-full appearance-none bg-transparent" oninput="calculateProPrice()"><span class="text-slate-400 text-sm font-bold">20</span></div>
+                            <div class="text-center mb-5"><div class="inline-block bg-blue-50 px-4 py-1.5 rounded-xl border border-blue-100"><span class="text-blue-800 font-bold text-xl" id="cars-count">2</span> <span class="text-blue-600 text-xs font-semibold">coches / sem</span></div></div>
                             <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
                                 <div class="flex justify-between items-center text-sm"><span class="text-slate-500">Precio por coche:</span><span class="font-bold text-slate-800" id="price-per-car">10.00 €</span></div>
                                 <div class="flex justify-between items-center text-sm"><span class="text-slate-500">Total semanal:</span><span class="font-semibold text-slate-700" id="weekly-total">20.00 €</span></div>
                                 <div class="flex justify-between items-center pt-2 border-t border-slate-200"><span class="text-slate-800 font-bold text-sm">Tu Suscripción:</span><span class="font-black text-blue-600 text-xl" id="monthly-total">80.00 €</span></div>
                             </div>
                             <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="bg-emerald-500 text-white p-2 rounded-lg"><i class="ph-bold ph-trend-down text-lg"></i></div>
-                                    <div><p class="text-[11px] text-emerald-700 font-medium">Respecto a tarifa normal</p><p class="text-sm font-bold text-emerald-950">Te ahorras:</p></div>
-                                </div>
+                                <div class="flex items-center gap-3"><div class="bg-emerald-500 text-white p-2 rounded-lg"><i class="ph-bold ph-trend-down text-lg"></i></div><div><p class="text-[11px] text-emerald-700 font-medium">Respecto a normal</p><p class="text-sm font-bold text-emerald-950">Te ahorras:</p></div></div>
                                 <div class="text-right"><span class="font-black text-emerald-600 text-xl block" id="savings-total">8.00 €</span><span class="text-[10px] uppercase text-emerald-700 font-bold tracking-wider">Al mes</span></div>
                             </div>
                         </div>
@@ -264,9 +223,7 @@
                         <h2 class="text-lg font-bold ml-2 text-slate-800">Sobre mí</h2>
                     </div>
                     <div class="flex-1 overflow-y-auto p-6">
-                        <div class="w-32 h-32 mx-auto rounded-full bg-slate-200 border-4 border-white shadow-lg overflow-hidden mb-6 flex items-center justify-center">
-                            <i class="ph-fill ph-user text-5xl text-slate-400"></i>
-                        </div>
+                        <div class="w-32 h-32 mx-auto rounded-full bg-slate-200 border-4 border-white shadow-lg overflow-hidden mb-6 flex items-center justify-center"><i class="ph-fill ph-user text-5xl text-slate-400"></i></div>
                         <h1 class="text-2xl font-bold text-center text-slate-900 mb-2">¡Hola! Soy Pablo 👋</h1>
                         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mt-6 text-slate-700 leading-relaxed text-sm space-y-4">
                             <p>Tengo <strong class="text-blue-600" id="dynamic-age">20</strong> años y soy un apasionado absoluto del mundo del motor, de conducir y, sobre todo, de dejar los coches impecables.</p>
@@ -290,21 +247,17 @@
                             <div id="calendar-days" class="grid grid-cols-7 gap-2 text-center text-sm"></div>
                         </div>
 
-                        <div id="time-selection" class="hidden">
-                            <h3 class="font-bold text-md mb-2 text-slate-800">Horas para el <span id="selected-date-display" class="text-blue-600"></span></h3>
-                            <p class="text-xs text-slate-500 mb-4">* De 01:00 a 09:00 requiere reservar con 3h de antelación.</p>
-                            <div id="time-slots-container" class="grid grid-cols-3 gap-3 mb-6 max-h-64 overflow-y-auto pr-2"></div>
+                        <div id="time-selection" class="hidden pb-10">
+                            <h3 class="font-bold text-xl mb-1 text-slate-800">Horarios para el <span id="selected-date-display" class="text-blue-600"></span></h3>
+                            <p class="text-xs text-slate-500 mb-6">* Las reservas de madrugada requieren 3h de antelación.</p>
+                            
+                            <!-- Contenedor rediseñado ESTILO BARBERÍA -->
+                            <div id="time-slots-container" class="mb-6"></div>
 
-                            <div id="client-info-section" class="hidden space-y-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-1">Nombre y Apellidos</label>
-                                    <input type="text" id="client-name" placeholder="Ej: Pablo García Pérez" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-1">Dirección (Calle y Número)</label>
-                                    <input type="text" id="client-location" placeholder="Ej: Calle Mayor, 12" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors">
-                                </div>
-                                <button onclick="confirmAppointment()" id="btn-confirmar" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mt-2">
+                            <div id="client-info-section" class="hidden mt-8 space-y-4 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                                <div><label class="block text-sm font-bold text-slate-700 mb-1">Nombre y Apellidos</label><input type="text" id="client-name" placeholder="Ej: Pablo García Pérez" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
+                                <div><label class="block text-sm font-bold text-slate-700 mb-1">Dirección (Calle y Número)</label><input type="text" id="client-location" placeholder="Ej: Calle Mayor, 12" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
+                                <button onclick="confirmAppointment()" id="btn-confirmar" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mt-4">
                                     <i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva
                                 </button>
                             </div>
@@ -318,7 +271,7 @@
 
     <script>
         // ==========================================
-        // CONFIGURACIÓN CENTRAL (SUPABASE, TELEGRAM, WA)
+        // CONFIGURACIÓN CENTRAL
         // ==========================================
         const MY_WHATSAPP = "34644909851"; 
         const SUPABASE_URL = "https://kujtlvfqxghhidlgxzbn.supabase.co"; 
@@ -326,10 +279,15 @@
         const TELEGRAM_TOKEN = "8611178436:AAHXGFqtenGl00Rvrgqk0dZIHEfuUCgY6-o";
         const CHAT_ID = "6519651464";
 
-        let supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let supabaseClient = null;
+        try {
+            if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch(e) { console.error("Error al cargar Supabase", e); }
+
         let selectedDateStr = ""; 
         let selectedTimeStr = "";
         
+        // HORAS CADA 30 MIN
         const ALL_HOURS = [];
         for (let h = 0; h < 24; h++) {
             let hourStr = h.toString().padStart(2, '0');
@@ -340,37 +298,26 @@
         // SUSCRIPCIÓN EN TIEMPO REAL (WEBSOCKETS)
         // =========================================================
         if (supabaseClient) {
-            supabaseClient
-                .channel('realtime-citas')
+            supabaseClient.channel('realtime-citas')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'citas' }, payload => {
                     if (selectedDateStr) {
                         const changedRecord = payload.new || payload.old;
-                        
-                        // Solo recargamos si el cambio afectó al día que estamos mirando
                         if (changedRecord && changedRecord.fecha === selectedDateStr) {
                             const mode = document.getElementById('admin-view').classList.contains('open') ? 'admin' : 'client';
                             
-                            // Bloqueo Anti-colisión: Si el cliente iba a reservar esa hora exacta y alguien se le adelanta
                             if (mode === 'client' && selectedTimeStr === changedRecord.hora && payload.eventType === 'INSERT') {
-                                showModal({
-                                    title: "Hora ocupada",
-                                    message: "¡Lo sentimos! Esta hora acaba de ser bloqueada o reservada por alguien más.",
-                                    type: "alert"
-                                });
+                                showModal({ title: "Hora ocupada", message: "¡Lo sentimos! Esta hora acaba de ser bloqueada o reservada por alguien más.", type: "alert" });
                                 document.getElementById('client-info-section').classList.add('hidden');
                                 selectedTimeStr = "";
                             }
-                            
-                            // Recargar huecos visualmente
                             renderTimeSlots(selectedDateStr, mode);
                         }
                     }
-                })
-                .subscribe();
+                }).subscribe();
         }
 
         // =========================================================
-        // MODAL PERSONALIZADO (REEMPLAZA ALERT Y CONFIRM)
+        // MODAL PERSONALIZADO (REEMPLAZA AVISOS FEOS DEL NAVEGADOR)
         // =========================================================
         function showModal({ title, message, type = 'alert', onConfirm }) {
             const modal = document.getElementById('custom-modal');
@@ -379,7 +326,7 @@
             
             document.getElementById('modal-title').textContent = title;
             document.getElementById('modal-message').textContent = message;
-            btnContainer.innerHTML = ''; // Limpiamos botones
+            btnContainer.innerHTML = ''; 
             
             const cleanup = () => {
                 box.classList.remove('scale-100', 'opacity-100');
@@ -416,7 +363,7 @@
         }
 
         // =========================================================
-        // FUNCIONES GENERALES
+        // FUNCIONES GENERALES Y DOM
         // =========================================================
         async function cleanOldAppointments() {
             if (!supabaseClient) return;
@@ -425,16 +372,22 @@
             try { await supabaseClient.from('citas').delete().lt('fecha', todayStr); } catch(e) {}
         }
         
-        function calcularEdad() {
+        document.addEventListener("DOMContentLoaded", () => {
+            cleanOldAppointments();
+            
             const f = new Date(2006, 0, 1); const hoy = new Date();
             let edad = hoy.getFullYear() - f.getFullYear();
             if (hoy.getMonth() - f.getMonth() < 0 || (hoy.getMonth() - f.getMonth() === 0 && hoy.getDate() < f.getDate())) edad--;
-            document.getElementById('dynamic-age').textContent = edad;
-        }
-        calcularEdad();
+            const ageEl = document.getElementById('dynamic-age');
+            if(ageEl) ageEl.textContent = edad;
+            
+            calculateProPrice();
+        });
 
         function calculateProPrice() {
-            const slider = document.getElementById('cars-slider'); const cars = parseInt(slider.value);
+            const slider = document.getElementById('cars-slider'); 
+            if(!slider) return;
+            const cars = parseInt(slider.value);
             let price = Math.max(6.50, 10.00 - ((cars - 2) * 0.50));
             const weekly = price * cars; const monthly = weekly * 4; const savings = (cars * 4 * 11.00) - monthly;
             document.getElementById('cars-count').textContent = cars;
@@ -443,13 +396,12 @@
             document.getElementById('monthly-total').textContent = monthly.toFixed(2) + ' €';
             document.getElementById('savings-total').textContent = savings.toFixed(2) + ' €';
         }
-        calculateProPrice();
 
         function openPage(id) { document.getElementById(id).classList.add('open'); }
         function closePage(id) { document.getElementById(id).classList.remove('open'); }
 
         // =========================================================
-        // CALENDARIO
+        // CALENDARIO (REUTILIZABLE PARA CLIENTE Y ADMIN)
         // =========================================================
         function renderCalendar(mode) {
             const now = new Date();
@@ -506,10 +458,13 @@
             await renderTimeSlots(dateStr, mode);
         }
 
+        // =========================================================
+        // REDISEÑO: GENERADOR DE HORAS ESTILO BARBERÍA
+        // =========================================================
         async function renderTimeSlots(dateStr, mode) {
             const prefix = mode === 'admin' ? 'admin-' : '';
             const container = document.getElementById(prefix + 'time-slots-container');
-            container.innerHTML = '<div class="col-span-3 text-center text-sm py-4"><i class="ph-bold ph-spinner animate-spin text-xl"></i> Cargando...</div>';
+            container.innerHTML = '<div class="text-center py-6 text-slate-400"><i class="ph-bold ph-spinner animate-spin text-2xl"></i><p class="mt-2 text-sm">Cargando huecos...</p></div>';
             
             let occupiedData = [];
             if (supabaseClient) {
@@ -519,35 +474,63 @@
                 } catch (e) {}
             }
 
-            container.innerHTML = '';
+            // Separar las horas en bloques bonitos
+            const categorias = { 'Madrugada': [], 'Mañana': [], 'Mediodía y Tarde': [], 'Noche': [] };
+            
+            ALL_HOURS.forEach(time => {
+                const hourNum = parseInt(time.split(':')[0]);
+                if (hourNum >= 0 && hourNum < 6) categorias['Madrugada'].push(time);
+                else if (hourNum >= 6 && hourNum < 12) categorias['Mañana'].push(time);
+                else if (hourNum >= 12 && hourNum < 18) categorias['Mediodía y Tarde'].push(time);
+                else categorias['Noche'].push(time);
+            });
+
+            let htmlFinal = '';
             const now = new Date();
 
-            ALL_HOURS.forEach(time => {
-                const [h, m] = time.split(':');
-                const slotDate = new Date(`${dateStr}T${time}:00`);
-                let isBlocked = false;
+            for (const [catName, times] of Object.entries(categorias)) {
+                if(times.length === 0) continue;
                 
-                const dbSlot = occupiedData.find(row => row.hora === time);
-                if (dbSlot) isBlocked = true;
+                let bloqueHtml = `
+                    <div class="mb-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="h-px bg-slate-200 flex-1"></div>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">${catName}</h4>
+                            <div class="h-px bg-slate-200 flex-1"></div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                `;
 
-                if (mode !== 'admin') {
-                    if (slotDate < now) isBlocked = true;
-                    const hourNum = parseInt(h);
-                    if (hourNum >= 1 && hourNum <= 9 && ((slotDate - now) / (1000 * 60 * 60)) < 3) isBlocked = true;
-                    
-                    if (isBlocked) {
-                        container.innerHTML += `<div class="bg-slate-200 text-slate-400 line-through text-center py-2.5 rounded-xl text-sm font-medium cursor-not-allowed">${time}</div>`;
+                times.forEach(time => {
+                    const [h, m] = time.split(':');
+                    const slotDate = new Date(`${dateStr}T${time}:00`);
+                    let isBlocked = false;
+                    const dbSlot = occupiedData.find(row => row.hora === time);
+                    if (dbSlot) isBlocked = true;
+
+                    if (mode !== 'admin') {
+                        if (slotDate < now) isBlocked = true;
+                        const hourNum = parseInt(h);
+                        if (hourNum >= 1 && hourNum <= 9 && ((slotDate - now) / (1000 * 60 * 60)) < 3) isBlocked = true;
+                        
+                        if (isBlocked) {
+                            bloqueHtml += `<div class="bg-slate-100 text-slate-300 line-through text-center py-3 rounded-2xl text-sm font-semibold cursor-not-allowed border border-slate-100">${time}</div>`;
+                        } else {
+                            bloqueHtml += `<div onclick="selectTime('${time}', this)" class="time-btn bg-white border border-slate-200 text-center py-3 rounded-2xl text-sm text-slate-700 font-bold cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-all shadow-sm active:scale-95">${time}</div>`;
+                        }
                     } else {
-                        container.innerHTML += `<div onclick="selectTime('${time}', this)" class="time-btn bg-white border border-slate-200 text-center py-2.5 rounded-xl text-sm text-slate-600 font-medium cursor-pointer hover:bg-slate-100 transition-colors shadow-sm">${time}</div>`;
+                        if (isBlocked) {
+                            bloqueHtml += `<div onclick="adminToggleSlot('${time}', '${dbSlot.id}', true)" class="bg-red-500/20 text-red-400 border border-red-500/30 text-center py-3 rounded-2xl text-sm font-bold cursor-pointer hover:bg-red-500/30 transition-colors">${time}</div>`;
+                        } else {
+                            bloqueHtml += `<div onclick="adminToggleSlot('${time}', null, false)" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-center py-3 rounded-2xl text-sm font-bold cursor-pointer hover:bg-emerald-500/30 transition-colors">${time}</div>`;
+                        }
                     }
-                } else {
-                    if (isBlocked) {
-                        container.innerHTML += `<div onclick="adminToggleSlot('${time}', '${dbSlot.id}', true)" class="bg-red-500/20 text-red-400 border border-red-500/30 text-center py-2.5 rounded-xl text-sm font-bold cursor-pointer hover:bg-red-500/30 transition-colors">${time}</div>`;
-                    } else {
-                        container.innerHTML += `<div onclick="adminToggleSlot('${time}', null, false)" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-center py-2.5 rounded-xl text-sm font-bold cursor-pointer hover:bg-emerald-500/30 transition-colors">${time}</div>`;
-                    }
-                }
-            });
+                });
+                bloqueHtml += `</div></div>`;
+                htmlFinal += bloqueHtml;
+            }
+
+            container.innerHTML = htmlFinal;
         }
 
         // =========================================================
@@ -555,15 +538,18 @@
         // =========================================================
         function selectTime(time, el) {
             document.querySelectorAll('.time-btn').forEach(b => {
-                b.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-700', 'border-2', 'font-bold');
-                b.classList.add('bg-white', 'border-slate-200', 'text-slate-600');
+                b.classList.remove('border-blue-600', 'bg-blue-600', 'text-white', 'shadow-md');
+                b.classList.add('bg-white', 'border-slate-200', 'text-slate-700');
             });
-            el.classList.remove('bg-white', 'border-slate-200', 'text-slate-600');
-            el.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-700', 'border-2', 'font-bold');
+            el.classList.remove('bg-white', 'border-slate-200', 'text-slate-700');
+            el.classList.add('border-blue-600', 'bg-blue-600', 'text-white', 'shadow-md');
+            
             selectedTimeStr = time;
             const infoSection = document.getElementById('client-info-section');
             infoSection.classList.remove('hidden');
-            setTimeout(() => infoSection.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
+            
+            // Scroll suave hacia el formulario para que el cliente lo vea automáticamente
+            setTimeout(() => infoSection.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
         }
 
         async function confirmAppointment() {
@@ -571,7 +557,7 @@
             const location = document.getElementById('client-location').value.trim();
             
             if (!name || !location) {
-                return showModal({ title: "Datos incompletos", message: "Por favor, rellena tu nombre y la dirección del vehículo.", type: "alert" });
+                return showModal({ title: "Faltan datos", message: "Por favor, rellena tu nombre y la dirección del vehículo.", type: "alert" });
             }
             
             const btn = document.getElementById('btn-confirmar');
@@ -594,8 +580,7 @@
 
             const telegramMsg = `🔔 <b>NUEVA RESERVA WEB</b>\n\n👤 <b>Nombre:</b> ${name}\n📍 <b>Dirección:</b> ${location}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
             fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chat_id: CHAT_ID, text: telegramMsg, parse_mode: 'HTML' })
             });
 
@@ -614,6 +599,7 @@
         // ACCIONES ADMIN
         // =========================================================
         async function checkAdmin() {
+            if (!supabaseClient) return showModal({ title: "Error", message: "Base de datos desconectada.", type: "alert" });
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 openPage('admin-view');
@@ -669,12 +655,27 @@
             if (isBlocked) {
                 showModal({
                     title: "Liberar Hora",
-                    message: `¿Seguro que quieres LIBERAR la hora de las ${time}?`,
+                    message: `¿Quieres desbloquear las ${time} para que los clientes puedan reservar?`,
                     type: "confirm",
                     onConfirm: async () => {
                         await supabaseClient.from('citas').delete().eq('id', dbId);
-                        // No hace falta renderizar porque el tiempo real lo hará automático
+                        // El websocket en tiempo real actualizará la pantalla solo
                     }
                 });
             } else {
-                showMod
+                showModal({
+                    title: "Bloquear Hora",
+                    message: `¿Quieres bloquear las ${time} para que nadie pueda reservarla?`,
+                    type: "confirm",
+                    onConfirm: async () => {
+                        await supabaseClient.from('citas').insert([{ 
+                            fecha: selectedDateStr, hora: time, cliente: "BLOQUEADO (Admin)", localizacion: "N/A" 
+                        }]);
+                        // El websocket en tiempo real actualizará la pantalla solo
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

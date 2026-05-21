@@ -73,6 +73,7 @@
             <!-- LADO DERECHO: LA APLICACIÓN -->
             <div id="app-container" class="relative w-full h-[100dvh] lg:h-[800px] lg:w-[390px] bg-slate-50 lg:rounded-[3rem] lg:shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden lg:border-[12px] border-slate-950 shrink-0 z-20">
                 
+                <!-- SIMULACIÓN DE LA CÁMARA PARA PC -->
                 <div class="hidden lg:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-slate-950 rounded-b-3xl z-50"></div>
 
                 <!-- PÁGINA PRINCIPAL -->
@@ -125,7 +126,7 @@
                         </button>
                     </div>
 
-                    <!-- FOOTER CON EL CANDADO ARREGLADO (Z-INDEX ALTO Y POSITION RELATIVE) -->
+                    <!-- FOOTER CON EL CANDADO -->
                     <footer class="text-center py-4 text-slate-400 text-xs mt-auto flex justify-center items-center gap-2 relative z-30">
                         &copy; 2026 24H Detailing 
                         <button onclick="checkAdmin()" class="p-2 hover:bg-slate-200 rounded-full transition-colors active:scale-90 cursor-pointer pointer-events-auto text-slate-500">
@@ -169,7 +170,7 @@
                     </div>
                 </div>
 
-                <!-- PÁGINA: PANEL ADMIN -->
+                <!-- PÁGINA: PANEL ADMIN (BLOQUEAR CITAS) -->
                 <div id="admin-view" class="page-slide absolute inset-0 bg-slate-800 z-50 flex flex-col pt-4 lg:pt-8 text-white">
                     <div class="bg-slate-950 px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow-md">
                         <div class="flex items-center">
@@ -204,7 +205,6 @@
                     </div>
                 </div>
 
-                <!-- (Las demás páginas: pro-view, about-view, booking-view se mantienen iguales) -->
                 <!-- PÁGINA: PROFESIONALES -->
                 <div id="pro-view" class="page-slide absolute inset-0 bg-slate-50 z-40 flex flex-col pt-4 lg:pt-8">
                     <div class="bg-slate-900 px-4 py-4 flex items-center sticky top-0 z-10 text-white shadow-md">
@@ -306,10 +306,14 @@
     </div>
 
     <script>
-        // DATOS CONSTANTES
+        // ==========================================
+        // CONFIGURACIÓN CENTRAL (SUPABASE, TELEGRAM, WA)
+        // ==========================================
         const MY_WHATSAPP = "34644909851"; 
         const SUPABASE_URL = "https://kujtlvfqxghhidlgxzbn.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_KGhnhvQ3gG6mmzUMxxCfPQ_OwmvHjgo"; 
+        
+        // Telegram Bot API
         const TELEGRAM_TOKEN = "8611178436:AAHXGFqtenGl00Rvrgqk0dZIHEfuUCgY6-o";
         const CHAT_ID = "6519651464";
 
@@ -317,19 +321,22 @@
         let selectedDateStr = ""; 
         let selectedTimeStr = "";
         
-        // HORAS CADA 30 MIN
+        // HORAS CADA 30 MIN (00:00 a 23:30)
         const ALL_HOURS = [];
         for (let h = 0; h < 24; h++) {
             let hourStr = h.toString().padStart(2, '0');
             ALL_HOURS.push(`${hourStr}:00`, `${hourStr}:30`);
         }
 
+        // FUNCIÓN: ELIMINAR CITAS ANTIGUAS
+        // *Nota: Para que esto funcione, asegúrate de que tus políticas de Supabase (RLS) permitan hacer DELETE*
         async function cleanOldAppointments() {
             if (!supabaseClient) return;
             const now = new Date();
             const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             try { await supabaseClient.from('citas').delete().lt('fecha', todayStr); } catch(e) {}
         }
+        // Limpiamos al abrir la app
         cleanOldAppointments();
 
         function calcularEdad() {
@@ -356,7 +363,7 @@
         function closePage(id) { document.getElementById(id).classList.remove('open'); }
 
         // =========================================================
-        // LÓGICA DE CALENDARIO (CLIENTE Y ADMIN)
+        // CALENDARIO (REUTILIZABLE PARA CLIENTE Y ADMIN)
         // =========================================================
         function renderCalendar(mode) {
             const now = new Date();
@@ -409,6 +416,7 @@
             document.getElementById(prefix + 'selected-date-display').textContent = `${d}/${m}/${y}`;
             document.getElementById(prefix + 'time-selection').classList.remove('hidden');
             if(mode !== 'admin') document.getElementById('client-info-section').classList.add('hidden');
+            
             await renderTimeSlots(dateStr, mode);
         }
 
@@ -432,19 +440,23 @@
                 const [h, m] = time.split(':');
                 const slotDate = new Date(`${dateStr}T${time}:00`);
                 let isBlocked = false;
+                
                 const dbSlot = occupiedData.find(row => row.hora === time);
                 if (dbSlot) isBlocked = true;
 
                 if (mode !== 'admin') {
+                    // Bloqueos de cliente: Horas pasadas y madrugadas de menos de 3h de antelación
                     if (slotDate < now) isBlocked = true;
                     const hourNum = parseInt(h);
                     if (hourNum >= 1 && hourNum <= 9 && ((slotDate - now) / (1000 * 60 * 60)) < 3) isBlocked = true;
+                    
                     if (isBlocked) {
                         container.innerHTML += `<div class="bg-slate-200 text-slate-400 line-through text-center py-2.5 rounded-xl text-sm font-medium cursor-not-allowed">${time}</div>`;
                     } else {
                         container.innerHTML += `<div onclick="selectTime('${time}', this)" class="time-btn bg-white border border-slate-200 text-center py-2.5 rounded-xl text-sm text-slate-600 font-medium cursor-pointer hover:bg-slate-100 transition-colors shadow-sm">${time}</div>`;
                     }
                 } else {
+                    // Modo admin: Botones rojos/verdes clicables para bloquear
                     if (isBlocked) {
                         container.innerHTML += `<div onclick="adminToggleSlot('${time}', '${dbSlot.id}', true)" class="bg-red-500/20 text-red-400 border border-red-500/30 text-center py-2.5 rounded-xl text-sm font-bold cursor-pointer hover:bg-red-500/30 transition-colors">${time}</div>`;
                     } else {
@@ -454,6 +466,9 @@
             });
         }
 
+        // =========================================================
+        // ACCIONES DEL CLIENTE (RESERVAR)
+        // =========================================================
         function selectTime(time, el) {
             document.querySelectorAll('.time-btn').forEach(b => {
                 b.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-700', 'border-2', 'font-bold');
@@ -470,34 +485,44 @@
         async function confirmAppointment() {
             const name = document.getElementById('client-name').value.trim();
             const location = document.getElementById('client-location').value.trim();
-            if (!name || !location) return alert("Rellena tu nombre y dirección.");
+            
+            if (!name || !location) return alert("Por favor, rellena tu nombre y la dirección del vehículo.");
+            
             const btn = document.getElementById('btn-confirmar');
             btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-2xl"></i> Guardando...`;
             btn.disabled = true;
 
+            // 1. Guardar en Supabase comprobando que esté libre
             if (supabaseClient) {
                 try {
                     const { data: check } = await supabaseClient.from('citas').select('id').eq('fecha', selectedDateStr).eq('hora', selectedTimeStr);
                     if (check && check.length > 0) {
-                        alert("Alguien acaba de reservar esta hora. Elige otra.");
+                        alert("¡Vaya! Alguien acaba de reservar esta hora. Elige otra por favor.");
                         btn.innerHTML = `<i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva`;
                         btn.disabled = false;
                         document.getElementById('client-info-section').classList.add('hidden');
                         return renderTimeSlots(selectedDateStr, 'client');
                     }
+                    // Insertamos la cita
                     await supabaseClient.from('citas').insert([{ fecha: selectedDateStr, hora: selectedTimeStr, cliente: name, localizacion: location }]);
-                } catch (e) {}
+                } catch (e) {
+                    console.error("Error guardando en Supabase:", e);
+                }
             }
 
-            const telegramMsg = `🔔 <b>NUEVA RESERVA WEB</b>\n\n👤 <b>Nombre:</b> ${name}\n📍 <b>Dirección:</b> ${location}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
+            // 2. ENVIAR NOTIFICACIÓN A TELEGRAM DIRECTAMENTE
+            const telegramMsg = `🔔 <b>NUEVA RESERVA DE APP</b>\n\n👤 <b>Nombre:</b> ${name}\n📍 <b>Dirección:</b> ${location}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
             fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chat_id: CHAT_ID, text: telegramMsg, parse_mode: 'HTML' })
-            });
+            }).catch(e => console.error("Error enviando Telegram:", e));
 
-            const waMsg = `¡Hola Pablo! 👋 Acabo de reservar cita en la web.\n\n👤 *Nombre:* ${name}\n📍 *Dirección:* ${location}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}\n\nConfírmame cuando puedas.`;
+            // 3. Abrir WhatsApp para el cliente
+            const waMsg = `¡Hola Pablo! 👋 Acabo de reservar cita en la web de 24H Detailing.\n\n👤 *Nombre:* ${name}\n📍 *Dirección:* ${location}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}\n\nConfírmame cuando puedas.`;
             window.open(`https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(waMsg)}`, '_blank');
             
+            // Reseteo de pantalla
             closePage('booking-view');
             document.getElementById('client-name').value = '';
             document.getElementById('client-location').value = '';
@@ -507,10 +532,10 @@
         }
 
         // =========================================================
-        // AUTENTICACIÓN Y PANEL DE ADMIN CON SUPABASE AUTH
+        // ACCIONES DE ADMINISTRADOR (SUPABASE AUTH)
         // =========================================================
         async function checkAdmin() {
-            // Verificar si la sesión ya está activa
+            // Revisa si ya hay una sesión guardada en el navegador
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 openPage('admin-view');
@@ -544,7 +569,6 @@
                 btn.innerHTML = `Iniciar Sesión`;
                 btn.disabled = false;
             } else {
-                // Éxito
                 document.getElementById('admin-email').value = '';
                 document.getElementById('admin-pass').value = '';
                 btn.innerHTML = `Iniciar Sesión`;
@@ -563,6 +587,7 @@
 
         async function adminToggleSlot(time, dbId, isBlocked) {
             if (!supabaseClient) return;
+            
             if (isBlocked) {
                 if(confirm(`¿Quieres LIBERAR la hora de las ${time}?`)) {
                     await supabaseClient.from('citas').delete().eq('id', dbId);
@@ -571,7 +596,10 @@
             } else {
                 if(confirm(`¿Quieres BLOQUEAR la hora de las ${time}?`)) {
                     await supabaseClient.from('citas').insert([{ 
-                        fecha: selectedDateStr, hora: time, cliente: "BLOQUEADO", localizacion: "N/A" 
+                        fecha: selectedDateStr, 
+                        hora: time, 
+                        cliente: "BLOQUEADO (Admin)", 
+                        localizacion: "N/A" 
                     }]);
                     renderTimeSlots(selectedDateStr, 'admin'); 
                 }

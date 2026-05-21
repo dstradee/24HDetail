@@ -92,7 +92,7 @@
                             <button onclick="openPage('about-view')" class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors">
                                 <i class="ph-fill ph-user text-3xl text-slate-700"></i><span class="text-sm font-semibold text-slate-700">Sobre mí</span>
                             </button>
-                            <button onclick="window.location.href='https://wa.me/34644909851'" class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors">
+                            <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors">
                                 <i class="ph-fill ph-whatsapp-logo text-3xl text-emerald-500"></i><span class="text-sm font-semibold text-slate-700 text-center leading-tight">Contacto</span>
                             </button>
                         </div>
@@ -100,7 +100,10 @@
                         <button onclick="openPage('pro-view')" class="mt-2 w-full bg-slate-800 text-white p-4 rounded-2xl shadow-md flex items-center justify-between active:scale-95 transition-transform">
                             <div class="flex items-center gap-3">
                                 <i class="ph-fill ph-handshake text-2xl text-emerald-400"></i>
-                                <div class="text-left"><span class="font-semibold text-sm block">Soy Profesional</span><span class="text-xs text-slate-400">Tarifas especiales</span></div>
+                                <div class="text-left">
+                                    <span class="font-semibold text-sm block">Soy Compraventas</span>
+                                    <span class="text-xs text-slate-400">Tarifas especiales</span>
+                                </div>
                             </div>
                             <i class="ph-bold ph-caret-right text-lg opacity-50"></i>
                         </button>
@@ -108,27 +111,52 @@
                     <footer class="text-center py-4 text-slate-400 text-xs mt-auto relative z-30">&copy; 2026 24H Detailing</footer>
                 </main>
 
-                <!-- PÁGINA: PROFESIONALES -->
+                <!-- PÁGINA: PROFESIONALES (COMPRAVENTAS) -->
                 <div id="pro-view" class="page-slide bg-slate-50 flex flex-col pt-4 lg:pt-8">
                     <div class="bg-slate-900 px-4 py-4 flex items-center sticky top-0 z-10 text-white shadow-md">
                         <button onclick="closePage('pro-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-800 active:bg-slate-700 transition-colors"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
                         <h2 class="text-lg font-bold ml-2">Planes Compraventa</h2>
                     </div>
                     <div class="flex-1 overflow-y-auto p-5 pb-10">
-                        <div class="text-center mb-6 mt-2"><i class="ph-fill ph-handshake text-5xl text-emerald-500 mb-2"></i><h3 class="text-xl font-bold text-slate-800">Suscripción Mensual</h3><p class="text-xs text-slate-500 mt-2">¿Tienes volumen de stock? Ahorra dinero fijando tus lavados al mes. Tarifa pública normal: 11 €/coche.</p></div>
+                        <div class="text-center mb-6 mt-2">
+                            <i class="ph-fill ph-handshake text-5xl text-emerald-500 mb-2"></i>
+                            <h3 class="text-xl font-bold text-slate-800">Suscripción Mensual</h3>
+                            <p class="text-xs text-slate-500 mt-2">¿Tienes volumen de stock? Ahorra dinero fijando tus lavados al mes. Tarifa pública normal: 11 €/coche.</p>
+                        </div>
+                        
                         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 text-center">¿Coches a la semana? (Máx. 20)</label>
-                            <div class="flex items-center gap-4 mb-5"><span class="text-slate-400 text-sm font-bold">2</span><input type="range" id="cars-slider" min="2" max="20" value="2" class="w-full appearance-none bg-transparent" oninput="calculateProPrice()"><span class="text-slate-400 text-sm font-bold">20</span></div>
-                            <div class="text-center mb-5"><div class="inline-block bg-blue-50 px-4 py-1.5 rounded-xl border border-blue-100"><span class="text-blue-800 font-bold text-xl" id="cars-count">2</span> <span class="text-blue-600 text-xs font-semibold">coches / sem</span></div></div>
+                            <div class="flex items-center gap-4 mb-5">
+                                <span class="text-slate-400 text-sm font-bold">2</span>
+                                <input type="range" id="cars-slider" min="2" max="20" value="2" class="w-full appearance-none bg-transparent" oninput="calculateProPrice()">
+                                <span class="text-slate-400 text-sm font-bold">20</span>
+                            </div>
+                            <div class="text-center mb-5">
+                                <div class="inline-block bg-blue-50 px-4 py-1.5 rounded-xl border border-blue-100">
+                                    <span class="text-blue-800 font-bold text-xl" id="cars-count">2</span> 
+                                    <span class="text-blue-600 text-xs font-semibold">coches / sem</span>
+                                </div>
+                            </div>
                             <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
                                 <div class="flex justify-between items-center text-sm"><span class="text-slate-500">Precio por coche:</span><span class="font-bold text-slate-800" id="price-per-car">10.00 €</span></div>
                                 <div class="flex justify-between items-center text-sm"><span class="text-slate-500">Total semanal:</span><span class="font-semibold text-slate-700" id="weekly-total">20.00 €</span></div>
                                 <div class="flex justify-between items-center pt-2 border-t border-slate-200"><span class="text-slate-800 font-bold text-sm">Tu Suscripción:</span><span class="font-black text-blue-600 text-xl" id="monthly-total">80.00 €</span></div>
                             </div>
                             <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between">
-                                <div class="flex items-center gap-3"><div class="bg-emerald-500 text-white p-2 rounded-lg"><i class="ph-bold ph-trend-down text-lg"></i></div><div><p class="text-[11px] text-emerald-700 font-medium">Respecto a normal</p><p class="text-sm font-bold text-emerald-950">Te ahorras:</p></div></div>
-                                <div class="text-right"><span class="font-black text-emerald-600 text-xl block" id="savings-total">8.00 €</span><span class="text-[10px] uppercase text-emerald-700 font-bold tracking-wider">Al mes</span></div>
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-emerald-500 text-white p-2 rounded-lg"><i class="ph-bold ph-trend-down text-lg"></i></div>
+                                    <div><p class="text-[11px] text-emerald-700 font-medium">Respecto a normal</p><p class="text-sm font-bold text-emerald-950">Te ahorras:</p></div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-black text-emerald-600 text-xl block" id="savings-total">8.00 €</span>
+                                    <span class="text-[10px] uppercase text-emerald-700 font-bold tracking-wider">Al mes</span>
+                                </div>
                             </div>
+                            
+                            <!-- NUEVO BOTÓN CONTACTO DIRECTO COMPRAVENTAS -->
+                            <button onclick="window.open('https://wa.me/34644909851?text=' + encodeURIComponent('Hola soy compraventas y me gustaría tener más información acerca de tus servicios'), '_blank')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mt-6">
+                                <i class="ph-bold ph-whatsapp text-2xl"></i> Contáctame
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -168,7 +196,7 @@
                             <h3 class="font-bold text-xl mb-1 text-slate-800">Horarios para el <span id="selected-date-display" class="text-blue-600"></span></h3>
                             <p class="text-xs text-slate-500 mb-6">* Las reservas de madrugada requieren 3h de antelación y las de día normal 30 min.</p>
                             
-                            <!-- SELECTOR NATIVO DE HORA (REDISEÑADO PARA OCULTAR EL PASADO) -->
+                            <!-- SELECTOR NATIVO DE HORA -->
                             <div id="time-slots-container" class="mb-6"></div>
 
                             <div id="client-info-section" class="hidden mt-4 space-y-4 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
@@ -320,7 +348,7 @@
             await renderTimeSlots(dateStr);
         }
 
-        // RENDERIZAR HORAS CLIENTE (SELECTOR NATIVO INTELIGENTE)
+        // RENDERIZAR HORAS CLIENTE
         async function renderTimeSlots(dateStr) {
             const container = document.getElementById('time-slots-container');
             container.innerHTML = '<div class="text-center py-6 text-slate-400"><i class="ph-bold ph-spinner animate-spin text-2xl"></i></div>';
@@ -348,20 +376,14 @@
                 const diffMs = slotDate - now; const diffMinutes = diffMs / (1000 * 60); const hourNum = parseInt(h);
 
                 let isPastOrTooEarly = false;
-                if (diffMs < 0) {
-                    isPastOrTooEarly = true; 
-                } else if (hourNum >= 1 && hourNum <= 9) {
-                    if (diffMinutes < 180) isPastOrTooEarly = true; 
-                } else {
-                    if (diffMinutes < 30) isPastOrTooEarly = true; 
-                }
+                if (diffMs < 0) isPastOrTooEarly = true; 
+                else if (hourNum >= 1 && hourNum <= 9) { if (diffMinutes < 180) isPastOrTooEarly = true; } 
+                else { if (diffMinutes < 30) isPastOrTooEarly = true; }
                 
-                // MAGIA: Si ya pasó la hora o es demasiado pronto, no la pintamos en el desplegable.
                 if (isPastOrTooEarly) return; 
                 
                 hasRenderedOptions = true;
 
-                // DISTINCIÓN VISUAL: Emojis para que sea súper claro qué está libre y qué ocupado
                 if (isOccupied) {
                     htmlFinal += `<option value="${time}" disabled>❌ ${time} - Reservada</option>`;
                 } else {

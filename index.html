@@ -21,10 +21,9 @@
             overflow-x: hidden;
         }
         
-        /* Scrollbar invisible pero funcional */
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         
-        /* ARREGLO DE BOTONES: Para que no molesten cuando las pantallas están ocultas */
+        /* ARREGLO BOTONES INVISIBLES */
         .page-slide { 
             transform: translateX(100%); 
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s;
@@ -37,7 +36,6 @@
             pointer-events: auto;
         }
 
-        /* Estilos del slider */
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%;
             background: #2563eb; cursor: pointer; margin-top: -8px; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
@@ -75,14 +73,13 @@
             <!-- LADO DERECHO: LA APLICACIÓN -->
             <div id="app-container" class="relative w-full h-[100dvh] lg:h-[800px] lg:w-[390px] bg-slate-50 lg:rounded-[3rem] lg:shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden lg:border-[12px] border-slate-950 shrink-0 z-20">
                 
-                <!-- SIMULACIÓN DE LA CÁMARA PARA PC -->
                 <div class="hidden lg:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-slate-950 rounded-b-3xl z-50"></div>
 
-                <!-- MODAL PERSONALIZADO (AVISOS Y CONFIRMACIONES) -->
+                <!-- MODAL PERSONALIZADO -->
                 <div id="custom-modal" class="hidden absolute inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-5">
                     <div class="bg-white p-6 rounded-3xl shadow-2xl w-full transform transition-all scale-95 opacity-0" id="custom-modal-box">
                         <h3 class="text-xl font-bold text-slate-800 mb-2" id="modal-title">Título</h3>
-                        <p class="text-slate-600 text-sm mb-6 leading-relaxed" id="modal-message">Mensaje...</p>
+                        <p class="text-slate-600 text-sm mb-6 whitespace-pre-line leading-relaxed" id="modal-message">Mensaje...</p>
                         <div class="flex gap-3" id="modal-buttons"></div>
                     </div>
                 </div>
@@ -137,7 +134,7 @@
                         </button>
                     </div>
 
-                    <!-- FOOTER CON EL CANDADO (Con Position Z-Index para que siempre sea clicable) -->
+                    <!-- FOOTER CON EL CANDADO -->
                     <footer class="text-center py-4 text-slate-400 text-xs mt-auto flex justify-center items-center gap-2 relative z-30">
                         &copy; 2026 24H Detailing 
                         <button onclick="checkAdmin()" class="p-2 hover:bg-slate-200 rounded-full transition-colors active:scale-90 cursor-pointer pointer-events-auto text-slate-500">
@@ -170,7 +167,7 @@
                     </div>
                 </div>
 
-                <!-- PÁGINA: PANEL ADMIN -->
+                <!-- PÁGINA: PANEL ADMIN (MANTIENE LA VISTA EN CUADRÍCULAS PARA VERLO TODO RÁPIDO) -->
                 <div id="admin-view" class="page-slide absolute inset-0 bg-slate-800 z-40 flex flex-col pt-4 lg:pt-8 text-white">
                     <div class="bg-slate-950 px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow-md">
                         <div class="flex items-center"><button onclick="closePage('admin-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-800 transition-colors text-white"><i class="ph-bold ph-arrow-left text-2xl"></i></button><h2 class="text-lg font-bold ml-2">Panel Admin</h2></div>
@@ -184,7 +181,7 @@
                         </div>
                         <div id="admin-time-selection" class="hidden">
                             <h3 class="font-bold text-md mb-2">Horas para el <span id="admin-selected-date-display" class="text-blue-400"></span></h3>
-                            <p class="text-[11px] text-slate-400 mb-6 uppercase tracking-wider font-bold">Toca para cambiar: Verde = Libre | Rojo = Bloqueada</p>
+                            <p class="text-[11px] text-slate-400 mb-6 uppercase tracking-wider font-bold">Toca para gestionar: Verde = Libre | Rojo = Ocupada</p>
                             <!-- Contenedor Admin de Horas -->
                             <div id="admin-time-slots-container" class="mb-6"></div>
                         </div>
@@ -251,12 +248,19 @@
                             <h3 class="font-bold text-xl mb-1 text-slate-800">Horarios para el <span id="selected-date-display" class="text-blue-600"></span></h3>
                             <p class="text-xs text-slate-500 mb-6">* Las reservas de madrugada requieren 3h de antelación y las de día normal 30 min.</p>
                             
-                            <!-- Contenedor rediseñado ESTILO BARBERÍA -->
-                            <div id="time-slots-container" class="mb-6"></div>
+                            <!-- SELECTOR NATIVO DE HORA (TIPO RUEDECITA EN MÓVIL) -->
+                            <div id="time-slots-container" class="mb-6">
+                                <!-- Se genera por JS -->
+                            </div>
 
-                            <div id="client-info-section" class="hidden mt-8 space-y-4 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                            <div id="client-info-section" class="hidden mt-4 space-y-4 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
                                 <div><label class="block text-sm font-bold text-slate-700 mb-1">Nombre y Apellidos</label><input type="text" id="client-name" placeholder="Ej: Pablo García Pérez" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
+                                
+                                <!-- NUEVO CAMPO: TELÉFONO -->
+                                <div><label class="block text-sm font-bold text-slate-700 mb-1">Teléfono Móvil</label><input type="tel" id="client-phone" placeholder="Ej: 600123456" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
+                                
                                 <div><label class="block text-sm font-bold text-slate-700 mb-1">Dirección (Calle y Número)</label><input type="text" id="client-location" placeholder="Ej: Calle Mayor, 12" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
+                                
                                 <button onclick="confirmAppointment()" id="btn-confirmar" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mt-4">
                                     <i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva
                                 </button>
@@ -307,12 +311,11 @@
                             
                             // Si el cliente estaba apunto de reservar esa hora exacta
                             if (mode === 'client' && selectedTimeStr === changedRecord.hora && payload.eventType === 'INSERT') {
-                                showModal({ title: "Hora ocupada", message: "¡Lo sentimos! Esta hora acaba de ser bloqueada o reservada por alguien más en este preciso instante.", type: "alert" });
+                                showModal({ title: "Hora ocupada", message: "¡Lo sentimos! Esta hora acaba de ser reservada. Elige otra.", type: "alert" });
                                 document.getElementById('client-info-section').classList.add('hidden');
                                 selectedTimeStr = "";
                             }
                             
-                            // Recarga la lista de horas automáticamente si estamos mirando ese mismo día
                             renderTimeSlots(selectedDateStr, mode);
                         }
                     }
@@ -402,7 +405,7 @@
         function closePage(id) { document.getElementById(id).classList.remove('open'); }
 
         // =========================================================
-        // CALENDARIO (CLIENTE Y ADMIN)
+        // CALENDARIO
         // =========================================================
         function renderCalendar(mode) {
             const now = new Date();
@@ -460,7 +463,7 @@
         }
 
         // =========================================================
-        // REDISEÑO "TIPO BARBERÍA" + LÓGICA DE TIEMPOS 30min / 3h
+        // REDISEÑO: SELECTOR NATIVO CLIENTE + GRILLA ADMIN
         // =========================================================
         async function renderTimeSlots(dateStr, mode) {
             const prefix = mode === 'admin' ? 'admin-' : '';
@@ -470,38 +473,28 @@
             let occupiedData = [];
             if (supabaseClient) {
                 try {
-                    const { data } = await supabaseClient.from('citas').select('id, hora').eq('fecha', dateStr);
+                    // Ahora pedimos todos los campos para que el Admin pueda ver el teléfono y el cliente
+                    const { data } = await supabaseClient.from('citas').select('*').eq('fecha', dateStr);
                     if (data) occupiedData = data;
                 } catch (e) {}
             }
 
-            // Separar las horas en bloques (Estilo Barbería)
-            const categorias = { 'Madrugada': [], 'Mañana': [], 'Mediodía y Tarde': [], 'Noche': [] };
-            ALL_HOURS.forEach(time => {
-                const hourNum = parseInt(time.split(':')[0]);
-                if (hourNum >= 0 && hourNum < 6) categorias['Madrugada'].push(time);
-                else if (hourNum >= 6 && hourNum < 12) categorias['Mañana'].push(time);
-                else if (hourNum >= 12 && hourNum < 18) categorias['Mediodía y Tarde'].push(time);
-                else categorias['Noche'].push(time);
-            });
-
-            let htmlFinal = '';
-            const now = new Date(); // Para los cálculos de antelación
-
-            for (const [catName, times] of Object.entries(categorias)) {
-                if(times.length === 0) continue;
-                
-                let bloqueHtml = `
-                    <div class="mb-6">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="h-px bg-slate-200 flex-1"></div>
-                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">${catName}</h4>
-                            <div class="h-px bg-slate-200 flex-1"></div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-3">
+            const now = new Date();
+            
+            // PREPARADO PARA EL FUTURO: Si añades servicios más largos, 
+            // aquí se calcularía que un servicio ocupa 2 o 3 huecos (ej: 1 hora o 1.5 horas).
+            
+            // ----------------------------------------------------
+            // VISTA CLIENTE: SELECTOR NATIVO TIPO RUEDA (iOS/Android)
+            // ----------------------------------------------------
+            if (mode === 'client') {
+                let htmlFinal = `
+                <div class="relative bg-white border border-slate-300 rounded-xl px-4 py-4 shadow-sm">
+                    <select id="native-time-select" class="w-full bg-transparent text-slate-800 font-bold text-lg focus:outline-none appearance-none cursor-pointer" onchange="onTimeSelected(this.value)">
+                        <option value="">-- Toca aquí para elegir hora --</option>
                 `;
 
-                times.forEach(time => {
+                ALL_HOURS.forEach(time => {
                     const [h, m] = time.split(':');
                     const slotDate = new Date(`${dateStr}T${time}:00`);
                     let isBlocked = false;
@@ -509,71 +502,97 @@
                     const dbSlot = occupiedData.find(row => row.hora === time);
                     if (dbSlot) isBlocked = true;
 
-                    if (mode !== 'admin') {
-                        const diffMs = slotDate - now;
-                        const diffMinutes = diffMs / (1000 * 60); // Diferencia en minutos
-                        const hourNum = parseInt(h);
+                    const diffMs = slotDate - now;
+                    const diffMinutes = diffMs / (1000 * 60);
+                    const hourNum = parseInt(h);
 
-                        // SI ES HORA PASADA -> Bloquear
-                        if (diffMs < 0) {
-                            isBlocked = true; 
-                        } 
-                        // SI ES ENTRE 01:00 Y 09:00 -> 3 horas de antelación (180 mins)
-                        else if (hourNum >= 1 && hourNum <= 9) {
-                            if (diffMinutes < 180) isBlocked = true; 
-                        } 
-                        // EL RESTO DEL DÍA -> 30 minutos de antelación
-                        else {
-                            if (diffMinutes < 30) isBlocked = true; 
-                        }
-                        
-                        // Renderizado Cliente
-                        if (isBlocked) {
-                            bloqueHtml += `<div class="bg-slate-100 text-slate-300 line-through text-center py-3 rounded-2xl text-sm font-semibold cursor-not-allowed border border-slate-100">${time}</div>`;
-                        } else {
-                            bloqueHtml += `<div onclick="selectTime('${time}', this)" class="time-btn bg-white border border-slate-200 text-center py-3 rounded-2xl text-sm text-slate-700 font-bold cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-all shadow-sm active:scale-95">${time}</div>`;
-                        }
+                    if (diffMs < 0) {
+                        isBlocked = true; 
+                    } else if (hourNum >= 1 && hourNum <= 9) {
+                        if (diffMinutes < 180) isBlocked = true; 
                     } else {
-                        // Renderizado Admin (Se puede clickear para bloquear / desbloquear todo el rato)
-                        if (isBlocked) {
-                            bloqueHtml += `<div onclick="adminToggleSlot('${time}', '${dbSlot.id}', true)" class="bg-red-500/20 text-red-400 border border-red-500/30 text-center py-3 rounded-2xl text-sm font-bold cursor-pointer hover:bg-red-500/30 transition-colors">${time}</div>`;
+                        if (diffMinutes < 30) isBlocked = true; 
+                    }
+                    
+                    if (isBlocked) {
+                        htmlFinal += `<option value="${time}" disabled>${time} (No disponible)</option>`;
+                    } else {
+                        htmlFinal += `<option value="${time}">${time}</option>`;
+                    }
+                });
+
+                htmlFinal += `
+                    </select>
+                    <i class="ph-bold ph-caret-down absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none text-xl"></i>
+                </div>
+                `;
+                container.innerHTML = htmlFinal;
+            } 
+            
+            // ----------------------------------------------------
+            // VISTA ADMIN: CUADRÍCULA (Para verlo todo de un vistazo)
+            // ----------------------------------------------------
+            else {
+                const categorias = { 'Madrugada': [], 'Mañana': [], 'Mediodía y Tarde': [], 'Noche': [] };
+                ALL_HOURS.forEach(time => {
+                    const hourNum = parseInt(time.split(':')[0]);
+                    if (hourNum >= 0 && hourNum < 6) categorias['Madrugada'].push(time);
+                    else if (hourNum >= 6 && hourNum < 12) categorias['Mañana'].push(time);
+                    else if (hourNum >= 12 && hourNum < 18) categorias['Mediodía y Tarde'].push(time);
+                    else categorias['Noche'].push(time);
+                });
+
+                let htmlFinal = '';
+                for (const [catName, times] of Object.entries(categorias)) {
+                    if(times.length === 0) continue;
+                    let bloqueHtml = `
+                        <div class="mb-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="h-px bg-slate-200 flex-1 opacity-20"></div>
+                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">${catName}</h4>
+                                <div class="h-px bg-slate-200 flex-1 opacity-20"></div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3">
+                    `;
+                    times.forEach(time => {
+                        const dbSlot = occupiedData.find(row => row.hora === time);
+                        if (dbSlot) {
+                            // Convertimos los datos a un string seguro para pasarlo a la función
+                            const slotDataStr = encodeURIComponent(JSON.stringify(dbSlot));
+                            bloqueHtml += `<div onclick="adminToggleSlot('${time}', '${slotDataStr}', true)" class="bg-red-500/20 text-red-400 border border-red-500/30 text-center py-3 rounded-2xl text-sm font-bold cursor-pointer hover:bg-red-500/30 transition-colors">${time}</div>`;
                         } else {
                             bloqueHtml += `<div onclick="adminToggleSlot('${time}', null, false)" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-center py-3 rounded-2xl text-sm font-bold cursor-pointer hover:bg-emerald-500/30 transition-colors">${time}</div>`;
                         }
-                    }
-                });
-                bloqueHtml += `</div></div>`;
-                htmlFinal += bloqueHtml;
+                    });
+                    bloqueHtml += `</div></div>`;
+                    htmlFinal += bloqueHtml;
+                }
+                container.innerHTML = htmlFinal;
             }
-
-            container.innerHTML = htmlFinal;
         }
 
         // =========================================================
         // ACCIONES CLIENTE
         // =========================================================
-        function selectTime(time, el) {
-            document.querySelectorAll('.time-btn').forEach(b => {
-                b.classList.remove('border-blue-600', 'bg-blue-600', 'text-white', 'shadow-md');
-                b.classList.add('bg-white', 'border-slate-200', 'text-slate-700');
-            });
-            el.classList.remove('bg-white', 'border-slate-200', 'text-slate-700');
-            el.classList.add('border-blue-600', 'bg-blue-600', 'text-white', 'shadow-md');
-            
+        function onTimeSelected(time) {
+            if (!time) {
+                document.getElementById('client-info-section').classList.add('hidden');
+                selectedTimeStr = "";
+                return;
+            }
             selectedTimeStr = time;
             const infoSection = document.getElementById('client-info-section');
             infoSection.classList.remove('hidden');
-            
-            // Scroll suave hacia el formulario (Estilo app nativa)
             setTimeout(() => infoSection.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
         }
 
         async function confirmAppointment() {
             const name = document.getElementById('client-name').value.trim();
+            const phone = document.getElementById('client-phone').value.trim();
             const location = document.getElementById('client-location').value.trim();
             
-            if (!name || !location) {
-                return showModal({ title: "Faltan datos", message: "Por favor, rellena tu nombre completo y la dirección del vehículo.", type: "alert" });
+            if (!name || !phone || !location) {
+                return showModal({ title: "Faltan datos", message: "Por favor, rellena tu nombre, teléfono y dirección del vehículo.", type: "alert" });
             }
             
             const btn = document.getElementById('btn-confirmar');
@@ -590,21 +609,28 @@
                         document.getElementById('client-info-section').classList.add('hidden');
                         return renderTimeSlots(selectedDateStr, 'client');
                     }
-                    await supabaseClient.from('citas').insert([{ fecha: selectedDateStr, hora: selectedTimeStr, cliente: name, localizacion: location }]);
+                    await supabaseClient.from('citas').insert([{ 
+                        fecha: selectedDateStr, 
+                        hora: selectedTimeStr, 
+                        cliente: name, 
+                        localizacion: location,
+                        telefono: phone 
+                    }]);
                 } catch (e) {}
             }
 
-            const telegramMsg = `🔔 <b>NUEVA RESERVA WEB</b>\n\n👤 <b>Nombre:</b> ${name}\n📍 <b>Dirección:</b> ${location}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
+            const telegramMsg = `🔔 <b>NUEVA RESERVA WEB</b>\n\n👤 <b>Nombre:</b> ${name}\n📞 <b>Teléfono:</b> ${phone}\n📍 <b>Dirección:</b> ${location}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
             fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chat_id: CHAT_ID, text: telegramMsg, parse_mode: 'HTML' })
             });
 
-            const waMsg = `¡Hola Pablo! 👋 Acabo de reservar cita en la web de 24H Detailing.\n\n👤 *Nombre:* ${name}\n📍 *Dirección:* ${location}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}\n\nConfírmame cuando puedas.`;
+            const waMsg = `¡Hola Pablo! 👋 Acabo de reservar cita en la web de 24H Detailing.\n\n👤 *Nombre:* ${name}\n📞 *Teléfono:* ${phone}\n📍 *Dirección:* ${location}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}\n\nConfírmame cuando puedas.`;
             window.open(`https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(waMsg)}`, '_blank');
             
             closePage('booking-view');
             document.getElementById('client-name').value = '';
+            document.getElementById('client-phone').value = '';
             document.getElementById('client-location').value = '';
             document.getElementById('time-selection').classList.add('hidden');
             btn.innerHTML = `<i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva`;
@@ -665,20 +691,26 @@
             closePage('admin-view');
         }
 
-        async function adminToggleSlot(time, dbId, isBlocked) {
+        async function adminToggleSlot(time, slotDataEncoded, isBlocked) {
             if (!supabaseClient) return;
             
             if (isBlocked) {
+                const dbSlot = JSON.parse(decodeURIComponent(slotDataEncoded));
+                const esBloqueoTuyo = dbSlot.cliente === "BLOQUEADO (Admin)";
+                
+                const mensaje = esBloqueoTuyo 
+                    ? `¿Quieres desbloquear las ${time} para que los clientes puedan reservar?` 
+                    : `Cita real de:\n\n👤 Nombre: ${dbSlot.cliente}\n📞 Tel: ${dbSlot.telefono || 'No especificado'}\n📍 Dirección: ${dbSlot.localizacion}\n\n¿Seguro que deseas CANCELAR / ELIMINAR esta cita?`;
+
                 showModal({
-                    title: "Liberar Hora",
-                    message: `¿Quieres desbloquear las ${time} para que los clientes puedan reservar?`,
+                    title: esBloqueoTuyo ? "Liberar Hora" : "Cancelar Cita de Cliente",
+                    message: mensaje,
                     type: "confirm",
                     onConfirm: async () => {
-                        const { error } = await supabaseClient.from('citas').delete().eq('id', dbId);
+                        const { error } = await supabaseClient.from('citas').delete().eq('id', dbSlot.id);
                         if (error) {
-                            showModal({ title: "Error", message: "No se pudo liberar. Comprueba tus permisos de base de datos.", type: "alert" });
+                            showModal({ title: "Error", message: "No se pudo eliminar. Revisa tus permisos.", type: "alert" });
                         }
-                        // Forzamos a recargar la pantalla para que veas el cambio INMEDIATAMENTE
                         renderTimeSlots(selectedDateStr, 'admin');
                     }
                 });
@@ -689,12 +721,11 @@
                     type: "confirm",
                     onConfirm: async () => {
                         const { error } = await supabaseClient.from('citas').insert([{ 
-                            fecha: selectedDateStr, hora: time, cliente: "BLOQUEADO (Admin)", localizacion: "N/A" 
+                            fecha: selectedDateStr, hora: time, cliente: "BLOQUEADO (Admin)", localizacion: "N/A", telefono: "N/A"
                         }]);
                         if (error) {
-                            showModal({ title: "Error", message: "No se pudo bloquear. Comprueba tus permisos de base de datos.", type: "alert" });
+                            showModal({ title: "Error", message: "No se pudo bloquear. Revisa tus permisos.", type: "alert" });
                         }
-                        // Forzamos a recargar la pantalla para que veas el cambio INMEDIATAMENTE
                         renderTimeSlots(selectedDateStr, 'admin');
                     }
                 });

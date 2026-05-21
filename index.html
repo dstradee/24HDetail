@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>24H Detailing</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Iconos de Phosphor -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- SUPABASE CLIENT -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        body {
+            background-color: #0f172a; 
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        .page-slide {
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .page-slide.open {
+            transform: translateX(0);
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #e2e8f0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased font-sans">
+
+    <!-- WRAPPER PARA ESCRITORIO -->
+    <div class="min-h-screen w-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-slate-800 to-blue-950 flex justify-center items-center lg:p-12">
+        
+        <div class="max-w-6xl w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12">
+            
+            <!-- LADO IZQUIERDO: PRESENTACIÓN EN ORDENADOR -->
+            <div class="hidden lg:flex flex-col text-white max-w-lg">
+                <div class="inline-block bg-blue-500/20 text-blue-300 font-semibold px-4 py-1.5 rounded-full mb-6 border border-blue-400/30 w-fit text-sm tracking-wide uppercase">
+                    Servicio Premium de Detallado
+                </div>
+                <h1 class="text-6xl font-black mb-6 leading-tight">
+                    Dejamos tu coche <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">como nuevo</span>
+                </h1>
+                <p class="text-lg text-slate-300 mb-10 leading-relaxed">
+                    Reserva tu cita de forma rápida y sencilla. Nos dedicamos a devolverle a tu vehículo ese brillo del primer día con los mejores productos y la máxima atención al detalle.
+                </p>
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <div class="bg-amber-500/20 p-3 rounded-xl"><i class="ph-fill ph-sparkle text-2xl text-amber-400"></i></div>
+                        <span class="font-medium text-slate-100">Acabado Premium</span>
+                    </div>
+                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <div class="bg-blue-500/20 p-3 rounded-xl"><i class="ph-fill ph-clock text-2xl text-blue-400"></i></div>
+                        <span class="font-medium text-slate-100">Ahorra Tiempo</span>
+                    </div>
+                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <div class="bg-emerald-500/20 p-3 rounded-xl"><i class="ph-fill ph-shield-check text-2xl text-emerald-400"></i></div>
+                        <span class="font-medium text-slate-100">Máxima Calidad</span>
+                    </div>
+                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <div class="bg-purple-500/20 p-3 rounded-xl"><i class="ph-fill ph-handshake text-2xl text-purple-400"></i></div>
+                        <span class="font-medium text-slate-100">Compraventas</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LADO DERECHO: LA APLICACIÓN -->
+            <div id="app-container" class="relative w-full h-[100dvh] lg:h-[800px] lg:w-[390px] bg-slate-50 lg:rounded-[3rem] lg:shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden lg:border-[12px] border-slate-950 shrink-0">
+                
+                <div class="hidden lg:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-slate-950 rounded-b-3xl z-50"></div>
+
+                <!-- PÁGINA PRINCIPAL -->
+                <main id="main-view" class="h-full flex flex-col w-full relative z-10 overflow-y-auto">
+                    
+                    <header class="bg-slate-900 text-white rounded-b-3xl pt-14 pb-8 px-6 shadow-lg relative overflow-hidden shrink-0">
+                        <div class="absolute -top-16 -right-16 w-48 h-48 bg-blue-500 rounded-full opacity-20 blur-2xl"></div>
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-center mb-6">
+                                <div>
+                                    <p class="text-blue-400 text-sm font-semibold uppercase tracking-wider mb-1">24H Detailing</p>
+                                    <h1 class="text-2xl font-bold leading-tight">Reserva tu <br>lavado hoy</h1>
+                                </div>
+                                <i class="ph-fill ph-car-profile text-5xl text-blue-400 opacity-80"></i>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div class="flex-1 px-5 py-6 flex flex-col gap-4">
+                        <button onclick="openPage('booking-view'); renderCalendar();" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-5 rounded-2xl shadow-xl shadow-blue-600/20 flex items-center justify-between transition-transform active:scale-95">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-white/20 p-3 rounded-xl">
+                                    <i class="ph ph-calendar-plus text-2xl"></i>
+                                </div>
+                                <div class="text-left">
+                                    <h2 class="text-lg font-bold">Agendar una cita</h2>
+                                    <p class="text-blue-100 text-xs">Reserva tu hueco ahora</p>
+                                </div>
+                            </div>
+                            <i class="ph-bold ph-caret-right text-xl opacity-70"></i>
+                        </button>
+
+                        <div class="grid grid-cols-2 gap-4 mt-2">
+                            <button onclick="openPage('about-view')" class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors">
+                                <i class="ph-fill ph-user text-3xl text-slate-700"></i>
+                                <span class="text-sm font-semibold text-slate-700">Sobre mí</span>
+                            </button>
+                            <button class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors">
+                                <i class="ph-fill ph-sparkle text-3xl text-amber-500"></i>
+                                <span class="text-sm font-semibold text-slate-700 text-center leading-tight">Servicios</span>
+                            </button>
+                        </div>
+
+                        <button onclick="openPage('pro-view')" class="mt-2 w-full bg-slate-800 text-white p-4 rounded-2xl shadow-md flex items-center justify-between active:scale-95 transition-transform">
+                            <div class="flex items-center gap-3">
+                                <i class="ph-fill ph-handshake text-2xl text-emerald-400"></i>
+                                <div class="text-left">
+                                    <span class="font-semibold text-sm block">Soy Profesional</span>
+                                    <span class="text-xs text-slate-400">Tarifas especiales volumen</span>
+                                </div>
+                            </div>
+                            <i class="ph-bold ph-caret-right text-lg opacity-50"></i>
+                        </button>
+                    </div>
+
+                    <footer class="text-center py-6 text-slate-400 text-xs mt-auto">
+                        &copy; 2026 24H Detailing
+                    </footer>
+                </main>
+
+                <!-- PÁGINA: PROFESIONALES -->
+                <!-- (Mismo código de profesionales, lo dejo contraído para no aburrir con lo mismo) -->
+                <div id="pro-view" class="page-slide absolute inset-0 bg-slate-50 z-40 flex flex-col pt-4 lg:pt-8">
+                    <div class="bg-slate-900 px-4 py-4 flex items-center sticky top-0 z-10 text-white shadow-md">
+                        <button onclick="closePage('pro-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-800 active:bg-slate-700 transition-colors">
+                            <i class="ph-bold ph-arrow-left text-2xl"></i>
+                        </button>
+                        <h2 class="text-lg font-bold ml-2">Planes Compraventa</h2>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-5 pb-10">
+                        <div class="text-center mb-6 mt-2">
+                            <i class="ph-fill ph-handshake text-5xl text-emerald-500 mb-2"></i>
+                            <h3 class="text-xl font-bold text-slate-800">Suscripción Mensual</h3>
+                            <p class="text-xs text-slate-500 mt-2">¿Tienes volumen de stock? Ahorra dinero fijando tus lavados al mes. Tarifa pública normal: 11 €/coche.</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 text-center">¿Coches a la semana? (Máx. 20)</label>
+                            <div class="flex items-center gap-4 mb-5">
+                                <span class="text-slate-400 text-sm font-bold">2</span>
+                                <input type="range" id="cars-slider" min="2" max="20" value="2" class="w-full appearance-none bg-transparent" oninput="calculateProPrice()">
+                                <span class="text-slate-400 text-sm font-bold">20</span>
+                            </div>
+                            <div class="text-center mb-5">
+                                <div class="inline-block bg-blue-50 px-4 py-1.5 rounded-xl border border-blue-100">
+                                    <span class="text-blue-800 font-bold text-xl" id="cars-count">2</span> 
+                                    <span class="text-blue-600 text-xs font-semibold">coches / sem</span>
+                                </div>
+                            </div>
+                            <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-slate-500">Precio por coche:</span>
+                                    <span class="font-bold text-slate-800" id="price-per-car">10.00 €</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-slate-500">Total semanal:</span>
+                                    <span class="font-semibold text-slate-700" id="weekly-total">20.00 €</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-2 border-t border-slate-200">
+                                    <span class="text-slate-800 font-bold text-sm">Tu Suscripción:</span>
+                                    <span class="font-black text-blue-600 text-xl" id="monthly-total">80.00 €</span>
+                                </div>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-emerald-500 text-white p-2 rounded-lg"><i class="ph-bold ph-trend-down text-lg"></i></div>
+                                    <div>
+                                        <p class="text-[11px] text-emerald-700 font-medium">Respecto a tarifa normal</p>
+                                        <p class="text-sm font-bold text-emerald-950">Te ahorras:</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-black text-emerald-600 text-xl block" id="savings-total">8.00 €</span>
+                                    <span class="text-[10px] uppercase text-emerald-700 font-bold tracking-wider">Al mes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA: SOBRE MÍ -->
+                <div id="about-view" class="page-slide absolute inset-0 bg-slate-50 z-40 flex flex-col pt-4 lg:pt-8">
+                    <div class="bg-white border-b border-slate-100 px-4 py-4 flex items-center sticky top-0 z-10 shadow-sm">
+                        <button onclick="closePage('about-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-600">
+                            <i class="ph-bold ph-arrow-left text-2xl"></i>
+                        </button>
+                        <h2 class="text-lg font-bold ml-2 text-slate-800">Sobre mí</h2>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-6">
+                        <div class="w-32 h-32 mx-auto rounded-full bg-slate-200 border-4 border-white shadow-lg overflow-hidden mb-6 flex items-center justify-center">
+                            <i class="ph-fill ph-user text-5xl text-slate-400"></i>
+                        </div>
+                        <h1 class="text-2xl font-bold text-center text-slate-900 mb-2">¡Hola! Soy Pablo 👋</h1>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mt-6 text-slate-700 leading-relaxed text-sm space-y-4">
+                            <p>Tengo <strong class="text-blue-600" id="dynamic-age">20</strong> años y soy un apasionado absoluto del mundo del motor, de conducir y, sobre todo, de dejar los coches impecables.</p>
+                            <p>Soy empresario y en mi día a día me dedico al trading. Mucha gente me suele preguntar: <em>«Si te dedicas al trading, ¿por qué limpias coches?»</em>.</p>
+                            <p>La respuesta es sencilla: el trading, como cualquier otro negocio real, necesita paciencia y capital. Así que esto me sirve para ir retroalimentando mis inversiones. Pero la razón principal es que <strong>me encanta limpiar coches</strong> y disfruto muchísimo estando conectado con este mundillo. ¡Es pura pasión!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA: AGENDAR CITA -->
+                <div id="booking-view" class="page-slide absolute inset-0 bg-slate-50 z-40 flex flex-col pt-4 lg:pt-8">
+                    <div class="bg-white border-b border-slate-100 px-4 py-4 flex items-center sticky top-0 z-10 shadow-sm">
+                        <button onclick="closePage('booking-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-600">
+                            <i class="ph-bold ph-arrow-left text-2xl"></i>
+                        </button>
+                        <h2 class="text-lg font-bold ml-2 text-slate-800">Seleccionar Cita</h2>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-5 pb-12">
+                        <p class="text-slate-500 text-sm mb-6">Elige el día que mejor te venga para dejar tu coche impoluto.</p>
+
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-lg text-slate-800 capitalize" id="calendar-month-text">Cargando...</h3>
+                            </div>
+                            <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-400 mb-2">
+                                <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
+                            </div>
+                            <div id="calendar-days" class="grid grid-cols-7 gap-2 text-center text-sm">
+                                <!-- Generado por JS -->
+                            </div>
+                        </div>
+
+                        <div id="time-selection" class="hidden">
+                            <h3 class="font-bold text-md mb-2 text-slate-800">Horas para el <span id="selected-date-display" class="text-blue-600"></span></h3>
+                            <p class="text-xs text-slate-500 mb-4">* De 01:00 a 09:00 requiere reservar con 3h de antelación.</p>
+                            
+                            <div id="time-slots-container" class="grid grid-cols-3 gap-3 mb-6 max-h-64 overflow-y-auto pr-2">
+                                <!-- Generado por JS tras consultar a Supabase -->
+                            </div>
+
+                            <div id="client-info-section" class="hidden space-y-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">Nombre y Apellidos</label>
+                                    <input type="text" id="client-name" placeholder="Ej: Pablo García Pérez" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">Dirección (Calle y Número)</label>
+                                    <input type="text" id="client-location" placeholder="Ej: Calle Mayor, 12" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors">
+                                </div>
+                                <button onclick="confirmAppointment()" id="btn-confirmar" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mt-2">
+                                    <i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        // CONFIGURACIÓN DE TU NEGOCIO (WHATSAPP Y SUPABASE)
+        // =====================================================================
+        
+        const MY_WHATSAPP = "PON_TU_WHATSAPP_AQUI"; 
+        
+        const SUPABASE_URL = "https://kujtlvfqxghhidlgxzbn.supabase.co"; 
+        const SUPABASE_ANON_KEY = "sb_publishable_KGhnhvQ3gG6mmzUMxxCfPQ_OwmvHjgo"; 
+        
+        let supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let selectedDateStr = ""; 
+        let selectedTimeStr = "";
+        
+        // 1. GENERAR HORAS CADA 30 MINUTOS AUTOMÁTICAMENTE (00:00 a 23:30)
+        const ALL_HOURS = [];
+        for (let h = 0; h < 24; h++) {
+            let hourStr = h.toString().padStart(2, '0');
+            ALL_HOURS.push(`${hourStr}:00`);
+            ALL_HOURS.push(`${hourStr}:30`);
+        }
+
+        // 2. FUNCIÓN PARA LIMPIAR CITAS ANTIGUAS AUTOMÁTICAMENTE
+        async function cleanOldAppointments() {
+            if (!supabaseClient) return;
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            // Fecha de hoy en formato YYYY-MM-DD
+            const todayStr = `${year}-${month}-${day}`;
+
+            try {
+                // Borrar todo lo que sea menor al día de hoy
+                await supabaseClient.from('citas').delete().lt('fecha', todayStr);
+                console.log("Base de datos limpia de citas pasadas.");
+            } catch(e) {
+                console.error("Error limpiando citas antiguas", e);
+            }
+        }
+        
+        // Ejecutamos la limpieza nada más abrir la web
+        cleanOldAppointments();
+
+        // Lógica de edad
+        function calcularEdad() {
+            const f = new Date(2006, 0, 1); 
+            const hoy = new Date();
+            let edad = hoy.getFullYear() - f.getFullYear();
+            if (hoy.getMonth() - f.getMonth() < 0 || (hoy.getMonth() - f.getMonth() === 0 && hoy.getDate() < f.getDate())) edad--;
+            document.getElementById('dynamic-age').textContent = edad;
+        }
+        calcularEdad();
+
+        // Calculadora Profesional
+        function calculateProPrice() {
+            const slider = document.getElementById('cars-slider');
+            const cars = parseInt(slider.value);
+            let price = 10.00 - ((cars - 2) * 0.50);
+            if (price < 6.50) price = 6.50;
+
+            const weekly = price * cars;
+            const monthly = weekly * 4;
+            const savings = (cars * 4 * 11.00) - monthly;
+
+            document.getElementById('cars-count').textContent = cars;
+            document.getElementById('price-per-car').textContent = price.toFixed(2) + ' €';
+            document.getElementById('weekly-total').textContent = weekly.toFixed(2) + ' €';
+            document.getElementById('monthly-total').textContent = monthly.toFixed(2) + ' €';
+            document.getElementById('savings-total').textContent = savings.toFixed(2) + ' €';
+        }
+        calculateProPrice();
+
+        function openPage(id) { document.getElementById(id).classList.add('open'); }
+        function closePage(id) { document.getElementById(id).classList.remove('open'); }
+
+        // Renderizado del calendario
+        function renderCalendar() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('calendar-month-text').textContent = `${monthNames[month]} ${year}`;
+
+            const daysContainer = document.getElementById('calendar-days');
+            daysContainer.innerHTML = '';
+
+            let firstDay = new Date(year, month, 1).getDay();
+            let emptySpaces = firstDay === 0 ? 6 : firstDay - 1; 
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < emptySpaces; i++) daysContainer.innerHTML += `<div></div>`;
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isPast = day < now.getDate() && month === now.getMonth();
+                const isToday = day === now.getDate() && month === now.getMonth();
+                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                
+                let cls = "py-2 rounded-lg font-medium transition-colors ";
+                if (isPast) {
+                    cls += "text-slate-300 cursor-not-allowed";
+                    daysContainer.innerHTML += `<div class="${cls}">${day}</div>`;
+                } else if (isToday) {
+                    cls += "bg-blue-600 text-white shadow-md cursor-pointer today-day day-btn";
+                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
+                } else {
+                    cls += "text-slate-700 bg-slate-50 cursor-pointer hover:bg-blue-100 day-btn";
+                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
+                }
+            }
+        }
+
+        async function selectDate(dateStr, el) {
+            document.querySelectorAll('.day-btn').forEach(b => {
+                if(b.classList.contains('bg-slate-800')) {
+                    b.classList.remove('bg-slate-800', 'text-white', 'shadow-md');
+                    if(b.classList.contains('today-day')) b.classList.add('bg-blue-600', 'text-white');
+                    else b.classList.add('bg-slate-50', 'text-slate-700');
+                }
+            });
+            el.classList.remove('bg-slate-50', 'text-slate-700', 'bg-blue-600');
+            el.classList.add('bg-slate-800', 'text-white', 'shadow-md');
+
+            selectedDateStr = dateStr;
+            const [y, m, d] = dateStr.split('-');
+            document.getElementById('selected-date-display').textContent = `${d}/${m}/${y}`;
+            document.getElementById('time-selection').classList.remove('hidden');
+            document.getElementById('client-info-section').classList.add('hidden');
+            
+            await renderTimeSlots(dateStr);
+        }
+
+        async function renderTimeSlots(dateStr) {
+            const container = document.getElementById('time-slots-container');
+            container.innerHTML = '<div class="col-span-3 text-center text-sm text-slate-400 py-4"><i class="ph-bold ph-spinner animate-spin text-xl"></i> Buscando huecos...</div>';
+            
+            let occupiedSlots = [];
+            // Traer citas de Supabase
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient.from('citas').select('hora').eq('fecha', dateStr);
+                    if (data) occupiedSlots = data.map(row => row.hora);
+                } catch (e) { console.error("Error leyendo DB", e); }
+            }
+
+            container.innerHTML = '';
+            const now = new Date();
+
+            ALL_HOURS.forEach(time => {
+                const [h, m] = time.split(':');
+                const slotDate = new Date(`${dateStr}T${time}:00`);
+                let isBlocked = false;
+
+                if (slotDate < now) isBlocked = true;
+
+                // Bloqueo de 3h para la madrugada
+                const hourNum = parseInt(h);
+                if (hourNum >= 1 && hourNum <= 9) {
+                    const diffHours = (slotDate - now) / (1000 * 60 * 60);
+                    if (diffHours >= 0 && diffHours < 3) isBlocked = true;
+                }
+
+                if (occupiedSlots.includes(time)) isBlocked = true;
+
+                if (isBlocked) {
+                    container.innerHTML += `<div class="bg-slate-200 text-slate-400 line-through text-center py-2.5 rounded-xl text-sm font-medium cursor-not-allowed">${time}</div>`;
+                } else {
+                    container.innerHTML += `<div onclick="selectTime('${time}', this)" class="time-btn bg-white border border-slate-200 text-center py-2.5 rounded-xl text-sm text-slate-600 font-medium cursor-pointer hover:bg-slate-100 transition-colors shadow-sm">${time}</div>`;
+                }
+            });
+        }
+
+        function selectTime(time, el) {
+            document.querySelectorAll('.time-btn').forEach(b => {
+                b.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-700', 'border-2', 'font-bold');
+                b.classList.add('bg-white', 'border-slate-200', 'text-slate-600');
+            });
+            el.classList.remove('bg-white', 'border-slate-200', 'text-slate-600');
+            el.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-700', 'border-2', 'font-bold');
+            selectedTimeStr = time;
+            
+            // Hacer scroll suave hasta el formulario para que el cliente lo vea en móvil
+            const infoSection = document.getElementById('client-info-section');
+            infoSection.classList.remove('hidden');
+            setTimeout(() => {
+                infoSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 100);
+        }
+
+        async function confirmAppointment() {
+            const name = document.getElementById('client-name').value.trim();
+            const location = document.getElementById('client-location').value.trim();
+            
+            if (!name || !location) {
+                return alert("Por favor, rellena tu nombre completo y la dirección del vehículo.");
+            }
+
+            const btn = document.getElementById('btn-confirmar');
+            btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-2xl"></i> Guardando...`;
+            btn.disabled = true;
+
+            // COMPROBACIÓN EN TIEMPO REAL: ¿Alguien la acaba de coger?
+            if (supabaseClient) {
+                try {
+                    const { data: checkData } = await supabaseClient.from('citas')
+                        .select('id')
+                        .eq('fecha', selectedDateStr)
+                        .eq('hora', selectedTimeStr);
+
+                    if (checkData && checkData.length > 0) {
+                        alert("¡Vaya! Alguien acaba de reservar justo esta hora. Por favor, elige otra.");
+                        btn.innerHTML = `<i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva`;
+                        btn.disabled = false;
+                        document.getElementById('client-info-section').classList.add('hidden');
+                        renderTimeSlots(selectedDateStr); // Recarga las horas para mostrarla bloqueada
+                        return;
+                    }
+
+                    // Si está libre, la guardamos con la nueva columna 'localizacion'
+                    const { error } = await supabaseClient.from('citas').insert([{ 
+                        fecha: selectedDateStr, 
+                        hora: selectedTimeStr, 
+                        cliente: name,
+                        localizacion: location
+                    }]);
+                    
+                    if (error) throw error;
+                } catch (e) {
+                    console.error("No se pudo guardar", e);
+                    // Si el error es por la restricción UNIQUE que pusimos en Supabase, también salta aquí
+                }
+            }
+
+            // REDIRECCIÓN A WHATSAPP CON LA DIRECCIÓN INCLUIDA
+            const msg = `¡Hola Pablo! 👋 Acabo de reservar cita en la web de 24H Detailing.\n\n👤 *A nombre de:* ${name}\n📍 *Dirección:* ${location}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}\n\nConfírmame cuando puedas.`;
+            window.open(`https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
+            
+            // Reseteo de la UI
+            closePage('booking-view');
+            document.getElementById('client-name').value = '';
+            document.getElementById('client-location').value = '';
+            document.getElementById('time-selection').classList.add('hidden');
+            btn.innerHTML = `<i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva`;
+            btn.disabled = false;
+            renderCalendar();
+        }
+    </script>
+</body>
+</html>

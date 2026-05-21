@@ -14,7 +14,7 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col pb-24">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col pb-32">
 
     <!-- LOGIN ADMIN -->
     <div id="login-view" class="fixed inset-0 z-50 bg-slate-900 flex flex-col items-center justify-center p-6">
@@ -53,9 +53,9 @@
             </button>
         </div>
 
-        <div class="grid md:grid-cols-12 gap-8">
-            <!-- CALENDARIO -->
-            <div class="md:col-span-5 lg:col-span-4 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700 h-fit sticky top-8">
+        <div class="grid md:grid-cols-12 gap-8 relative">
+            <!-- CALENDARIO (Solo se queda pegado en PC usando md:sticky) -->
+            <div class="md:col-span-5 lg:col-span-4 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700 h-fit md:sticky md:top-8 z-10">
                 <h2 class="text-lg font-bold mb-4 capitalize" id="admin-calendar-month-text">Calendario</h2>
                 <div class="grid grid-cols-7 gap-2 text-center text-xs font-bold text-slate-500 mb-2 uppercase">
                     <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
@@ -64,7 +64,7 @@
             </div>
 
             <!-- HORAS (SELECCIÓN MÚLTIPLE) -->
-            <div class="md:col-span-7 lg:col-span-8 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700">
+            <div class="md:col-span-7 lg:col-span-8 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700 z-0">
                 
                 <div id="admin-placeholder" class="h-full flex flex-col items-center justify-center text-slate-500 opacity-50 py-20">
                     <i class="ph-fill ph-calendar-check text-6xl mb-4"></i>
@@ -90,10 +90,10 @@
     </div>
 
     <!-- BARRA FLOTANTE DE ACCIONES (APARECE AL SELECCIONAR) -->
-    <div id="action-bar" class="fixed bottom-0 left-0 w-full bg-slate-950/90 backdrop-blur-md border-t border-slate-800 p-4 transform translate-y-full transition-transform duration-300 z-40 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+    <div id="action-bar" class="fixed bottom-0 left-0 w-full bg-slate-950/95 backdrop-blur-md border-t border-slate-800 p-4 transform translate-y-full transition-transform duration-300 z-40 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
         <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-4">
-                <button onclick="deselectAll()" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 text-slate-400">
+                <button onclick="deselectAll()" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 text-slate-400 transition-colors">
                     <i class="ph-bold ph-x text-xl"></i>
                 </button>
                 <div>
@@ -128,7 +128,7 @@
         let supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         let selectedDateStr = "";
-        let selectedSlotsMap = new Map(); // Guarda las horas seleccionadas { time: { dbId, isBlocked, cliente, localizacion, telefono } }
+        let selectedSlotsMap = new Map();
 
         const ALL_HOURS = [];
         for (let h = 0; h < 24; h++) {
@@ -143,7 +143,7 @@
                 document.getElementById('login-view').classList.add('hidden');
                 document.getElementById('admin-dashboard').classList.remove('hidden');
                 renderAdminCalendar();
-                setupRealtime(); // Activamos tiempo real para el admin
+                setupRealtime(); 
             }
         });
 
@@ -168,14 +168,14 @@
             window.location.reload();
         }
 
-        // TIEMPO REAL PARA EL ADMIN (Ver cambios mágicos)
+        // TIEMPO REAL
         function setupRealtime() {
             supabaseClient.channel('admin-realtime')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'citas' }, payload => {
                     if (selectedDateStr) {
                         const rec = payload.new || payload.old;
                         if (rec && rec.fecha === selectedDateStr) {
-                            renderAdminTimeSlots(selectedDateStr, false); // false = no borrar selecciones actuales
+                            renderAdminTimeSlots(selectedDateStr, false); 
                         }
                     }
                 }).subscribe();
@@ -219,8 +219,15 @@
             document.getElementById('admin-placeholder').classList.add('hidden');
             document.getElementById('admin-time-selection').classList.remove('hidden');
             
-            deselectAll(); // Al cambiar de día, vaciamos la selección actual
+            deselectAll();
             renderAdminTimeSlots(dateStr, true);
+
+            // ANIMACIÓN SCROLL MÓVIL: Si estás en un móvil, te baja a las horas automáticamente.
+            if (window.innerWidth < 768) {
+                setTimeout(() => {
+                    document.getElementById('admin-time-selection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
         }
 
         // GENERADOR DE HORAS CON SELECCIÓN MÚLTIPLE
@@ -254,7 +261,6 @@
                     const isSelected = selectedSlotsMap.has(time);
                     const isBlocked = !!dbSlot;
                     
-                    // Clases dinámicas dependiendo de si está seleccionado y su estado
                     let baseCls = "time-slot-btn relative p-3 rounded-2xl text-left font-bold cursor-pointer transition-all duration-200 border border-transparent overflow-hidden group ";
                     let ringCls = isSelected ? "ring-4 ring-blue-500 ring-offset-2 ring-offset-slate-800 scale-95" : "hover:scale-[1.02] hover:shadow-lg";
                     
@@ -264,7 +270,7 @@
                     if (isBlocked) {
                         baseCls += "bg-red-500/10 border-red-500/30 text-red-100";
                         slotDataStr = encodeURIComponent(JSON.stringify(dbSlot));
-                        const name = dbSlot.cliente === "BLOQUEADO (Admin)" ? "BLOQUEO" : dbSlot.cliente.split(' ')[0]; // Pillamos solo el primer nombre para que quepa bien
+                        const name = dbSlot.cliente === "BLOQUEADO (Admin)" ? "BLOQUEO" : dbSlot.cliente.split(' ')[0];
                         contentHtml = `
                             <div class="flex justify-between items-start mb-1">
                                 <span class="text-lg">${time}</span>
@@ -291,7 +297,6 @@
             container.innerHTML = htmlFinal;
         }
 
-        // LÓGICA DE SELECCIÓN MÚLTIPLE
         function toggleSlot(time, isBlocked, slotDataEncoded) {
             const el = document.getElementById(`slot-${time}`);
             if (selectedSlotsMap.has(time)) {
@@ -341,7 +346,6 @@
             }
         }
 
-        // ACCIONES EN LOTE (BLOQUEAR / LIBERAR)
         function showAdminModal(title, message, onConfirm) {
             const modal = document.getElementById('admin-modal');
             const box = document.getElementById('admin-modal-box');
@@ -391,7 +395,6 @@
                 const toUnblock = slots.filter(([time, data]) => data.isBlocked);
                 if (toUnblock.length === 0) return showAdminModal("Atención", "Todas las horas que has seleccionado ya están libres.", () => {});
                 
-                // Si solo selecciona 1 ocupada, le damos los detalles exactos del cliente antes de borrar
                 if (toUnblock.length === 1) {
                     const data = toUnblock[0][1].dbData;
                     const isOwnerBlock = data.cliente === "BLOQUEADO (Admin)";
@@ -404,7 +407,6 @@
                         deselectAll();
                     });
                 } 
-                // Si selecciona múltiples, borramos todas de golpe
                 else {
                     showAdminModal("Liberar Múltiples Horas", `Vas a liberar/eliminar ${toUnblock.length} horas (incluyendo citas de clientes si las hay).\n\n¿Estás seguro?`, async () => {
                         const ids = toUnblock.map(([time, data]) => data.dbData.id);

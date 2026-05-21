@@ -76,6 +76,17 @@
                 <!-- SIMULACIÓN DE LA CÁMARA PARA PC -->
                 <div class="hidden lg:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-slate-950 rounded-b-3xl z-50"></div>
 
+                <!-- MODAL PERSONALIZADO (ALERTA/CONFIRMACIÓN) -->
+                <div id="custom-modal" class="hidden absolute inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-5">
+                    <div class="bg-white p-6 rounded-3xl shadow-2xl w-full transform transition-all scale-95 opacity-0" id="custom-modal-box">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2" id="modal-title">Título</h3>
+                        <p class="text-slate-600 text-sm mb-6 leading-relaxed" id="modal-message">Mensaje...</p>
+                        <div class="flex gap-3" id="modal-buttons">
+                            <!-- JS inserta aquí los botones -->
+                        </div>
+                    </div>
+                </div>
+
                 <!-- PÁGINA PRINCIPAL -->
                 <main id="main-view" class="h-full flex flex-col w-full relative z-10 overflow-y-auto pb-6">
                     <header class="bg-slate-900 text-white rounded-b-3xl pt-14 pb-8 px-6 shadow-lg relative overflow-hidden shrink-0">
@@ -136,7 +147,7 @@
                 </main>
 
                 <!-- PÁGINA: LOGIN DE ADMINISTRADOR -->
-                <div id="login-view" class="page-slide absolute inset-0 bg-slate-900 z-50 flex flex-col pt-4 lg:pt-8 text-white">
+                <div id="login-view" class="page-slide absolute inset-0 bg-slate-900 z-40 flex flex-col pt-4 lg:pt-8 text-white">
                     <div class="px-4 py-4 flex items-center sticky top-0 z-10">
                         <button onclick="closePage('login-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-800 transition-colors">
                             <i class="ph-bold ph-x text-2xl"></i>
@@ -171,7 +182,7 @@
                 </div>
 
                 <!-- PÁGINA: PANEL ADMIN (BLOQUEAR CITAS) -->
-                <div id="admin-view" class="page-slide absolute inset-0 bg-slate-800 z-50 flex flex-col pt-4 lg:pt-8 text-white">
+                <div id="admin-view" class="page-slide absolute inset-0 bg-slate-800 z-40 flex flex-col pt-4 lg:pt-8 text-white">
                     <div class="bg-slate-950 px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow-md">
                         <div class="flex items-center">
                             <button onclick="closePage('admin-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-800 transition-colors text-white">
@@ -312,8 +323,6 @@
         const MY_WHATSAPP = "34644909851"; 
         const SUPABASE_URL = "https://kujtlvfqxghhidlgxzbn.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_KGhnhvQ3gG6mmzUMxxCfPQ_OwmvHjgo"; 
-        
-        // Telegram Bot API
         const TELEGRAM_TOKEN = "8611178436:AAHXGFqtenGl00Rvrgqk0dZIHEfuUCgY6-o";
         const CHAT_ID = "6519651464";
 
@@ -321,24 +330,101 @@
         let selectedDateStr = ""; 
         let selectedTimeStr = "";
         
-        // HORAS CADA 30 MIN (00:00 a 23:30)
         const ALL_HOURS = [];
         for (let h = 0; h < 24; h++) {
             let hourStr = h.toString().padStart(2, '0');
             ALL_HOURS.push(`${hourStr}:00`, `${hourStr}:30`);
         }
 
-        // FUNCIÓN: ELIMINAR CITAS ANTIGUAS
-        // *Nota: Para que esto funcione, asegúrate de que tus políticas de Supabase (RLS) permitan hacer DELETE*
+        // =========================================================
+        // SUSCRIPCIÓN EN TIEMPO REAL (WEBSOCKETS)
+        // =========================================================
+        if (supabaseClient) {
+            supabaseClient
+                .channel('realtime-citas')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'citas' }, payload => {
+                    if (selectedDateStr) {
+                        const changedRecord = payload.new || payload.old;
+                        
+                        // Solo recargamos si el cambio afectó al día que estamos mirando
+                        if (changedRecord && changedRecord.fecha === selectedDateStr) {
+                            const mode = document.getElementById('admin-view').classList.contains('open') ? 'admin' : 'client';
+                            
+                            // Bloqueo Anti-colisión: Si el cliente iba a reservar esa hora exacta y alguien se le adelanta
+                            if (mode === 'client' && selectedTimeStr === changedRecord.hora && payload.eventType === 'INSERT') {
+                                showModal({
+                                    title: "Hora ocupada",
+                                    message: "¡Lo sentimos! Esta hora acaba de ser bloqueada o reservada por alguien más.",
+                                    type: "alert"
+                                });
+                                document.getElementById('client-info-section').classList.add('hidden');
+                                selectedTimeStr = "";
+                            }
+                            
+                            // Recargar huecos visualmente
+                            renderTimeSlots(selectedDateStr, mode);
+                        }
+                    }
+                })
+                .subscribe();
+        }
+
+        // =========================================================
+        // MODAL PERSONALIZADO (REEMPLAZA ALERT Y CONFIRM)
+        // =========================================================
+        function showModal({ title, message, type = 'alert', onConfirm }) {
+            const modal = document.getElementById('custom-modal');
+            const box = document.getElementById('custom-modal-box');
+            const btnContainer = document.getElementById('modal-buttons');
+            
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            btnContainer.innerHTML = ''; // Limpiamos botones
+            
+            const cleanup = () => {
+                box.classList.remove('scale-100', 'opacity-100');
+                box.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => modal.classList.add('hidden'), 200);
+            };
+
+            if (type === 'confirm') {
+                const btnNo = document.createElement('button');
+                btnNo.className = "flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors active:scale-95";
+                btnNo.textContent = "Cancelar";
+                btnNo.onclick = cleanup;
+                
+                const btnYes = document.createElement('button');
+                btnYes.className = "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/20 transition-colors active:scale-95";
+                btnYes.textContent = "Confirmar";
+                btnYes.onclick = () => { cleanup(); if(onConfirm) onConfirm(); };
+                
+                btnContainer.appendChild(btnNo);
+                btnContainer.appendChild(btnYes);
+            } else {
+                const btnOk = document.createElement('button');
+                btnOk.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/20 transition-colors active:scale-95";
+                btnOk.textContent = "Entendido";
+                btnOk.onclick = cleanup;
+                btnContainer.appendChild(btnOk);
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.remove('scale-95', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        // =========================================================
+        // FUNCIONES GENERALES
+        // =========================================================
         async function cleanOldAppointments() {
             if (!supabaseClient) return;
             const now = new Date();
             const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             try { await supabaseClient.from('citas').delete().lt('fecha', todayStr); } catch(e) {}
         }
-        // Limpiamos al abrir la app
-        cleanOldAppointments();
-
+        
         function calcularEdad() {
             const f = new Date(2006, 0, 1); const hoy = new Date();
             let edad = hoy.getFullYear() - f.getFullYear();
@@ -363,7 +449,7 @@
         function closePage(id) { document.getElementById(id).classList.remove('open'); }
 
         // =========================================================
-        // CALENDARIO (REUTILIZABLE PARA CLIENTE Y ADMIN)
+        // CALENDARIO
         // =========================================================
         function renderCalendar(mode) {
             const now = new Date();
@@ -445,7 +531,6 @@
                 if (dbSlot) isBlocked = true;
 
                 if (mode !== 'admin') {
-                    // Bloqueos de cliente: Horas pasadas y madrugadas de menos de 3h de antelación
                     if (slotDate < now) isBlocked = true;
                     const hourNum = parseInt(h);
                     if (hourNum >= 1 && hourNum <= 9 && ((slotDate - now) / (1000 * 60 * 60)) < 3) isBlocked = true;
@@ -456,7 +541,6 @@
                         container.innerHTML += `<div onclick="selectTime('${time}', this)" class="time-btn bg-white border border-slate-200 text-center py-2.5 rounded-xl text-sm text-slate-600 font-medium cursor-pointer hover:bg-slate-100 transition-colors shadow-sm">${time}</div>`;
                     }
                 } else {
-                    // Modo admin: Botones rojos/verdes clicables para bloquear
                     if (isBlocked) {
                         container.innerHTML += `<div onclick="adminToggleSlot('${time}', '${dbSlot.id}', true)" class="bg-red-500/20 text-red-400 border border-red-500/30 text-center py-2.5 rounded-xl text-sm font-bold cursor-pointer hover:bg-red-500/30 transition-colors">${time}</div>`;
                     } else {
@@ -467,7 +551,7 @@
         }
 
         // =========================================================
-        // ACCIONES DEL CLIENTE (RESERVAR)
+        // ACCIONES CLIENTE
         // =========================================================
         function selectTime(time, el) {
             document.querySelectorAll('.time-btn').forEach(b => {
@@ -486,43 +570,38 @@
             const name = document.getElementById('client-name').value.trim();
             const location = document.getElementById('client-location').value.trim();
             
-            if (!name || !location) return alert("Por favor, rellena tu nombre y la dirección del vehículo.");
+            if (!name || !location) {
+                return showModal({ title: "Datos incompletos", message: "Por favor, rellena tu nombre y la dirección del vehículo.", type: "alert" });
+            }
             
             const btn = document.getElementById('btn-confirmar');
             btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-2xl"></i> Guardando...`;
             btn.disabled = true;
 
-            // 1. Guardar en Supabase comprobando que esté libre
             if (supabaseClient) {
                 try {
                     const { data: check } = await supabaseClient.from('citas').select('id').eq('fecha', selectedDateStr).eq('hora', selectedTimeStr);
                     if (check && check.length > 0) {
-                        alert("¡Vaya! Alguien acaba de reservar esta hora. Elige otra por favor.");
+                        showModal({ title: "Hora ocupada", message: "¡Vaya! Alguien acaba de reservar esta hora. Elige otra por favor.", type: "alert" });
                         btn.innerHTML = `<i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva`;
                         btn.disabled = false;
                         document.getElementById('client-info-section').classList.add('hidden');
                         return renderTimeSlots(selectedDateStr, 'client');
                     }
-                    // Insertamos la cita
                     await supabaseClient.from('citas').insert([{ fecha: selectedDateStr, hora: selectedTimeStr, cliente: name, localizacion: location }]);
-                } catch (e) {
-                    console.error("Error guardando en Supabase:", e);
-                }
+                } catch (e) {}
             }
 
-            // 2. ENVIAR NOTIFICACIÓN A TELEGRAM DIRECTAMENTE
-            const telegramMsg = `🔔 <b>NUEVA RESERVA DE APP</b>\n\n👤 <b>Nombre:</b> ${name}\n📍 <b>Dirección:</b> ${location}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
+            const telegramMsg = `🔔 <b>NUEVA RESERVA WEB</b>\n\n👤 <b>Nombre:</b> ${name}\n📍 <b>Dirección:</b> ${location}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
             fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chat_id: CHAT_ID, text: telegramMsg, parse_mode: 'HTML' })
-            }).catch(e => console.error("Error enviando Telegram:", e));
+            });
 
-            // 3. Abrir WhatsApp para el cliente
             const waMsg = `¡Hola Pablo! 👋 Acabo de reservar cita en la web de 24H Detailing.\n\n👤 *Nombre:* ${name}\n📍 *Dirección:* ${location}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}\n\nConfírmame cuando puedas.`;
             window.open(`https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(waMsg)}`, '_blank');
             
-            // Reseteo de pantalla
             closePage('booking-view');
             document.getElementById('client-name').value = '';
             document.getElementById('client-location').value = '';
@@ -532,10 +611,9 @@
         }
 
         // =========================================================
-        // ACCIONES DE ADMINISTRADOR (SUPABASE AUTH)
+        // ACCIONES ADMIN
         // =========================================================
         async function checkAdmin() {
-            // Revisa si ya hay una sesión guardada en el navegador
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 openPage('admin-view');
@@ -589,22 +667,14 @@
             if (!supabaseClient) return;
             
             if (isBlocked) {
-                if(confirm(`¿Quieres LIBERAR la hora de las ${time}?`)) {
-                    await supabaseClient.from('citas').delete().eq('id', dbId);
-                    renderTimeSlots(selectedDateStr, 'admin'); 
-                }
+                showModal({
+                    title: "Liberar Hora",
+                    message: `¿Seguro que quieres LIBERAR la hora de las ${time}?`,
+                    type: "confirm",
+                    onConfirm: async () => {
+                        await supabaseClient.from('citas').delete().eq('id', dbId);
+                        // No hace falta renderizar porque el tiempo real lo hará automático
+                    }
+                });
             } else {
-                if(confirm(`¿Quieres BLOQUEAR la hora de las ${time}?`)) {
-                    await supabaseClient.from('citas').insert([{ 
-                        fecha: selectedDateStr, 
-                        hora: time, 
-                        cliente: "BLOQUEADO (Admin)", 
-                        localizacion: "N/A" 
-                    }]);
-                    renderTimeSlots(selectedDateStr, 'admin'); 
-                }
-            }
-        }
-    </script>
-</body>
-</html>
+                showMod

@@ -7,11 +7,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col pb-24">
 
     <!-- LOGIN ADMIN -->
-    <div id="login-view" class="flex-1 flex flex-col items-center justify-center p-6">
+    <div id="login-view" class="fixed inset-0 z-50 bg-slate-900 flex flex-col items-center justify-center p-6">
         <div class="w-full max-w-md bg-slate-800 p-8 rounded-3xl shadow-2xl border border-slate-700">
             <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30">
                 <i class="ph-bold ph-shield-check text-3xl text-white"></i>
@@ -36,57 +42,93 @@
     </div>
 
     <!-- PANEL ADMIN (DASHBOARD) -->
-    <div id="admin-dashboard" class="hidden flex-1 flex flex-col max-w-5xl mx-auto w-full p-4 md:p-8">
+    <div id="admin-dashboard" class="hidden flex-1 flex flex-col max-w-6xl mx-auto w-full p-4 md:p-8">
         <div class="flex justify-between items-center bg-slate-800 p-4 md:p-6 rounded-2xl shadow-lg border border-slate-700 mb-6">
             <div class="flex items-center gap-3">
                 <div class="bg-blue-600 p-2 rounded-lg"><i class="ph-bold ph-car-profile text-xl"></i></div>
                 <h1 class="text-xl font-bold">24H Detailing Admin</h1>
             </div>
             <button onclick="logoutAdmin()" class="text-red-400 hover:bg-red-400/10 px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors">
-                <i class="ph-bold ph-sign-out"></i> Cerrar Sesión
+                <i class="ph-bold ph-sign-out"></i> Salir
             </button>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-8">
+        <div class="grid md:grid-cols-12 gap-8">
             <!-- CALENDARIO -->
-            <div class="bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700">
-                <h2 class="text-lg font-bold mb-4" id="admin-calendar-month-text">Calendario</h2>
+            <div class="md:col-span-5 lg:col-span-4 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700 h-fit sticky top-8">
+                <h2 class="text-lg font-bold mb-4 capitalize" id="admin-calendar-month-text">Calendario</h2>
                 <div class="grid grid-cols-7 gap-2 text-center text-xs font-bold text-slate-500 mb-2 uppercase">
                     <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
                 </div>
                 <div id="admin-calendar-days" class="grid grid-cols-7 gap-2 text-center text-sm"></div>
             </div>
 
-            <!-- HORAS -->
-            <div class="bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700">
-                <div id="admin-time-selection" class="hidden">
-                    <h3 class="font-bold text-lg mb-2">Día: <span id="admin-selected-date-display" class="text-blue-400"></span></h3>
-                    <p class="text-xs text-slate-400 mb-6">Toca una hora verde para bloquearla. Toca una roja para ver sus datos y cancelarla.</p>
-                    <div id="admin-time-slots-container" class="max-h-[500px] overflow-y-auto pr-2"></div>
-                </div>
-                <div id="admin-placeholder" class="h-full flex flex-col items-center justify-center text-slate-500 opacity-50 py-12">
+            <!-- HORAS (SELECCIÓN MÚLTIPLE) -->
+            <div class="md:col-span-7 lg:col-span-8 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700">
+                
+                <div id="admin-placeholder" class="h-full flex flex-col items-center justify-center text-slate-500 opacity-50 py-20">
                     <i class="ph-fill ph-calendar-check text-6xl mb-4"></i>
-                    <p>Selecciona un día en el calendario</p>
+                    <p class="text-lg">Selecciona un día en el calendario</p>
+                </div>
+
+                <div id="admin-time-selection" class="hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-slate-700 pb-4">
+                        <div>
+                            <h3 class="font-bold text-2xl">Día: <span id="admin-selected-date-display" class="text-blue-400"></span></h3>
+                            <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider font-bold">Toca para seleccionar varias horas</p>
+                        </div>
+                        <button onclick="selectAllDay()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-bold py-2 px-4 rounded-xl flex items-center gap-2 transition-colors active:scale-95">
+                            <i class="ph-bold ph-check-square-offset"></i> Seleccionar todo el día
+                        </button>
+                    </div>
+                    
+                    <!-- GRID DE HORAS -->
+                    <div id="admin-time-slots-container"></div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- BARRA FLOTANTE DE ACCIONES (APARECE AL SELECCIONAR) -->
+    <div id="action-bar" class="fixed bottom-0 left-0 w-full bg-slate-950/90 backdrop-blur-md border-t border-slate-800 p-4 transform translate-y-full transition-transform duration-300 z-40 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <button onclick="deselectAll()" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 text-slate-400">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+                <div>
+                    <p class="text-lg font-bold text-white"><span id="selected-count" class="text-blue-400">0</span> horas seleccionadas</p>
+                    <p class="text-xs text-slate-400">Elige qué hacer con ellas</p>
+                </div>
+            </div>
+            <div class="flex gap-3 w-full sm:w-auto">
+                <button onclick="executeBulkAction('unblock')" class="flex-1 sm:flex-none bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 hover:bg-emerald-500/30 font-bold py-3 px-6 rounded-xl transition-colors active:scale-95 flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-lock-open"></i> Liberar
+                </button>
+                <button onclick="executeBulkAction('block')" class="flex-1 sm:flex-none bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500/30 font-bold py-3 px-6 rounded-xl transition-colors active:scale-95 flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-lock-key"></i> Bloquear
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL CONFIRMACIONES -->
-    <div id="admin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-        <div class="bg-slate-800 p-6 rounded-2xl shadow-2xl w-full max-w-sm border border-slate-700">
+    <div id="admin-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+        <div class="bg-slate-800 p-6 rounded-3xl shadow-2xl w-full max-w-sm border border-slate-700 transform transition-all scale-95 opacity-0" id="admin-modal-box">
             <h3 class="text-xl font-bold text-white mb-2" id="admin-modal-title">Título</h3>
-            <p class="text-slate-300 text-sm mb-6 whitespace-pre-line" id="admin-modal-message">Mensaje...</p>
+            <p class="text-slate-300 text-sm mb-6 whitespace-pre-line leading-relaxed" id="admin-modal-message">Mensaje...</p>
             <div class="flex gap-3" id="admin-modal-buttons"></div>
         </div>
     </div>
 
     <script>
+        // CONFIGURACIÓN SUPABASE
         const SUPABASE_URL = "https://kujtlvfqxghhidlgxzbn.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_KGhnhvQ3gG6mmzUMxxCfPQ_OwmvHjgo"; 
         let supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         let selectedDateStr = "";
+        let selectedSlotsMap = new Map(); // Guarda las horas seleccionadas { time: { dbId, isBlocked, cliente, localizacion, telefono } }
 
         const ALL_HOURS = [];
         for (let h = 0; h < 24; h++) {
@@ -94,13 +136,14 @@
             ALL_HOURS.push(`${hourStr}:00`, `${hourStr}:30`);
         }
 
+        // INIT & AUTH
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 document.getElementById('login-view').classList.add('hidden');
                 document.getElementById('admin-dashboard').classList.remove('hidden');
-                document.getElementById('admin-dashboard').classList.add('flex');
                 renderAdminCalendar();
+                setupRealtime(); // Activamos tiempo real para el admin
             }
         });
 
@@ -109,7 +152,7 @@
             const password = document.getElementById('admin-pass').value;
             const btn = document.getElementById('btn-login');
             
-            btn.textContent = "Cargando..."; btn.disabled = true;
+            btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Cargando...`; btn.disabled = true;
             const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) {
                 document.getElementById('login-error').textContent = "Credenciales incorrectas.";
@@ -125,6 +168,20 @@
             window.location.reload();
         }
 
+        // TIEMPO REAL PARA EL ADMIN (Ver cambios mágicos)
+        function setupRealtime() {
+            supabaseClient.channel('admin-realtime')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'citas' }, payload => {
+                    if (selectedDateStr) {
+                        const rec = payload.new || payload.old;
+                        if (rec && rec.fecha === selectedDateStr) {
+                            renderAdminTimeSlots(selectedDateStr, false); // false = no borrar selecciones actuales
+                        }
+                    }
+                }).subscribe();
+        }
+
+        // CALENDARIO
         function renderAdminCalendar() {
             const now = new Date(); const year = now.getFullYear(); const month = now.getMonth();
             const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -139,9 +196,9 @@
                 const isToday = day === now.getDate() && month === now.getMonth();
                 const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
                 
-                let cls = "py-3 rounded-lg font-bold cursor-pointer transition-colors admin-day-btn ";
-                if (isToday) cls += "bg-blue-600 text-white today-day";
-                else cls += "bg-slate-700 text-slate-300 hover:bg-slate-600";
+                let cls = "py-3 rounded-xl font-bold cursor-pointer transition-colors admin-day-btn ";
+                if (isToday) cls += "bg-blue-600 text-white today-day shadow-lg shadow-blue-500/30";
+                else cls += "bg-slate-900 border border-slate-700 text-slate-300 hover:bg-slate-700";
                 
                 container.innerHTML += `<div class="${cls}" onclick="selectAdminDate('${dateStr}', this)">${day}</div>`;
             }
@@ -149,12 +206,12 @@
 
         function selectAdminDate(dateStr, el) {
             document.querySelectorAll('.admin-day-btn').forEach(b => {
-                b.classList.remove('bg-white', 'text-slate-900', 'shadow-lg');
+                b.classList.remove('bg-white', 'text-slate-900', 'shadow-xl');
                 if(b.classList.contains('today-day')) b.classList.add('bg-blue-600', 'text-white');
-                else b.classList.add('bg-slate-700', 'text-slate-300');
+                else b.classList.add('bg-slate-900', 'text-slate-300');
             });
-            el.classList.remove('bg-slate-700', 'text-slate-300', 'bg-blue-600');
-            el.classList.add('bg-white', 'text-slate-900', 'shadow-lg');
+            el.classList.remove('bg-slate-900', 'text-slate-300', 'bg-blue-600');
+            el.classList.add('bg-white', 'text-slate-900', 'shadow-xl');
 
             selectedDateStr = dateStr;
             const [y, m, d] = dateStr.split('-');
@@ -162,12 +219,14 @@
             document.getElementById('admin-placeholder').classList.add('hidden');
             document.getElementById('admin-time-selection').classList.remove('hidden');
             
-            renderAdminTimeSlots(dateStr);
+            deselectAll(); // Al cambiar de día, vaciamos la selección actual
+            renderAdminTimeSlots(dateStr, true);
         }
 
-        async function renderAdminTimeSlots(dateStr) {
+        // GENERADOR DE HORAS CON SELECCIÓN MÚLTIPLE
+        async function renderAdminTimeSlots(dateStr, showLoader = true) {
             const container = document.getElementById('admin-time-slots-container');
-            container.innerHTML = '<div class="text-center py-6"><i class="ph-bold ph-spinner animate-spin text-2xl"></i></div>';
+            if (showLoader) container.innerHTML = '<div class="text-center py-10"><i class="ph-bold ph-spinner animate-spin text-3xl text-blue-500"></i></div>';
             
             let occupiedData = [];
             const { data } = await supabaseClient.from('citas').select('*').eq('fecha', dateStr);
@@ -186,18 +245,45 @@
             for (const [catName, times] of Object.entries(categorias)) {
                 if(times.length === 0) continue;
                 let bloqueHtml = `
-                    <div class="mb-6">
-                        <h4 class="text-xs font-bold text-slate-400 uppercase mb-3 border-b border-slate-700 pb-2">${catName}</h4>
-                        <div class="grid grid-cols-3 gap-3">
+                    <div class="mb-8">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-widest">${catName}</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 `;
                 times.forEach(time => {
                     const dbSlot = occupiedData.find(row => row.hora === time);
-                    if (dbSlot) {
-                        const slotDataStr = encodeURIComponent(JSON.stringify(dbSlot));
-                        bloqueHtml += `<div onclick="adminAction('${time}', '${slotDataStr}', true)" class="bg-red-500/20 text-red-400 border border-red-500/30 text-center py-3 rounded-xl text-sm font-bold cursor-pointer hover:bg-red-500/30 transition-colors">${time}</div>`;
+                    const isSelected = selectedSlotsMap.has(time);
+                    const isBlocked = !!dbSlot;
+                    
+                    // Clases dinámicas dependiendo de si está seleccionado y su estado
+                    let baseCls = "time-slot-btn relative p-3 rounded-2xl text-left font-bold cursor-pointer transition-all duration-200 border border-transparent overflow-hidden group ";
+                    let ringCls = isSelected ? "ring-4 ring-blue-500 ring-offset-2 ring-offset-slate-800 scale-95" : "hover:scale-[1.02] hover:shadow-lg";
+                    
+                    let contentHtml = "";
+                    let slotDataStr = "null";
+
+                    if (isBlocked) {
+                        baseCls += "bg-red-500/10 border-red-500/30 text-red-100";
+                        slotDataStr = encodeURIComponent(JSON.stringify(dbSlot));
+                        const name = dbSlot.cliente === "BLOQUEADO (Admin)" ? "BLOQUEO" : dbSlot.cliente.split(' ')[0]; // Pillamos solo el primer nombre para que quepa bien
+                        contentHtml = `
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="text-lg">${time}</span>
+                                <i class="ph-fill ph-x-circle text-red-500 text-xl"></i>
+                            </div>
+                            <span class="text-xs text-red-400 font-medium truncate block">${name}</span>
+                        `;
                     } else {
-                        bloqueHtml += `<div onclick="adminAction('${time}', null, false)" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-center py-3 rounded-xl text-sm font-bold cursor-pointer hover:bg-emerald-500/20 transition-colors">${time}</div>`;
+                        baseCls += "bg-emerald-500/10 border-emerald-500/20 text-emerald-100";
+                        contentHtml = `
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="text-lg">${time}</span>
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-xl opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                            </div>
+                            <span class="text-xs text-emerald-400 font-medium truncate block">Libre</span>
+                        `;
                     }
+
+                    bloqueHtml += `<div id="slot-${time}" onclick="toggleSlot('${time}', ${isBlocked}, '${slotDataStr}')" class="${baseCls} ${ringCls}">${contentHtml}</div>`;
                 });
                 bloqueHtml += `</div></div>`;
                 htmlFinal += bloqueHtml;
@@ -205,47 +291,127 @@
             container.innerHTML = htmlFinal;
         }
 
+        // LÓGICA DE SELECCIÓN MÚLTIPLE
+        function toggleSlot(time, isBlocked, slotDataEncoded) {
+            const el = document.getElementById(`slot-${time}`);
+            if (selectedSlotsMap.has(time)) {
+                selectedSlotsMap.delete(time);
+                el.classList.remove('ring-4', 'ring-blue-500', 'ring-offset-2', 'ring-offset-slate-800', 'scale-95');
+                el.classList.add('hover:scale-[1.02]', 'hover:shadow-lg');
+            } else {
+                let dbData = null;
+                if (slotDataEncoded !== 'null') dbData = JSON.parse(decodeURIComponent(slotDataEncoded));
+                
+                selectedSlotsMap.set(time, { isBlocked, dbData });
+                el.classList.add('ring-4', 'ring-blue-500', 'ring-offset-2', 'ring-offset-slate-800', 'scale-95');
+                el.classList.remove('hover:scale-[1.02]', 'hover:shadow-lg');
+            }
+            updateActionBar();
+        }
+
+        function selectAllDay() {
+            ALL_HOURS.forEach(time => {
+                if (!selectedSlotsMap.has(time)) {
+                    const el = document.getElementById(`slot-${time}`);
+                    if (el) el.click();
+                }
+            });
+        }
+
+        function deselectAll() {
+            selectedSlotsMap.clear();
+            document.querySelectorAll('.time-slot-btn').forEach(el => {
+                el.classList.remove('ring-4', 'ring-blue-500', 'ring-offset-2', 'ring-offset-slate-800', 'scale-95');
+                el.classList.add('hover:scale-[1.02]', 'hover:shadow-lg');
+            });
+            updateActionBar();
+        }
+
+        function updateActionBar() {
+            const bar = document.getElementById('action-bar');
+            const countEl = document.getElementById('selected-count');
+            const count = selectedSlotsMap.size;
+            
+            countEl.textContent = count;
+            
+            if (count > 0) {
+                bar.classList.remove('translate-y-full');
+            } else {
+                bar.classList.add('translate-y-full');
+            }
+        }
+
+        // ACCIONES EN LOTE (BLOQUEAR / LIBERAR)
         function showAdminModal(title, message, onConfirm) {
             const modal = document.getElementById('admin-modal');
+            const box = document.getElementById('admin-modal-box');
             document.getElementById('admin-modal-title').textContent = title;
             document.getElementById('admin-modal-message').textContent = message;
             
             const btnContainer = document.getElementById('admin-modal-buttons');
             btnContainer.innerHTML = '';
 
+            const cleanup = () => {
+                box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => modal.classList.add('hidden'), 200);
+            };
+
             const btnCancel = document.createElement('button');
-            btnCancel.className = "flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl";
+            btnCancel.className = "flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition-colors";
             btnCancel.textContent = "Atrás";
-            btnCancel.onclick = () => modal.classList.add('hidden');
+            btnCancel.onclick = cleanup;
 
             const btnConfirm = document.createElement('button');
-            btnConfirm.className = "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl";
+            btnConfirm.className = "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors";
             btnConfirm.textContent = "Confirmar";
-            btnConfirm.onclick = () => { modal.classList.add('hidden'); onConfirm(); };
+            btnConfirm.onclick = () => { cleanup(); onConfirm(); };
 
-            btnContainer.appendChild(btnCancel);
-            btnContainer.appendChild(btnConfirm);
+            btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnConfirm);
             
             modal.classList.remove('hidden');
+            setTimeout(() => { box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); }, 10);
         }
 
-        async function adminAction(time, slotDataEncoded, isBlocked) {
-            if (isBlocked) {
-                const dbSlot = JSON.parse(decodeURIComponent(slotDataEncoded));
-                const isOwnerBlock = dbSlot.cliente === "BLOQUEADO (Admin)";
-                const msg = isOwnerBlock 
-                    ? `¿Quieres desbloquear las ${time} para que los clientes puedan reservarla?` 
-                    : `CITA REAL:\n\n👤 ${dbSlot.cliente}\n📞 ${dbSlot.telefono || 'Sin tfno'}\n📍 ${dbSlot.localizacion}\n\n¿Deseas ELIMINAR/CANCELAR esta cita?`;
+        async function executeBulkAction(actionType) {
+            const slots = Array.from(selectedSlotsMap.entries());
+            
+            if (actionType === 'block') {
+                const toBlock = slots.filter(([time, data]) => !data.isBlocked);
+                if (toBlock.length === 0) return showAdminModal("Atención", "Todas las horas que has seleccionado ya están ocupadas o bloqueadas.", () => {});
                 
-                showAdminModal(isOwnerBlock ? "Desbloquear Hora" : "Cancelar Cita", msg, async () => {
-                    await supabaseClient.from('citas').delete().eq('id', dbSlot.id);
-                    renderAdminTimeSlots(selectedDateStr);
+                showAdminModal("Bloquear Horas", `Vas a bloquear ${toBlock.length} horas para que nadie pueda reservarlas.\n\n¿Estás seguro?`, async () => {
+                    const inserts = toBlock.map(([time]) => ({
+                        fecha: selectedDateStr, hora: time, cliente: "BLOQUEADO (Admin)", localizacion: "N/A", telefono: "N/A"
+                    }));
+                    await supabaseClient.from('citas').insert(inserts);
+                    deselectAll();
                 });
-            } else {
-                showAdminModal("Bloquear Hora", `¿Seguro que quieres bloquear las ${time} para que nadie pueda cogerla?`, async () => {
-                    await supabaseClient.from('citas').insert([{ fecha: selectedDateStr, hora: time, cliente: "BLOQUEADO (Admin)", localizacion: "N/A", telefono: "N/A" }]);
-                    renderAdminTimeSlots(selectedDateStr);
-                });
+            } 
+            else if (actionType === 'unblock') {
+                const toUnblock = slots.filter(([time, data]) => data.isBlocked);
+                if (toUnblock.length === 0) return showAdminModal("Atención", "Todas las horas que has seleccionado ya están libres.", () => {});
+                
+                // Si solo selecciona 1 ocupada, le damos los detalles exactos del cliente antes de borrar
+                if (toUnblock.length === 1) {
+                    const data = toUnblock[0][1].dbData;
+                    const isOwnerBlock = data.cliente === "BLOQUEADO (Admin)";
+                    const msg = isOwnerBlock 
+                        ? `¿Quieres desbloquear las ${toUnblock[0][0]}?` 
+                        : `CITA REAL:\n\n👤 Nombre: ${data.cliente}\n📞 Tel: ${data.telefono}\n📍 Dir: ${data.localizacion}\n\n¿Seguro que deseas ELIMINAR/CANCELAR esta cita?`;
+                    
+                    showAdminModal(isOwnerBlock ? "Desbloquear" : "Cancelar Cita", msg, async () => {
+                        await supabaseClient.from('citas').delete().eq('id', data.id);
+                        deselectAll();
+                    });
+                } 
+                // Si selecciona múltiples, borramos todas de golpe
+                else {
+                    showAdminModal("Liberar Múltiples Horas", `Vas a liberar/eliminar ${toUnblock.length} horas (incluyendo citas de clientes si las hay).\n\n¿Estás seguro?`, async () => {
+                        const ids = toUnblock.map(([time, data]) => data.dbData.id);
+                        await supabaseClient.from('citas').delete().in('id', ids);
+                        deselectAll();
+                    });
+                }
             }
         }
     </script>

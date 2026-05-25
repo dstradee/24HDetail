@@ -65,7 +65,6 @@
                             <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors"><i class="ph-fill ph-whatsapp-logo text-3xl text-emerald-500"></i><span class="text-sm font-semibold text-slate-700 text-center leading-tight">Contacto</span></button>
                         </div>
 
-                        <!-- BOTÓN ACCESO SOCIOS (NUEVO) -->
                         <button onclick="checkSocioLogin()" class="mt-2 w-full bg-indigo-600 text-white p-4 rounded-2xl shadow-md shadow-indigo-600/20 flex items-center justify-between active:scale-95 transition-transform">
                             <div class="flex items-center gap-3"><i class="ph-fill ph-buildings text-2xl text-indigo-300"></i><div class="text-left"><span class="font-semibold text-sm block">Acceso Socios / Empresas</span><span class="text-xs text-indigo-200">Rent a Car & Flotas</span></div></div><i class="ph-bold ph-caret-right text-lg opacity-50"></i>
                         </button>
@@ -112,7 +111,7 @@
                     </div>
                 </div>
 
-                <!-- PÁGINA: PROFESIONALES COMPRAVENTA (Igual que antes) -->
+                <!-- PÁGINA: PROFESIONALES COMPRAVENTA -->
                 <div id="pro-view" class="page-slide bg-slate-50 flex flex-col pt-4 lg:pt-8">
                     <div class="bg-slate-900 px-4 py-4 flex items-center sticky top-0 z-10 text-white shadow-md"><button onclick="closePage('pro-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-800 active:bg-slate-700 transition-colors"><i class="ph-bold ph-arrow-left text-2xl"></i></button><h2 class="text-lg font-bold ml-2">Planes Compraventa</h2></div>
                     <div class="flex-1 overflow-y-auto p-5 pb-10">
@@ -146,7 +145,7 @@
                     </div>
                 </div>
 
-                <!-- PÁGINA: AGENDAR CITA (COMPARTIDA CLIENTE NORMAL Y SOCIO) -->
+                <!-- PÁGINA: AGENDAR CITA (COMPARTIDA) -->
                 <div id="booking-view" class="page-slide bg-slate-50 flex flex-col pt-4 lg:pt-8">
                     <div class="bg-white border-b border-slate-100 px-4 py-4 flex items-center sticky top-0 z-10 shadow-sm">
                         <button onclick="closePage('booking-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-600"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
@@ -168,18 +167,30 @@
 
                             <div id="client-info-section" class="hidden mt-4 space-y-4 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
                                 
-                                <!-- CAMPOS PARA CLIENTE NORMAL -->
+                                <!-- CAMPOS CLIENTE NORMAL -->
                                 <div id="fields-normal">
                                     <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Nombre y Apellidos</label><input type="text" id="client-name" placeholder="Ej: Pablo García Pérez" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
                                     <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Teléfono Móvil</label><input type="tel" id="client-phone" placeholder="Ej: 600123456" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
                                 </div>
                                 
-                                <!-- CAMPO DIRECCIÓN OBLIGATORIO PARA TODOS -->
+                                <!-- CAMPO DIRECCIÓN (Obligatorio) -->
                                 <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Dirección del Vehículo</label><input type="text" id="client-location" placeholder="Ej: Calle Mayor, 12 o Parking X" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
 
-                                <!-- CAMPOS EXCLUSIVOS SOCIO -->
+                                <!-- CAMPOS SOCIOS (Opcional y Select) -->
                                 <div id="fields-socio" class="hidden">
-                                    <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Vehículo / Matrícula</label><input type="text" id="socio-car" placeholder="Ej: Ford Fiesta 1234ABC" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-500 transition-colors"></div>
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Vehículo / Matrícula <span class="text-slate-400 font-normal">(Opcional)</span></label>
+                                        <input type="text" id="socio-car" placeholder="Ej: Ford Fiesta 1234ABC" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-500 transition-colors">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Tipo de Servicio</label>
+                                        <select id="socio-service" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer text-slate-700">
+                                            <option value="" disabled selected>Selecciona el servicio...</option>
+                                            <option value="Limpieza por fuera">Limpieza por fuera</option>
+                                            <option value="Limpieza por dentro">Limpieza por dentro</option>
+                                            <option value="Limpieza por dentro y fuera">Limpieza por dentro y fuera</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <button onclick="confirmAppointment()" id="btn-confirmar" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mt-4">
@@ -205,12 +216,11 @@
         try { if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e) {}
 
         let selectedDateStr = ""; let selectedTimeStr = "";
-        let currentSocio = null; // Si es distinto de null, está en modo "Socio de empresa"
+        let currentSocio = null; 
         
         const ALL_HOURS = [];
         for (let h = 0; h < 24; h++) { let hs = h.toString().padStart(2, '0'); ALL_HOURS.push(`${hs}:00`, `${hs}:30`); }
 
-        // TIEMPO REAL
         if (supabaseClient) {
             supabaseClient.channel('realtime-citas').on('postgres_changes', { event: '*', schema: 'public', table: 'citas' }, payload => {
                 if (selectedDateStr) {
@@ -242,7 +252,6 @@
             const ageEl = document.getElementById('dynamic-age'); if(ageEl) ageEl.textContent = edad;
             calculateProPrice();
             
-            // Si el socio dejó la sesión abierta
             const savedSocio = localStorage.getItem('24h_socio');
             if (savedSocio) currentSocio = JSON.parse(savedSocio);
         });
@@ -268,9 +277,9 @@
             if (!user || !pass) { errorDiv.textContent = "Introduce usuario y contraseña"; errorDiv.classList.remove('hidden'); return; }
             btn.innerHTML = "Comprobando..."; btn.disabled = true; errorDiv.classList.add('hidden');
 
-            // Buscamos en la tabla de socios
             if (supabaseClient) {
-                const { data, error } = await supabaseClient.from('socios').select('*').eq('username', user).eq('password', pass);
+                // ILIKE ignora si escriben en mayúsculas o minúsculas
+                const { data, error } = await supabaseClient.from('socios').select('*').ilike('username', user).eq('password', pass);
                 if (data && data.length > 0) {
                     currentSocio = data[0];
                     localStorage.setItem('24h_socio', JSON.stringify(currentSocio));
@@ -292,7 +301,6 @@
         }
 
         function openBooking(mode) {
-            // mode = 'client' o 'socio'
             if (currentSocio) {
                 document.getElementById('fields-normal').classList.add('hidden');
                 document.getElementById('fields-socio').classList.remove('hidden');
@@ -396,16 +404,17 @@
         }
 
         async function confirmAppointment() {
-            let finalName = ""; let finalPhone = ""; let finalLocation = ""; let isSocioRes = false;
+            let finalName = ""; let finalPhone = ""; let finalLocation = ""; let isSocioRes = false; let serviceType = "";
 
             if (currentSocio) {
                 isSocioRes = true;
-                const car = document.getElementById('socio-car').value.trim();
+                const car = document.getElementById('socio-car').value.trim() || 'No especificado';
                 const loc = document.getElementById('client-location').value.trim();
-                if (!car || !loc) return showModal({ title: "Faltan datos", message: "Rellena el vehículo y la dirección." });
+                serviceType = document.getElementById('socio-service').value;
+
+                if (!loc || !serviceType) return showModal({ title: "Faltan datos", message: "La dirección y el tipo de servicio son obligatorios." });
                 
-                // En base de datos lo guardamos para que tú lo identifiques rápido
-                finalName = `[SOCIO] ${currentSocio.company_name} - ${car}`;
+                finalName = `[SOCIO] ${currentSocio.company_name} - ${car} (${serviceType})`;
                 finalPhone = "SOCIO";
                 finalLocation = loc;
             } else {
@@ -432,13 +441,12 @@
                 } catch (e) {}
             }
 
-            // MENSJE A TELEGRAM DIFERENTE SI ES SOCIO
             let telegramMsg = "";
             let waMsg = "";
 
             if (isSocioRes) {
-                telegramMsg = `🏢 <b>RESERVA DE SOCIO</b>\n\n👤 <b>Empresa:</b> ${currentSocio.company_name}\n🚗 <b>Vehículo:</b> ${document.getElementById('socio-car').value}\n📍 <b>Dirección:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
-                waMsg = `¡Hola Pablo! 👋 Acabamos de reservar desde el portal de ${currentSocio.company_name}.\n\n🚗 *Vehículo:* ${document.getElementById('socio-car').value}\n📍 *Dirección:* ${finalLocation}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}`;
+                telegramMsg = `🏢 <b>RESERVA DE SOCIO</b>\n\n👤 <b>Empresa:</b> ${currentSocio.company_name}\n🧼 <b>Servicio:</b> ${serviceType}\n🚗 <b>Vehículo:</b> ${document.getElementById('socio-car').value || 'No espec.'}\n📍 <b>Dirección:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
+                waMsg = `¡Hola Pablo! 👋 Acabamos de reservar desde el portal de ${currentSocio.company_name}.\n\n🧼 *Servicio:* ${serviceType}\n🚗 *Vehículo:* ${document.getElementById('socio-car').value || 'No especificado'}\n📍 *Dirección:* ${finalLocation}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}`;
             } else {
                 telegramMsg = `🔔 <b>NUEVA RESERVA WEB</b>\n\n👤 <b>Nombre:</b> ${finalName}\n📞 <b>Teléfono:</b> ${finalPhone}\n📍 <b>Dirección:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
                 waMsg = `¡Hola Pablo! 👋 Acabo de reservar cita en la web.\n\n👤 *Nombre:* ${finalName}\n📞 *Teléfono:* ${finalPhone}\n📍 *Dirección:* ${finalLocation}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}\n\nConfírmame cuando puedas.`;
@@ -450,6 +458,7 @@
             closePage('booking-view');
             document.getElementById('client-name').value = ''; document.getElementById('client-phone').value = ''; document.getElementById('client-location').value = '';
             if(document.getElementById('socio-car')) document.getElementById('socio-car').value = '';
+            if(document.getElementById('socio-service')) document.getElementById('socio-service').value = '';
             document.getElementById('time-selection').classList.add('hidden');
             btn.innerHTML = `<i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva`; btn.disabled = false;
         }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+¡<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -107,14 +107,10 @@
                         </div>
 
                         <h3 class="font-bold text-lg text-slate-800 mb-3 flex items-center gap-2"><i class="ph-fill ph-clock text-indigo-500"></i> Próximas Citas</h3>
-                        <div id="socio-upcoming-list" class="space-y-3 mb-8">
-                            <!-- JS Inject -->
-                        </div>
+                        <div id="socio-upcoming-list" class="space-y-3 mb-8"></div>
 
                         <h3 class="font-bold text-lg text-slate-800 mb-3 flex items-center gap-2"><i class="ph-fill ph-check-circle text-emerald-500"></i> Historial</h3>
-                        <div id="socio-history-list" class="space-y-3 mb-6">
-                            <!-- JS Inject -->
-                        </div>
+                        <div id="socio-history-list" class="space-y-3 mb-6"></div>
 
                         <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="mt-4 w-full bg-white border border-slate-200 text-slate-700 font-bold py-4 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
                             <i class="ph-bold ph-whatsapp text-xl text-emerald-500"></i> Contacto Soporte
@@ -164,8 +160,14 @@
                     </div>
                     <div class="flex-1 overflow-y-auto p-5 pb-12">
                         <p class="text-slate-500 text-sm mb-6">Elige el día que mejor te venga para dejar tu coche impoluto.</p>
+                        
                         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
-                            <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg text-slate-800 capitalize" id="calendar-month-text">Cargando...</h3></div>
+                            <!-- NAVEGACIÓN DE MESES AÑADIDA AQUÍ -->
+                            <div class="flex justify-between items-center mb-4">
+                                <button onclick="changeMonth(-1)" class="p-2 -ml-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors"><i class="ph-bold ph-caret-left text-xl"></i></button>
+                                <h3 class="font-bold text-lg text-slate-800 capitalize" id="calendar-month-text">Cargando...</h3>
+                                <button onclick="changeMonth(1)" class="p-2 -mr-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors"><i class="ph-bold ph-caret-right text-xl"></i></button>
+                            </div>
                             <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-400 mb-2"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div>
                             <div id="calendar-days" class="grid grid-cols-7 gap-2 text-center text-sm"></div>
                         </div>
@@ -226,10 +228,13 @@
         let selectedDateStr = ""; let selectedTimeStr = "";
         let currentSocio = null; 
         
+        // VARIABLES NAVEGACIÓN CALENDARIO
+        let displayMonth = new Date().getMonth();
+        let displayYear = new Date().getFullYear();
+
         const ALL_HOURS = [];
         for (let h = 0; h < 24; h++) { let hs = h.toString().padStart(2, '0'); ALL_HOURS.push(`${hs}:00`, `${hs}:30`); }
 
-        // TIEMPO REAL
         if (supabaseClient) {
             supabaseClient.channel('realtime-citas').on('postgres_changes', { event: '*', schema: 'public', table: 'citas' }, payload => {
                 if (selectedDateStr) {
@@ -262,15 +267,12 @@
             modal.classList.remove('hidden'); setTimeout(() => { box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); }, 10);
         }
 
-        // LIMPIEZA Y ESTADOS DE CITAS (HISTORIAL)
         async function cleanOldAppointments() {
             if (!supabaseClient) return;
             const now = new Date();
             const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             try { 
-                // Borramos las pasadas públicas (que no son de socio)
                 await supabaseClient.from('citas').delete().lt('fecha', todayStr).is('socio_id', null);
-                // Marcamos las pasadas de socios como "completado"
                 await supabaseClient.from('citas').update({ estado: 'completado' }).lt('fecha', todayStr).not('socio_id', 'is', null).eq('estado', 'pendiente');
             } catch(e) {}
         }
@@ -287,13 +289,13 @@
         });
 
         // =====================================
-        // LÓGICA DE SOCIOS Y DASHBOARD
+        // LÓGICA DE SOCIOS
         // =====================================
         function checkSocioLogin() {
             if (currentSocio) {
                 document.getElementById('socio-name-display').textContent = currentSocio.company_name;
                 openPage('socios-dashboard-view');
-                loadSocioDashboard(); // Cargar sus citas
+                loadSocioDashboard();
             } else {
                 openPage('socios-login-view');
             }
@@ -309,7 +311,6 @@
             btn.innerHTML = "Comprobando..."; btn.disabled = true; errorDiv.classList.add('hidden');
 
             if (supabaseClient) {
-                // ILIKE ignora mayúsculas/minúsculas
                 const { data, error } = await supabaseClient.from('socios').select('*').ilike('username', user).eq('password', pass);
                 if (data && data.length > 0) {
                     currentSocio = data[0];
@@ -348,8 +349,6 @@
 
             data.forEach(cita => {
                 const isPast = cita.fecha < todayStr || cita.estado === 'completado';
-                
-                // Extraemos el vehículo y el servicio del string que guardamos en BD: "[SOCIO] Empresa - Vehículo (Servicio)"
                 const match = cita.cliente.match(/-\s*(.*?)\s*\((.*)\)/);
                 const vehicle = match ? match[1] : "No especificado";
                 const service = match ? match[2] : "No especificado";
@@ -403,6 +402,10 @@
                 document.getElementById('fields-socio').classList.add('hidden');
             }
             openPage('booking-view');
+            
+            // Al abrir la reserva, siempre forzamos que se muestre el mes y año actuales.
+            displayMonth = new Date().getMonth();
+            displayYear = new Date().getFullYear();
             renderCalendar();
         }
 
@@ -418,36 +421,61 @@
         function closePage(id) { document.getElementById(id).classList.remove('open'); }
 
         // =====================================
-        // CALENDARIO Y RESERVAS
+        // CALENDARIO Y NAVEGACIÓN
         // =====================================
+        function changeMonth(offset) {
+            displayMonth += offset;
+            if (displayMonth > 11) { displayMonth = 0; displayYear++; }
+            else if (displayMonth < 0) { displayMonth = 11; displayYear--; }
+            renderCalendar();
+        }
+
         function renderCalendar() {
-            const now = new Date(); const year = now.getFullYear(); const month = now.getMonth();
+            const now = new Date(); 
             const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            document.getElementById('calendar-month-text').textContent = `${monthNames[month]} ${year}`;
+            document.getElementById('calendar-month-text').textContent = `${monthNames[displayMonth]} ${displayYear}`;
             const daysContainer = document.getElementById('calendar-days'); daysContainer.innerHTML = '';
 
-            let firstDay = new Date(year, month, 1).getDay(); let emptySpaces = firstDay === 0 ? 6 : firstDay - 1; 
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            let firstDay = new Date(displayYear, displayMonth, 1).getDay(); let emptySpaces = firstDay === 0 ? 6 : firstDay - 1; 
+            const daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
 
             for (let i = 0; i < emptySpaces; i++) daysContainer.innerHTML += `<div></div>`;
+            
+            // Guardamos el día de hoy a las 00:00:00 para hacer la comprobación de pasados correcta
+            const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
             for (let day = 1; day <= daysInMonth; day++) {
-                const isPast = day < now.getDate() && month === now.getMonth();
-                const isToday = day === now.getDate() && month === now.getMonth();
-                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const thisDate = new Date(displayYear, displayMonth, day);
+                const isPast = thisDate < todayDate;
+                const isToday = day === now.getDate() && displayMonth === now.getMonth() && displayYear === now.getFullYear();
+                const dateStr = `${displayYear}-${String(displayMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                
+                const isSelected = (dateStr === selectedDateStr);
                 
                 let cls = `py-2 rounded-lg font-medium transition-colors client-day-btn `;
-                if (isPast) cls += "text-slate-300 cursor-not-allowed";
-                else if (isToday) cls += "bg-blue-600 text-white shadow-md cursor-pointer today-day";
-                else cls += "text-slate-700 bg-slate-50 cursor-pointer hover:bg-blue-100";
                 
-                daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
+                if (isPast) {
+                    cls += "text-slate-300 cursor-not-allowed";
+                    daysContainer.innerHTML += `<div class="${cls}">${day}</div>`;
+                } else if (isSelected) {
+                    cls += "bg-slate-800 text-white shadow-md";
+                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
+                } else if (isToday) {
+                    cls += "bg-blue-600 text-white shadow-md cursor-pointer today-day";
+                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
+                } else {
+                    cls += "text-slate-700 bg-slate-50 cursor-pointer hover:bg-blue-100";
+                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
+                }
             }
         }
 
         async function selectDate(dateStr, el) {
             document.querySelectorAll(`.client-day-btn`).forEach(b => {
-                b.classList.remove('bg-slate-800', 'text-white', 'shadow-md');
-                if(b.classList.contains('today-day')) b.classList.add('bg-blue-600', 'text-white'); else b.classList.add('bg-slate-50', 'text-slate-700');
+                if(b.classList.contains('bg-slate-800')) {
+                    b.classList.remove('bg-slate-800', 'text-white', 'shadow-md');
+                    if(b.classList.contains('today-day')) b.classList.add('bg-blue-600', 'text-white'); else b.classList.add('bg-slate-50', 'text-slate-700');
+                }
             });
             el.classList.remove('bg-slate-50', 'text-slate-700', 'bg-blue-600'); el.classList.add('bg-slate-800', 'text-white', 'shadow-md');
 
@@ -485,7 +513,7 @@
                 else htmlFinal += `<option value="${time}">✅ ${time} - Libre</option>`;
             });
 
-            if (!hasRenderedOptions) htmlFinal += `<option value="" disabled>No quedan horas disponibles hoy</option>`;
+            if (!hasRenderedOptions) htmlFinal += `<option value="" disabled>No quedan horas disponibles para este día</option>`;
             htmlFinal += `</select><i class="ph-bold ph-caret-down absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none text-xl"></i></div>`;
             container.innerHTML = htmlFinal;
         }
@@ -532,12 +560,8 @@
                         return renderTimeSlots(selectedDateStr);
                     }
                     
-                    // Si es socio guardamos el socio_id
                     const insertData = { fecha: selectedDateStr, hora: selectedTimeStr, cliente: finalName, localizacion: finalLocation, telefono: finalPhone };
-                    if (isSocioRes) {
-                        insertData.socio_id = currentSocio.id;
-                        insertData.estado = 'pendiente';
-                    }
+                    if (isSocioRes) { insertData.socio_id = currentSocio.id; insertData.estado = 'pendiente'; }
                     
                     await supabaseClient.from('citas').insert([insertData]);
                 } catch (e) {}
@@ -562,7 +586,7 @@
             document.getElementById('time-selection').classList.add('hidden');
             btn.innerHTML = `<i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva`; btn.disabled = false;
             
-            if(isSocioRes) loadSocioDashboard(); // Refrescamos sus próximas citas
+            if(isSocioRes) loadSocioDashboard(); 
         }
     </script>
 </body>

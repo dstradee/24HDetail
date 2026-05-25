@@ -46,7 +46,12 @@
         <!-- SECCIÓN 1: CALENDARIO Y CITAS -->
         <div id="section-citas" class="grid md:grid-cols-12 gap-8 relative">
             <div class="md:col-span-5 lg:col-span-4 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700 h-fit md:sticky md:top-8 z-10">
-                <h2 class="text-lg font-bold mb-4 capitalize" id="admin-calendar-month-text">Calendario</h2>
+                <!-- NAVEGACIÓN DE MESES ADMIN AÑADIDA AQUÍ -->
+                <div class="flex justify-between items-center mb-4">
+                    <button onclick="changeAdminMonth(-1)" class="p-2 -ml-2 rounded-full hover:bg-slate-700 text-slate-400 transition-colors"><i class="ph-bold ph-caret-left text-xl"></i></button>
+                    <h2 class="text-lg font-bold capitalize" id="admin-calendar-month-text">Calendario</h2>
+                    <button onclick="changeAdminMonth(1)" class="p-2 -mr-2 rounded-full hover:bg-slate-700 text-slate-400 transition-colors"><i class="ph-bold ph-caret-right text-xl"></i></button>
+                </div>
                 <div class="grid grid-cols-7 gap-2 text-center text-xs font-bold text-slate-500 mb-2 uppercase"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div>
                 <div id="admin-calendar-days" class="grid grid-cols-7 gap-2 text-center text-sm"></div>
             </div>
@@ -121,6 +126,10 @@
         let globalStats = {}; 
         let globalSocios = [];
 
+        // VARIABLES NAVEGACIÓN CALENDARIO ADMIN
+        let displayAdminMonth = new Date().getMonth();
+        let displayAdminYear = new Date().getFullYear();
+
         const ALL_HOURS = []; for (let h = 0; h < 24; h++) { let hs = h.toString().padStart(2, '0'); ALL_HOURS.push(`${hs}:00`, `${hs}:30`); }
 
         document.addEventListener("DOMContentLoaded", async () => {
@@ -171,7 +180,6 @@
             if (errS) { container.innerHTML = '<p class="text-red-400 text-center">Error cargando socios</p>'; return; }
             if (socios.length === 0) { container.innerHTML = '<p class="text-slate-500 text-center py-6">No hay socios creados todavía.</p>'; return; }
             
-            // Calculamos estadísticas
             globalStats = {}; globalSocios = socios;
             socios.forEach(s => globalStats[s.id] = { pendientes: 0, completados: 0 });
             if(citas) {
@@ -183,7 +191,6 @@
                 });
             }
 
-            // Botón Global de Telegram
             let html = `
                 <div class="mb-6">
                     <button onclick="sendGlobalReport()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
@@ -252,12 +259,9 @@
             }, false);
         }
 
-        // ========================================================
-        // 🧹 LIMPIEZA INTELIGENTE Y REPORTES TELEGRAM
-        // ========================================================
         function openCleanupModal(socioId, name) {
             const htmlMessage = `
-                <p class="mb-4 text-slate-300 text-sm">Selecciona qué historial de citas <b>COMPLETADAS</b> deseas borrar de la base de datos.</p>
+                <p class="mb-4 text-slate-300 text-sm">Selecciona qué historial de citas <b>COMPLETADAS</b> deseas borrar.</p>
                 <select id="cleanup-timeframe" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 outline-none">
                     <option value="1">Borrar anteriores a 1 mes</option>
                     <option value="2">Borrar anteriores a 2 meses</option>
@@ -275,8 +279,8 @@
                 }
                 
                 const { error } = await query;
-                if (!error) loadSocios(); // Recarga si va bien
-            }, true); // true indica que renderizamos HTML
+                if (!error) loadSocios(); 
+            }, true); 
         }
 
         function sendGlobalReport() {
@@ -300,7 +304,7 @@
         }
 
         // ========================================================
-        // CALENDARIO Y GESTIÓN DE CITAS
+        // CALENDARIO ADMIN (CON NAVEGACIÓN)
         // ========================================================
         function setupRealtime() {
             supabaseClient.channel('admin-realtime').on('postgres_changes', { event: '*', schema: 'public', table: 'citas' }, payload => {
@@ -308,18 +312,37 @@
             }).subscribe();
         }
 
+        function changeAdminMonth(offset) {
+            displayAdminMonth += offset;
+            if (displayAdminMonth > 11) { displayAdminMonth = 0; displayAdminYear++; }
+            else if (displayAdminMonth < 0) { displayAdminMonth = 11; displayAdminYear--; }
+            renderAdminCalendar();
+        }
+
         function renderAdminCalendar() {
-            const now = new Date(); const year = now.getFullYear(); const month = now.getMonth();
+            const now = new Date(); 
             const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            document.getElementById('admin-calendar-month-text').textContent = `${monthNames[month]} ${year}`;
+            document.getElementById('admin-calendar-month-text').textContent = `${monthNames[displayAdminMonth]} ${displayAdminYear}`;
             const container = document.getElementById('admin-calendar-days'); container.innerHTML = '';
-            let firstDay = new Date(year, month, 1).getDay(); let emptySpaces = firstDay === 0 ? 6 : firstDay - 1; 
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            let firstDay = new Date(displayAdminYear, displayAdminMonth, 1).getDay(); 
+            let emptySpaces = firstDay === 0 ? 6 : firstDay - 1; 
+            const daysInMonth = new Date(displayAdminYear, displayAdminMonth + 1, 0).getDate();
+            
             for (let i = 0; i < emptySpaces; i++) container.innerHTML += `<div></div>`;
+            
             for (let day = 1; day <= daysInMonth; day++) {
-                const isToday = day === now.getDate() && month === now.getMonth();
-                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-                let cls = "py-3 rounded-xl font-bold cursor-pointer transition-colors admin-day-btn " + (isToday ? "bg-blue-600 text-white today-day shadow-lg shadow-blue-500/30" : "bg-slate-900 border border-slate-700 text-slate-300 hover:bg-slate-700");
+                const isToday = day === now.getDate() && displayAdminMonth === now.getMonth() && displayAdminYear === now.getFullYear();
+                const dateStr = `${displayAdminYear}-${String(displayAdminMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                
+                const isSelected = (dateStr === selectedDateStr);
+                
+                let cls = "py-3 rounded-xl font-bold cursor-pointer transition-colors admin-day-btn ";
+                
+                if (isSelected) cls += "bg-white text-slate-900 shadow-xl";
+                else if (isToday) cls += "bg-blue-600 text-white today-day shadow-lg shadow-blue-500/30";
+                else cls += "bg-slate-900 border border-slate-700 text-slate-300 hover:bg-slate-700";
+                
                 container.innerHTML += `<div class="${cls}" onclick="selectAdminDate('${dateStr}', this)">${day}</div>`;
             }
         }
@@ -330,6 +353,7 @@
                 if(b.classList.contains('today-day')) b.classList.add('bg-blue-600', 'text-white'); else b.classList.add('bg-slate-900', 'text-slate-300');
             });
             el.classList.remove('bg-slate-900', 'text-slate-300', 'bg-blue-600'); el.classList.add('bg-white', 'text-slate-900', 'shadow-xl');
+            
             selectedDateStr = dateStr; document.getElementById('admin-selected-date-display').textContent = `${dateStr.split('-')[2]}/${dateStr.split('-')[1]}/${dateStr.split('-')[0]}`;
             document.getElementById('admin-placeholder').classList.add('hidden'); document.getElementById('admin-time-selection').classList.remove('hidden');
             deselectAll(); renderAdminTimeSlots(dateStr, true);
@@ -387,13 +411,9 @@
             if (selectedSlotsMap.size > 0) bar.classList.remove('translate-y-full'); else bar.classList.add('translate-y-full');
         }
 
-        // ========================================================
-        // MODAL Y EJECUCIÓN LOTE
-        // ========================================================
         function showAdminModal(title, message, onConfirm, isHtml = false) {
             const modal = document.getElementById('admin-modal'); const box = document.getElementById('admin-modal-box');
             document.getElementById('admin-modal-title').textContent = title; 
-            
             if(isHtml) document.getElementById('admin-modal-message').innerHTML = message;
             else document.getElementById('admin-modal-message').textContent = message;
             
@@ -411,7 +431,7 @@
             const slots = Array.from(selectedSlotsMap.entries());
             if (actionType === 'block') {
                 const toBlock = slots.filter(([time, data]) => !data.isBlocked);
-                if (toBlock.length === 0) return showAdminModal("Atención", "Todas las horas que has seleccionado ya están ocupadas o bloqueadas.", () => {}, false);
+                if (toBlock.length === 0) return showAdminModal("Atención", "Todas las horas seleccionadas ya están ocupadas.", () => {}, false);
                 showAdminModal("Bloquear Horas", `Vas a bloquear ${toBlock.length} horas.\n\n¿Estás seguro?`, async () => {
                     const inserts = toBlock.map(([time]) => ({ fecha: selectedDateStr, hora: time, cliente: "BLOQUEADO (Admin)", localizacion: "N/A", telefono: "N/A" }));
                     await supabaseClient.from('citas').insert(inserts); deselectAll(); renderAdminTimeSlots(selectedDateStr, false);

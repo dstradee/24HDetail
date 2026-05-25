@@ -35,7 +35,6 @@
         <div class="flex flex-col sm:flex-row justify-between items-center bg-slate-800 p-4 md:p-6 rounded-2xl shadow-lg border border-slate-700 mb-6 gap-4">
             <div class="flex items-center gap-3"><div class="bg-blue-600 p-2 rounded-lg"><i class="ph-bold ph-car-profile text-xl"></i></div><h1 class="text-xl font-bold">24H Detailing Admin</h1></div>
             
-            <!-- PESTAÑAS DE NAVEGACIÓN -->
             <div class="flex bg-slate-900 rounded-xl p-1 border border-slate-700 w-full sm:w-auto">
                 <button onclick="switchTab('citas')" id="tab-citas" class="flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white transition-colors">Citas y Horarios</button>
                 <button onclick="switchTab('socios')" id="tab-socios" class="flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm text-slate-400 hover:text-white transition-colors">Gestión Socios</button>
@@ -64,14 +63,13 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 2: GESTIÓN DE SOCIOS / RENT A CAR -->
+        <!-- SECCIÓN 2: GESTIÓN DE SOCIOS Y ESTADÍSTICAS -->
         <div id="section-socios" class="hidden grid md:grid-cols-12 gap-8 relative">
-            
             <div class="md:col-span-5 lg:col-span-4 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700 h-fit">
                 <h2 class="text-xl font-bold mb-2 flex items-center gap-2 text-emerald-400"><i class="ph-bold ph-user-plus"></i> Crear Socio</h2>
                 <p class="text-xs text-slate-400 mb-6">Añade una empresa para que puedan reservar de forma exclusiva.</p>
                 <div class="space-y-4">
-                    <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Nombre Empresa (Lo que ellos ven)</label><input type="text" id="new-socio-name" placeholder="Ej: Rent a Car Paquito" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-emerald-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Nombre Empresa</label><input type="text" id="new-socio-name" placeholder="Ej: Rent a Car Paquito" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-emerald-500"></div>
                     <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Usuario de Acceso</label><input type="text" id="new-socio-user" placeholder="Ej: paquito123" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-emerald-500"></div>
                     <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Contraseña</label><input type="text" id="new-socio-pass" placeholder="Ej: 1234" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-emerald-500"></div>
                     <button onclick="createSocio()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl mt-2 active:scale-95 transition-transform flex items-center justify-center gap-2"><i class="ph-bold ph-plus"></i> Añadir Socio</button>
@@ -79,8 +77,8 @@
             </div>
 
             <div class="md:col-span-7 lg:col-span-8 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700">
-                <h2 class="text-xl font-bold mb-6 flex items-center gap-2"><i class="ph-bold ph-buildings"></i> Socios Activos</h2>
-                <div id="socios-list-container" class="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2"><i class="ph-bold ph-buildings"></i> Dashboard de Socios</h2>
+                <div id="socios-list-container" class="max-h-[700px] overflow-y-auto pr-2">
                     <div class="text-center py-10 text-slate-500"><i class="ph-bold ph-spinner animate-spin text-3xl"></i></div>
                 </div>
             </div>
@@ -102,10 +100,11 @@
         </div>
     </div>
 
+    <!-- MODAL CONFIRMACIONES MULTIUSOS -->
     <div id="admin-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
         <div class="bg-slate-800 p-6 rounded-3xl shadow-2xl w-full max-w-sm border border-slate-700 transform scale-95 opacity-0 transition-all" id="admin-modal-box">
             <h3 class="text-xl font-bold text-white mb-2" id="admin-modal-title">Título</h3>
-            <p class="text-slate-300 text-sm mb-6 whitespace-pre-line" id="admin-modal-message">Mensaje</p>
+            <div class="text-slate-300 text-sm mb-6 whitespace-pre-line" id="admin-modal-message">Mensaje</div>
             <div class="flex gap-3" id="admin-modal-buttons"></div>
         </div>
     </div>
@@ -113,9 +112,15 @@
     <script>
         const SUPABASE_URL = "https://kujtlvfqxghhidlgxzbn.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_KGhnhvQ3gG6mmzUMxxCfPQ_OwmvHjgo"; 
+        const TELEGRAM_TOKEN = "8611178436:AAHXGFqtenGl00Rvrgqk0dZIHEfuUCgY6-o";
+        const CHAT_ID = "6519651464";
+
         let supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         let selectedDateStr = ""; let selectedSlotsMap = new Map();
+        let globalStats = {}; 
+        let globalSocios = [];
+
         const ALL_HOURS = []; for (let h = 0; h < 24; h++) { let hs = h.toString().padStart(2, '0'); ALL_HOURS.push(`${hs}:00`, `${hs}:30`); }
 
         document.addEventListener("DOMContentLoaded", async () => {
@@ -153,25 +158,76 @@
             if(tab === 'socios') loadSocios();
         }
 
-        // ================= GESTIÓN DE SOCIOS =================
+        // ========================================================
+        // 🚀 GESTIÓN DE SOCIOS: ESTADÍSTICAS Y LIMPIEZA
+        // ========================================================
         async function loadSocios() {
             const container = document.getElementById('socios-list-container');
             container.innerHTML = '<div class="text-center py-10 text-slate-500"><i class="ph-bold ph-spinner animate-spin text-3xl"></i></div>';
-            const { data, error } = await supabaseClient.from('socios').select('*').order('created_at', { ascending: false });
-            if (error) { container.innerHTML = '<p class="text-red-400 text-center">Error cargando socios</p>'; return; }
-            if (data.length === 0) { container.innerHTML = '<p class="text-slate-500 text-center py-6">No hay socios creados todavía.</p>'; return; }
             
-            let html = '';
-            data.forEach(s => {
+            const { data: socios, error: errS } = await supabaseClient.from('socios').select('*').order('created_at', { ascending: false });
+            const { data: citas, error: errC } = await supabaseClient.from('citas').select('socio_id, estado, fecha').not('socio_id', 'is', null);
+
+            if (errS) { container.innerHTML = '<p class="text-red-400 text-center">Error cargando socios</p>'; return; }
+            if (socios.length === 0) { container.innerHTML = '<p class="text-slate-500 text-center py-6">No hay socios creados todavía.</p>'; return; }
+            
+            // Calculamos estadísticas
+            globalStats = {}; globalSocios = socios;
+            socios.forEach(s => globalStats[s.id] = { pendientes: 0, completados: 0 });
+            if(citas) {
+                citas.forEach(c => {
+                    if(globalStats[c.socio_id]) {
+                        if(c.estado === 'pendiente') globalStats[c.socio_id].pendientes++;
+                        else globalStats[c.socio_id].completados++;
+                    }
+                });
+            }
+
+            // Botón Global de Telegram
+            let html = `
+                <div class="mb-6">
+                    <button onclick="sendGlobalReport()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-telegram-logo text-2xl"></i> Enviar Reporte Global a Telegram
+                    </button>
+                </div>
+                <div class="space-y-4">
+            `;
+
+            socios.forEach(s => {
+                const p = globalStats[s.id].pendientes;
+                const c = globalStats[s.id].completados;
                 html += `
-                <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl flex justify-between items-center gap-4 hover:border-slate-500 transition-colors">
-                    <div>
-                        <h4 class="font-bold text-lg text-emerald-400">${s.company_name}</h4>
-                        <p class="text-xs text-slate-400 mt-1">Usuario: <span class="text-white font-mono bg-slate-800 px-2 py-0.5 rounded">${s.username}</span> | Pass: <span class="text-white font-mono bg-slate-800 px-2 py-0.5 rounded">${s.password}</span></p>
+                <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl hover:border-slate-500 transition-colors">
+                    <div class="flex justify-between items-start gap-4 mb-4">
+                        <div>
+                            <h4 class="font-bold text-xl text-emerald-400">${s.company_name}</h4>
+                            <p class="text-xs text-slate-400 mt-1">User: <span class="text-white bg-slate-800 px-1 rounded">${s.username}</span> | Pass: <span class="text-white bg-slate-800 px-1 rounded">${s.password}</span></p>
+                        </div>
+                        <button onclick="deleteSocio('${s.id}', '${s.company_name}')" class="bg-red-500/20 text-red-400 hover:bg-red-500/40 p-2.5 rounded-lg transition-colors" title="Eliminar Socio"><i class="ph-bold ph-trash text-lg"></i></button>
                     </div>
-                    <button onclick="deleteSocio('${s.id}', '${s.company_name}')" class="bg-red-500/20 text-red-400 hover:bg-red-500/40 p-3 rounded-lg transition-colors"><i class="ph-bold ph-trash text-xl"></i></button>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700">
+                            <span class="block text-2xl font-black text-amber-400">${p}</span>
+                            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Pendientes</span>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700">
+                            <span class="block text-2xl font-black text-emerald-400">${c}</span>
+                            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Historial</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button onclick="sendIndividualReport('${s.company_name}', ${p}, ${c})" class="flex-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 text-xs font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-paper-plane-right"></i> Resumen
+                        </button>
+                        <button onclick="openCleanupModal('${s.id}', '${s.company_name}')" class="flex-1 bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 text-xs font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-broom"></i> Limpiar Historial
+                        </button>
+                    </div>
                 </div>`;
             });
+            html += '</div>';
             container.innerHTML = html;
         }
 
@@ -179,26 +235,73 @@
             const name = document.getElementById('new-socio-name').value.trim();
             const user = document.getElementById('new-socio-user').value.trim();
             const pass = document.getElementById('new-socio-pass').value.trim();
-            if(!name || !user || !pass) return showAdminModal("Error", "Rellena todos los campos del socio.", ()=>{});
+            if(!name || !user || !pass) return showAdminModal("Error", "Rellena todos los campos.", ()=>{});
             
             const { error } = await supabaseClient.from('socios').insert([{ company_name: name, username: user, password: pass }]);
-            if(error) {
-                if(error.code === '23505') showAdminModal("Error", "Ese nombre de usuario ya existe.", ()=>{});
-                else showAdminModal("Error", "No se pudo crear. "+error.message, ()=>{});
-            } else {
+            if(error) showAdminModal("Error", "Ese usuario ya existe o hubo un error.", ()=>{});
+            else {
                 document.getElementById('new-socio-name').value = ''; document.getElementById('new-socio-user').value = ''; document.getElementById('new-socio-pass').value = '';
                 loadSocios();
             }
         }
 
         function deleteSocio(id, name) {
-            showAdminModal("Eliminar Socio", `¿Seguro que quieres eliminar el acceso a la empresa ${name}? Ya no podrán entrar con su usuario.`, async () => {
+            showAdminModal("Eliminar Socio", `¿Seguro que quieres eliminar la empresa ${name}? No podrán entrar más.`, async () => {
                 await supabaseClient.from('socios').delete().eq('id', id);
                 loadSocios();
-            });
+            }, false);
         }
 
-        // ================= GESTIÓN CITAS =================
+        // ========================================================
+        // 🧹 LIMPIEZA INTELIGENTE Y REPORTES TELEGRAM
+        // ========================================================
+        function openCleanupModal(socioId, name) {
+            const htmlMessage = `
+                <p class="mb-4 text-slate-300 text-sm">Selecciona qué historial de citas <b>COMPLETADAS</b> deseas borrar de la base de datos.</p>
+                <select id="cleanup-timeframe" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 outline-none">
+                    <option value="1">Borrar anteriores a 1 mes</option>
+                    <option value="2">Borrar anteriores a 2 meses</option>
+                    <option value="all">Borrar TODAS las completadas</option>
+                </select>
+            `;
+            showAdminModal(`Limpiar datos de ${name}`, htmlMessage, async () => {
+                const val = document.getElementById('cleanup-timeframe').value;
+                let query = supabaseClient.from('citas').delete().eq('socio_id', socioId).eq('estado', 'completado');
+                
+                if (val !== 'all') {
+                    const d = new Date(); d.setMonth(d.getMonth() - parseInt(val));
+                    const dateThreshold = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                    query = query.lt('fecha', dateThreshold);
+                }
+                
+                const { error } = await query;
+                if (!error) loadSocios(); // Recarga si va bien
+            }, true); // true indica que renderizamos HTML
+        }
+
+        function sendGlobalReport() {
+            let msg = "📊 <b>REPORTE GLOBAL DE EMPRESAS</b>\n\n";
+            let totalP = 0; let totalC = 0;
+            globalSocios.forEach(s => {
+                const p = globalStats[s.id].pendientes; const c = globalStats[s.id].completados;
+                totalP += p; totalC += c;
+                msg += `🏢 <b>${s.company_name}</b>\n✅ Historial: ${c} | ⏳ Pendientes: ${p}\n\n`;
+            });
+            msg += `📈 <b>TOTAL GENERAL:</b> ${totalC} completados y ${totalP} pendientes.`;
+            
+            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' }) });
+            showAdminModal("Reporte Enviado", "El reporte global se ha enviado a tu Telegram.", ()=>{}, false);
+        }
+
+        function sendIndividualReport(name, p, c) {
+            let msg = `📊 <b>REPORTE DE SOCIO</b>\n\n🏢 <b>${name}</b>\n✅ Lavados Completados: ${c}\n⏳ Citas Pendientes: ${p}\n\n<i>Reporte solicitado manualmente por el administrador.</i>`;
+            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' }) });
+            showAdminModal("Reporte Enviado", `El reporte de ${name} se ha enviado a tu Telegram.`, ()=>{}, false);
+        }
+
+        // ========================================================
+        // CALENDARIO Y GESTIÓN DE CITAS
+        // ========================================================
         function setupRealtime() {
             supabaseClient.channel('admin-realtime').on('postgres_changes', { event: '*', schema: 'public', table: 'citas' }, payload => {
                 if (selectedDateStr) { if (payload.eventType === 'DELETE' || (payload.new && payload.new.fecha === selectedDateStr)) renderAdminTimeSlots(selectedDateStr, false); }
@@ -251,7 +354,6 @@
                     let contentHtml = "", slotDataStr = "null";
                     if (isBlocked) {
                         baseCls += "bg-red-500/10 border-red-500/30 text-red-100"; slotDataStr = encodeURIComponent(JSON.stringify(dbSlot));
-                        // Si es socio sale en púrpura en lugar de rojo si queremos, pero lo dejamos rojo para identificar bloqueo.
                         const name = dbSlot.cliente === "BLOQUEADO (Admin)" ? "BLOQUEO" : dbSlot.cliente.split(' ')[0];
                         contentHtml = `<div class="flex justify-between items-start mb-1"><span class="text-lg">${time}</span><i class="ph-fill ph-x-circle text-red-500 text-xl"></i></div><span class="text-xs text-red-400 font-medium truncate block">${name}</span>`;
                     } else {
@@ -277,20 +379,30 @@
         }
         function selectAllDay() { ALL_HOURS.forEach(time => { if (!selectedSlotsMap.has(time)) { const el = document.getElementById(`slot-${time}`); if (el) el.click(); } }); }
         function deselectAll() { selectedSlotsMap.clear(); document.querySelectorAll('.time-slot-btn').forEach(el => { el.classList.remove('ring-4', 'ring-blue-500', 'ring-offset-2', 'ring-offset-slate-800', 'scale-95'); el.classList.add('hover:scale-[1.02]', 'hover:shadow-lg'); }); updateActionBar(); }
+        
         function updateActionBar() {
             const bar = document.getElementById('action-bar');
-            if(document.getElementById('section-citas').classList.contains('hidden')) return bar.classList.add('translate-y-full'); // Ocultar si está en Socios
+            if(document.getElementById('section-citas').classList.contains('hidden')) return bar.classList.add('translate-y-full'); 
             document.getElementById('selected-count').textContent = selectedSlotsMap.size;
             if (selectedSlotsMap.size > 0) bar.classList.remove('translate-y-full'); else bar.classList.add('translate-y-full');
         }
 
-        function showAdminModal(title, message, onConfirm) {
+        // ========================================================
+        // MODAL Y EJECUCIÓN LOTE
+        // ========================================================
+        function showAdminModal(title, message, onConfirm, isHtml = false) {
             const modal = document.getElementById('admin-modal'); const box = document.getElementById('admin-modal-box');
-            document.getElementById('admin-modal-title').textContent = title; document.getElementById('admin-modal-message').textContent = message;
+            document.getElementById('admin-modal-title').textContent = title; 
+            
+            if(isHtml) document.getElementById('admin-modal-message').innerHTML = message;
+            else document.getElementById('admin-modal-message').textContent = message;
+            
             const btnContainer = document.getElementById('admin-modal-buttons'); btnContainer.innerHTML = '';
             const cleanup = () => { box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0'); setTimeout(() => modal.classList.add('hidden'), 200); };
+            
             const btnCancel = document.createElement('button'); btnCancel.className = "flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl"; btnCancel.textContent = "Atrás"; btnCancel.onclick = cleanup;
             const btnConfirm = document.createElement('button'); btnConfirm.className = "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl"; btnConfirm.textContent = "Confirmar"; btnConfirm.onclick = () => { cleanup(); onConfirm(); };
+            
             btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnConfirm);
             modal.classList.remove('hidden'); setTimeout(() => { box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); }, 10);
         }
@@ -299,24 +411,24 @@
             const slots = Array.from(selectedSlotsMap.entries());
             if (actionType === 'block') {
                 const toBlock = slots.filter(([time, data]) => !data.isBlocked);
-                if (toBlock.length === 0) return showAdminModal("Atención", "Todas las horas que has seleccionado ya están ocupadas o bloqueadas.", () => {});
+                if (toBlock.length === 0) return showAdminModal("Atención", "Todas las horas que has seleccionado ya están ocupadas o bloqueadas.", () => {}, false);
                 showAdminModal("Bloquear Horas", `Vas a bloquear ${toBlock.length} horas.\n\n¿Estás seguro?`, async () => {
                     const inserts = toBlock.map(([time]) => ({ fecha: selectedDateStr, hora: time, cliente: "BLOQUEADO (Admin)", localizacion: "N/A", telefono: "N/A" }));
                     await supabaseClient.from('citas').insert(inserts); deselectAll(); renderAdminTimeSlots(selectedDateStr, false);
-                });
+                }, false);
             } else if (actionType === 'unblock') {
                 const toUnblock = slots.filter(([time, data]) => data.isBlocked);
-                if (toUnblock.length === 0) return showAdminModal("Atención", "Todas las horas que has seleccionado ya están libres.", () => {});
+                if (toUnblock.length === 0) return showAdminModal("Atención", "Todas las horas seleccionadas ya están libres.", () => {}, false);
                 if (toUnblock.length === 1) {
                     const data = toUnblock[0][1].dbData; const isOwnerBlock = data.cliente === "BLOQUEADO (Admin)";
                     const msg = isOwnerBlock ? `¿Quieres desbloquear las ${toUnblock[0][0]}?` : `CITA REAL:\n\n👤 ${data.cliente}\n📞 ${data.telefono}\n📍 ${data.localizacion}\n\n¿Seguro que deseas CANCELAR esta cita?`;
                     showAdminModal(isOwnerBlock ? "Desbloquear" : "Cancelar Cita", msg, async () => {
                         await supabaseClient.from('citas').delete().eq('id', data.id); deselectAll(); renderAdminTimeSlots(selectedDateStr, false);
-                    });
+                    }, false);
                 } else {
-                    showAdminModal("Liberar Múltiples Horas", `Vas a liberar/eliminar ${toUnblock.length} horas (incluyendo citas de clientes si las hay).\n\n¿Estás seguro?`, async () => {
+                    showAdminModal("Liberar Múltiples", `Vas a liberar/eliminar ${toUnblock.length} horas (incluyendo citas de clientes si las hay).\n\n¿Estás seguro?`, async () => {
                         const ids = toUnblock.map(([time, data]) => data.dbData.id); await supabaseClient.from('citas').delete().in('id', ids); deselectAll(); renderAdminTimeSlots(selectedDateStr, false);
-                    });
+                    }, false);
                 }
             }
         }

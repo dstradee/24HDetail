@@ -97,15 +97,26 @@
                         <button onclick="logoutSocio()" class="text-indigo-300 hover:text-white font-bold text-sm"><i class="ph-bold ph-sign-out"></i> Salir</button>
                     </div>
                     <div class="flex-1 overflow-y-auto p-5 pb-12">
+                        
                         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-center mb-6">
-                            <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3"><i class="ph-bold ph-buildings text-3xl"></i></div>
                             <h2 class="text-2xl font-black text-slate-800">¡Hola, <span id="socio-name-display" class="text-indigo-600">Empresa</span>!</h2>
-                            <p class="text-slate-500 text-sm mt-2">Bienvenido a tu portal de reservas prioritarias de 24H Detailing.</p>
+                            <p class="text-slate-500 text-sm mt-2 mb-4">Bienvenido a tu portal de reservas.</p>
+                            <button onclick="openBooking('socio')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-transform flex items-center justify-center gap-2">
+                                <i class="ph-bold ph-calendar-plus text-2xl"></i> Nueva Reserva
+                            </button>
                         </div>
-                        <button onclick="openBooking('socio')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-5 rounded-2xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-transform flex items-center justify-center gap-3">
-                            <i class="ph-bold ph-calendar-plus text-2xl"></i> Agendar Vehículo
-                        </button>
-                        <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="mt-4 w-full bg-white border border-slate-200 text-slate-700 font-bold py-4 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2">
+
+                        <h3 class="font-bold text-lg text-slate-800 mb-3 flex items-center gap-2"><i class="ph-fill ph-clock text-indigo-500"></i> Próximas Citas</h3>
+                        <div id="socio-upcoming-list" class="space-y-3 mb-8">
+                            <!-- JS Inject -->
+                        </div>
+
+                        <h3 class="font-bold text-lg text-slate-800 mb-3 flex items-center gap-2"><i class="ph-fill ph-check-circle text-emerald-500"></i> Historial</h3>
+                        <div id="socio-history-list" class="space-y-3 mb-6">
+                            <!-- JS Inject -->
+                        </div>
+
+                        <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="mt-4 w-full bg-white border border-slate-200 text-slate-700 font-bold py-4 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
                             <i class="ph-bold ph-whatsapp text-xl text-emerald-500"></i> Contacto Soporte
                         </button>
                     </div>
@@ -167,16 +178,13 @@
 
                             <div id="client-info-section" class="hidden mt-4 space-y-4 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
                                 
-                                <!-- CAMPOS CLIENTE NORMAL -->
                                 <div id="fields-normal">
                                     <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Nombre y Apellidos</label><input type="text" id="client-name" placeholder="Ej: Pablo García Pérez" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
                                     <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Teléfono Móvil</label><input type="tel" id="client-phone" placeholder="Ej: 600123456" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
                                 </div>
                                 
-                                <!-- CAMPO DIRECCIÓN (Obligatorio) -->
                                 <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Dirección del Vehículo</label><input type="text" id="client-location" placeholder="Ej: Calle Mayor, 12 o Parking X" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
 
-                                <!-- CAMPOS SOCIOS (Opcional y Select) -->
                                 <div id="fields-socio" class="hidden">
                                     <div class="mb-4">
                                         <label class="block text-sm font-bold text-slate-700 mb-1">Vehículo / Matrícula <span class="text-slate-400 font-normal">(Opcional)</span></label>
@@ -221,6 +229,7 @@
         const ALL_HOURS = [];
         for (let h = 0; h < 24; h++) { let hs = h.toString().padStart(2, '0'); ALL_HOURS.push(`${hs}:00`, `${hs}:30`); }
 
+        // TIEMPO REAL
         if (supabaseClient) {
             supabaseClient.channel('realtime-citas').on('postgres_changes', { event: '*', schema: 'public', table: 'citas' }, payload => {
                 if (selectedDateStr) {
@@ -241,28 +250,50 @@
             document.getElementById('modal-title').textContent = title; document.getElementById('modal-message').textContent = message; btnContainer.innerHTML = ''; 
             const cleanup = () => { box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0'); setTimeout(() => modal.classList.add('hidden'), 200); };
 
-            const btnOk = document.createElement('button'); btnOk.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors active:scale-95"; btnOk.textContent = "Entendido"; btnOk.onclick = cleanup;
-            btnContainer.appendChild(btnOk);
+            if (type === 'confirm') {
+                const btnNo = document.createElement('button'); btnNo.className = "flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors active:scale-95"; btnNo.textContent = "Cancelar"; btnNo.onclick = cleanup;
+                const btnYes = document.createElement('button'); btnYes.className = "flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors active:scale-95"; btnYes.textContent = "Sí, eliminar"; btnYes.onclick = () => { cleanup(); if(onConfirm) onConfirm(); };
+                btnContainer.appendChild(btnNo); btnContainer.appendChild(btnYes);
+            } else {
+                const btnOk = document.createElement('button'); btnOk.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors active:scale-95"; btnOk.textContent = "Entendido"; btnOk.onclick = cleanup;
+                btnContainer.appendChild(btnOk);
+            }
+
             modal.classList.remove('hidden'); setTimeout(() => { box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); }, 10);
         }
 
+        // LIMPIEZA Y ESTADOS DE CITAS (HISTORIAL)
+        async function cleanOldAppointments() {
+            if (!supabaseClient) return;
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            try { 
+                // Borramos las pasadas públicas (que no son de socio)
+                await supabaseClient.from('citas').delete().lt('fecha', todayStr).is('socio_id', null);
+                // Marcamos las pasadas de socios como "completado"
+                await supabaseClient.from('citas').update({ estado: 'completado' }).lt('fecha', todayStr).not('socio_id', 'is', null).eq('estado', 'pendiente');
+            } catch(e) {}
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
+            cleanOldAppointments();
             const f = new Date(2006, 0, 1); const hoy = new Date(); let edad = hoy.getFullYear() - f.getFullYear();
             if (hoy.getMonth() - f.getMonth() < 0 || (hoy.getMonth() - f.getMonth() === 0 && hoy.getDate() < f.getDate())) edad--;
             const ageEl = document.getElementById('dynamic-age'); if(ageEl) ageEl.textContent = edad;
             calculateProPrice();
             
             const savedSocio = localStorage.getItem('24h_socio');
-            if (savedSocio) currentSocio = JSON.parse(savedSocio);
+            if (savedSocio) { currentSocio = JSON.parse(savedSocio); checkSocioLogin(); }
         });
 
         // =====================================
-        // LÓGICA DE SOCIOS
+        // LÓGICA DE SOCIOS Y DASHBOARD
         // =====================================
         function checkSocioLogin() {
             if (currentSocio) {
                 document.getElementById('socio-name-display').textContent = currentSocio.company_name;
                 openPage('socios-dashboard-view');
+                loadSocioDashboard(); // Cargar sus citas
             } else {
                 openPage('socios-login-view');
             }
@@ -278,7 +309,7 @@
             btn.innerHTML = "Comprobando..."; btn.disabled = true; errorDiv.classList.add('hidden');
 
             if (supabaseClient) {
-                // ILIKE ignora si escriben en mayúsculas o minúsculas
+                // ILIKE ignora mayúsculas/minúsculas
                 const { data, error } = await supabaseClient.from('socios').select('*').ilike('username', user).eq('password', pass);
                 if (data && data.length > 0) {
                     currentSocio = data[0];
@@ -287,6 +318,7 @@
                     closePage('socios-login-view');
                     document.getElementById('socio-name-display').textContent = currentSocio.company_name;
                     openPage('socios-dashboard-view');
+                    loadSocioDashboard();
                 } else {
                     errorDiv.textContent = "Datos incorrectos. Intenta de nuevo."; errorDiv.classList.remove('hidden');
                 }
@@ -298,6 +330,68 @@
             currentSocio = null;
             localStorage.removeItem('24h_socio');
             closePage('socios-dashboard-view');
+        }
+
+        async function loadSocioDashboard() {
+            const upcomingContainer = document.getElementById('socio-upcoming-list');
+            const historyContainer = document.getElementById('socio-history-list');
+            upcomingContainer.innerHTML = '<div class="text-center py-4"><i class="ph-bold ph-spinner animate-spin text-2xl text-indigo-500"></i></div>';
+            historyContainer.innerHTML = '<div class="text-center py-4"><i class="ph-bold ph-spinner animate-spin text-2xl text-indigo-500"></i></div>';
+
+            const { data, error } = await supabaseClient.from('citas').select('*').eq('socio_id', currentSocio.id).order('fecha', { ascending: false });
+            if(error || !data) return;
+
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+            let upcomingHtml = ''; let historyHtml = '';
+
+            data.forEach(cita => {
+                const isPast = cita.fecha < todayStr || cita.estado === 'completado';
+                
+                // Extraemos el vehículo y el servicio del string que guardamos en BD: "[SOCIO] Empresa - Vehículo (Servicio)"
+                const match = cita.cliente.match(/-\s*(.*?)\s*\((.*)\)/);
+                const vehicle = match ? match[1] : "No especificado";
+                const service = match ? match[2] : "No especificado";
+
+                if (isPast) {
+                    historyHtml += `
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm opacity-70">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="font-bold text-slate-800">${cita.fecha.split('-').reverse().join('/')} a las ${cita.hora}</span>
+                                <span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Completado</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-1"><i class="ph-fill ph-car mr-1"></i> ${vehicle}</p>
+                            <p class="text-xs text-slate-500"><i class="ph-fill ph-sparkle mr-1"></i> ${service}</p>
+                        </div>`;
+                } else {
+                    upcomingHtml += `
+                        <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm ring-1 ring-indigo-50 mb-3">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="font-bold text-indigo-900">${cita.fecha.split('-').reverse().join('/')} a las ${cita.hora}</span>
+                                <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Pendiente</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-1"><i class="ph-fill ph-car mr-1"></i> ${vehicle}</p>
+                            <p class="text-xs text-slate-600 mb-4"><i class="ph-fill ph-sparkle mr-1"></i> ${service}</p>
+                            <button onclick="cancelSocioAppointment('${cita.id}')" class="w-full bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold py-2.5 rounded-xl transition-colors">Cancelar Cita</button>
+                        </div>`;
+                }
+            });
+
+            upcomingContainer.innerHTML = upcomingHtml || '<p class="text-xs text-slate-400">No tienes citas pendientes.</p>';
+            historyContainer.innerHTML = historyHtml || '<p class="text-xs text-slate-400">No hay historial de citas.</p>';
+        }
+
+        function cancelSocioAppointment(id) {
+            showModal({
+                title: "Cancelar Cita",
+                message: "¿Estás seguro de que deseas cancelar esta reserva? La hora volverá a quedar libre para otros clientes.",
+                type: "confirm",
+                onConfirm: async () => {
+                    await supabaseClient.from('citas').delete().eq('id', id);
+                    loadSocioDashboard();
+                }
+            });
         }
 
         function openBooking(mode) {
@@ -437,13 +531,19 @@
                         document.getElementById('client-info-section').classList.add('hidden');
                         return renderTimeSlots(selectedDateStr);
                     }
-                    await supabaseClient.from('citas').insert([{ fecha: selectedDateStr, hora: selectedTimeStr, cliente: finalName, localizacion: finalLocation, telefono: finalPhone }]);
+                    
+                    // Si es socio guardamos el socio_id
+                    const insertData = { fecha: selectedDateStr, hora: selectedTimeStr, cliente: finalName, localizacion: finalLocation, telefono: finalPhone };
+                    if (isSocioRes) {
+                        insertData.socio_id = currentSocio.id;
+                        insertData.estado = 'pendiente';
+                    }
+                    
+                    await supabaseClient.from('citas').insert([insertData]);
                 } catch (e) {}
             }
 
-            let telegramMsg = "";
-            let waMsg = "";
-
+            let telegramMsg = ""; let waMsg = "";
             if (isSocioRes) {
                 telegramMsg = `🏢 <b>RESERVA DE SOCIO</b>\n\n👤 <b>Empresa:</b> ${currentSocio.company_name}\n🧼 <b>Servicio:</b> ${serviceType}\n🚗 <b>Vehículo:</b> ${document.getElementById('socio-car').value || 'No espec.'}\n📍 <b>Dirección:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
                 waMsg = `¡Hola Pablo! 👋 Acabamos de reservar desde el portal de ${currentSocio.company_name}.\n\n🧼 *Servicio:* ${serviceType}\n🚗 *Vehículo:* ${document.getElementById('socio-car').value || 'No especificado'}\n📍 *Dirección:* ${finalLocation}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}`;
@@ -461,6 +561,8 @@
             if(document.getElementById('socio-service')) document.getElementById('socio-service').value = '';
             document.getElementById('time-selection').classList.add('hidden');
             btn.innerHTML = `<i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva`; btn.disabled = false;
+            
+            if(isSocioRes) loadSocioDashboard(); // Refrescamos sus próximas citas
         }
     </script>
 </body>

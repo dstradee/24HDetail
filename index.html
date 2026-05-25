@@ -4,41 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>24H Detailing</title>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <style>
         body { background-color: #0f172a; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 0px; background: transparent; }
-        
-        .page-slide { 
-            position: absolute; inset: 0; z-index: 50;
-            transform: translateX(100%); 
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s;
-            visibility: hidden;
-        }
-        .page-slide.open { 
-            transform: translateX(0); 
-            visibility: visible;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%;
-            background: #2563eb; cursor: pointer; margin-top: -8px; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
-        }
+        .page-slide { position: absolute; inset: 0; z-index: 50; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s; visibility: hidden; }
+        .page-slide.open { transform: translateX(0); visibility: visible; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: #2563eb; cursor: pointer; margin-top: -8px; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: #e2e8f0; border-radius: 4px; }
     </style>
 </head>
 <body class="text-slate-800 antialiased font-sans">
 
-    <!-- WRAPPER PARA ESCRITORIO -->
     <div class="min-h-screen w-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-slate-800 to-blue-950 flex justify-center items-center lg:p-12">
         <div class="max-w-6xl w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12">
             
-            <!-- LADO IZQUIERDO PC -->
             <div class="hidden lg:flex flex-col text-white max-w-lg z-10">
                 <div class="inline-block bg-blue-500/20 text-blue-300 font-semibold px-4 py-1.5 rounded-full mb-6 border border-blue-400/30 w-fit text-sm tracking-wide uppercase">Servicio Premium de Detallado</div>
                 <h1 class="text-6xl font-black mb-6 leading-tight">Dejamos tu coche <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">como nuevo</span></h1>
@@ -51,11 +33,9 @@
                 </div>
             </div>
 
-            <!-- LA APLICACIÓN -->
             <div id="app-container" class="relative w-full h-[100dvh] lg:h-[800px] lg:w-[390px] bg-slate-50 lg:rounded-[3rem] lg:shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden lg:border-[12px] border-slate-950 shrink-0 z-20">
                 <div class="hidden lg:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-slate-950 rounded-b-3xl z-50"></div>
 
-                <!-- MODAL DE AVISOS -->
                 <div id="custom-modal" class="hidden absolute inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-5">
                     <div class="bg-white p-6 rounded-3xl shadow-2xl w-full transform transition-all scale-95 opacity-0" id="custom-modal-box">
                         <h3 class="text-xl font-bold text-slate-800 mb-2" id="modal-title">Título</h3>
@@ -64,63 +44,77 @@
                     </div>
                 </div>
 
-                <!-- PÁGINA PRINCIPAL -->
                 <main id="main-view" class="h-full flex flex-col w-full relative z-10 overflow-y-auto pb-6">
                     <header class="bg-slate-900 text-white rounded-b-3xl pt-14 pb-8 px-6 shadow-lg relative overflow-hidden shrink-0">
                         <div class="absolute -top-16 -right-16 w-48 h-48 bg-blue-500 rounded-full opacity-20 blur-2xl"></div>
                         <div class="relative z-10">
                             <div class="flex justify-between items-center mb-6">
-                                <div>
-                                    <p class="text-blue-400 text-sm font-semibold uppercase tracking-wider mb-1">24H Detailing</p>
-                                    <h1 class="text-2xl font-bold leading-tight">Reserva tu <br>lavado hoy</h1>
-                                </div>
+                                <div><p class="text-blue-400 text-sm font-semibold uppercase tracking-wider mb-1">24H Detailing</p><h1 class="text-2xl font-bold leading-tight">Reserva tu <br>lavado hoy</h1></div>
                                 <i class="ph-fill ph-car-profile text-5xl text-blue-400 opacity-80"></i>
                             </div>
                         </div>
                     </header>
 
                     <div class="flex-1 px-5 py-6 flex flex-col gap-4 relative z-20">
-                        <button onclick="openPage('booking-view'); renderCalendar();" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-5 rounded-2xl shadow-xl shadow-blue-600/20 flex items-center justify-between transition-transform active:scale-95">
-                            <div class="flex items-center gap-4">
-                                <div class="bg-white/20 p-3 rounded-xl"><i class="ph ph-calendar-plus text-2xl"></i></div>
-                                <div class="text-left"><h2 class="text-lg font-bold">Agendar una cita</h2><p class="text-blue-100 text-xs">Reserva tu hueco ahora</p></div>
-                            </div>
-                            <i class="ph-bold ph-caret-right text-xl opacity-70"></i>
+                        <button onclick="openBooking('client');" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-5 rounded-2xl shadow-xl shadow-blue-600/20 flex items-center justify-between transition-transform active:scale-95">
+                            <div class="flex items-center gap-4"><div class="bg-white/20 p-3 rounded-xl"><i class="ph ph-calendar-plus text-2xl"></i></div><div class="text-left"><h2 class="text-lg font-bold">Agendar una cita</h2><p class="text-blue-100 text-xs">Reserva tu hueco ahora</p></div></div><i class="ph-bold ph-caret-right text-xl opacity-70"></i>
                         </button>
 
                         <div class="grid grid-cols-2 gap-4 mt-2">
-                            <button onclick="openPage('about-view')" class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors">
-                                <i class="ph-fill ph-user text-3xl text-slate-700"></i><span class="text-sm font-semibold text-slate-700">Sobre mí</span>
-                            </button>
-                            <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors">
-                                <i class="ph-fill ph-whatsapp-logo text-3xl text-emerald-500"></i><span class="text-sm font-semibold text-slate-700 text-center leading-tight">Contacto</span>
-                            </button>
+                            <button onclick="openPage('about-view')" class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors"><i class="ph-fill ph-user text-3xl text-slate-700"></i><span class="text-sm font-semibold text-slate-700">Sobre mí</span></button>
+                            <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors"><i class="ph-fill ph-whatsapp-logo text-3xl text-emerald-500"></i><span class="text-sm font-semibold text-slate-700 text-center leading-tight">Contacto</span></button>
                         </div>
 
+                        <!-- BOTÓN ACCESO SOCIOS (NUEVO) -->
+                        <button onclick="checkSocioLogin()" class="mt-2 w-full bg-indigo-600 text-white p-4 rounded-2xl shadow-md shadow-indigo-600/20 flex items-center justify-between active:scale-95 transition-transform">
+                            <div class="flex items-center gap-3"><i class="ph-fill ph-buildings text-2xl text-indigo-300"></i><div class="text-left"><span class="font-semibold text-sm block">Acceso Socios / Empresas</span><span class="text-xs text-indigo-200">Rent a Car & Flotas</span></div></div><i class="ph-bold ph-caret-right text-lg opacity-50"></i>
+                        </button>
+
                         <button onclick="openPage('pro-view')" class="mt-2 w-full bg-slate-800 text-white p-4 rounded-2xl shadow-md flex items-center justify-between active:scale-95 transition-transform">
-                            <div class="flex items-center gap-3">
-                                <i class="ph-fill ph-handshake text-2xl text-emerald-400"></i>
-                                <div class="text-left"><span class="font-semibold text-sm block">Soy Compraventas</span><span class="text-xs text-slate-400">Tarifas especiales</span></div>
-                            </div>
-                            <i class="ph-bold ph-caret-right text-lg opacity-50"></i>
+                            <div class="flex items-center gap-3"><i class="ph-fill ph-handshake text-2xl text-emerald-400"></i><div class="text-left"><span class="font-semibold text-sm block">Soy Compraventas</span><span class="text-xs text-slate-400">Calculadora de Tarifas</span></div></div><i class="ph-bold ph-caret-right text-lg opacity-50"></i>
                         </button>
                     </div>
-
-                    <!-- FOOTER CON EL CANDADO QUE LLEVA AL ADMIN.HTML -->
-                    <footer class="text-center py-4 text-slate-400 text-xs mt-auto flex justify-center items-center gap-2 relative z-30">
-                        &copy; 2026 24H Detailing 
-                        <button onclick="window.location.href='admin.html'" class="p-2 hover:bg-slate-200 rounded-full transition-colors active:scale-90 cursor-pointer pointer-events-auto text-slate-500">
-                            <i class="ph-fill ph-lock-key text-lg"></i>
-                        </button>
-                    </footer>
+                    <footer class="text-center py-4 text-slate-400 text-xs mt-auto relative z-30">&copy; 2026 24H Detailing <button onclick="window.location.href='admin.html'" class="p-2 hover:bg-slate-200 rounded-full transition-colors active:scale-90 cursor-pointer pointer-events-auto text-slate-500"><i class="ph-fill ph-lock-key text-lg"></i></button></footer>
                 </main>
 
-                <!-- PÁGINA: PROFESIONALES -->
-                <div id="pro-view" class="page-slide bg-slate-50 flex flex-col pt-4 lg:pt-8">
-                    <div class="bg-slate-900 px-4 py-4 flex items-center sticky top-0 z-10 text-white shadow-md">
-                        <button onclick="closePage('pro-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-800 active:bg-slate-700 transition-colors"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
-                        <h2 class="text-lg font-bold ml-2">Planes Compraventa</h2>
+                <!-- LOGIN SOCIOS -->
+                <div id="socios-login-view" class="page-slide bg-indigo-950 flex flex-col pt-4 lg:pt-8 text-white">
+                    <div class="px-4 py-4 flex items-center sticky top-0 z-10"><button onclick="closePage('socios-login-view')" class="p-2 -ml-2 rounded-full hover:bg-indigo-900 transition-colors"><i class="ph-bold ph-x text-2xl"></i></button></div>
+                    <div class="flex-1 px-6 flex flex-col justify-center pb-20">
+                        <div class="text-center mb-8"><div class="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/30"><i class="ph-bold ph-buildings text-3xl text-white"></i></div><h2 class="text-2xl font-bold">Portal de Socios</h2><p class="text-indigo-300 text-sm mt-2">Acceso exclusivo para empresas</p></div>
+                        <div class="space-y-4">
+                            <div><label class="block text-xs font-bold text-indigo-300 uppercase tracking-wider mb-2">Usuario</label><input type="text" id="socio-user" placeholder="tu_usuario" class="w-full bg-indigo-900 border border-indigo-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500"></div>
+                            <div><label class="block text-xs font-bold text-indigo-300 uppercase tracking-wider mb-2">Contraseña</label><input type="password" id="socio-pass" placeholder="••••••••" class="w-full bg-indigo-900 border border-indigo-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500"></div>
+                            <div id="socio-login-error" class="hidden text-red-400 text-sm text-center font-medium py-2"></div>
+                            <button onclick="loginSocio()" id="btn-login-socio" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg mt-4 active:scale-95 transition-transform">Entrar</button>
+                        </div>
                     </div>
+                </div>
+
+                <!-- DASHBOARD SOCIO -->
+                <div id="socios-dashboard-view" class="page-slide bg-slate-50 flex flex-col pt-4 lg:pt-8">
+                    <div class="bg-indigo-900 text-white px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow-md">
+                        <div class="flex items-center"><button onclick="closePage('socios-dashboard-view')" class="p-2 -ml-2 rounded-full hover:bg-indigo-800 transition-colors"><i class="ph-bold ph-arrow-left text-2xl"></i></button><h2 class="text-lg font-bold ml-2">Panel Socio</h2></div>
+                        <button onclick="logoutSocio()" class="text-indigo-300 hover:text-white font-bold text-sm"><i class="ph-bold ph-sign-out"></i> Salir</button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-5 pb-12">
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-center mb-6">
+                            <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3"><i class="ph-bold ph-buildings text-3xl"></i></div>
+                            <h2 class="text-2xl font-black text-slate-800">¡Hola, <span id="socio-name-display" class="text-indigo-600">Empresa</span>!</h2>
+                            <p class="text-slate-500 text-sm mt-2">Bienvenido a tu portal de reservas prioritarias de 24H Detailing.</p>
+                        </div>
+                        <button onclick="openBooking('socio')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-5 rounded-2xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-transform flex items-center justify-center gap-3">
+                            <i class="ph-bold ph-calendar-plus text-2xl"></i> Agendar Vehículo
+                        </button>
+                        <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="mt-4 w-full bg-white border border-slate-200 text-slate-700 font-bold py-4 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-whatsapp text-xl text-emerald-500"></i> Contacto Soporte
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PÁGINA: PROFESIONALES COMPRAVENTA (Igual que antes) -->
+                <div id="pro-view" class="page-slide bg-slate-50 flex flex-col pt-4 lg:pt-8">
+                    <div class="bg-slate-900 px-4 py-4 flex items-center sticky top-0 z-10 text-white shadow-md"><button onclick="closePage('pro-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-800 active:bg-slate-700 transition-colors"><i class="ph-bold ph-arrow-left text-2xl"></i></button><h2 class="text-lg font-bold ml-2">Planes Compraventa</h2></div>
                     <div class="flex-1 overflow-y-auto p-5 pb-10">
                         <div class="text-center mb-6 mt-2"><i class="ph-fill ph-handshake text-5xl text-emerald-500 mb-2"></i><h3 class="text-xl font-bold text-slate-800">Suscripción Mensual</h3><p class="text-xs text-slate-500 mt-2">¿Tienes volumen de stock? Ahorra dinero fijando tus lavados al mes. Tarifa pública normal: 11 €/coche.</p></div>
                         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
@@ -132,23 +126,15 @@
                                 <div class="flex justify-between items-center text-sm"><span class="text-slate-500">Total semanal:</span><span class="font-semibold text-slate-700" id="weekly-total">20.00 €</span></div>
                                 <div class="flex justify-between items-center pt-2 border-t border-slate-200"><span class="text-slate-800 font-bold text-sm">Tu Suscripción:</span><span class="font-black text-blue-600 text-xl" id="monthly-total">80.00 €</span></div>
                             </div>
-                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between">
-                                <div class="flex items-center gap-3"><div class="bg-emerald-500 text-white p-2 rounded-lg"><i class="ph-bold ph-trend-down text-lg"></i></div><div><p class="text-[11px] text-emerald-700 font-medium">Respecto a normal</p><p class="text-sm font-bold text-emerald-950">Te ahorras:</p></div></div>
-                                <div class="text-right"><span class="font-black text-emerald-600 text-xl block" id="savings-total">8.00 €</span><span class="text-[10px] uppercase text-emerald-700 font-bold tracking-wider">Al mes</span></div>
-                            </div>
-                            <button onclick="window.open('https://wa.me/34644909851?text=' + encodeURIComponent('Hola soy compraventas y me gustaría tener más información acerca de tus servicios'), '_blank')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mt-6">
-                                <i class="ph-bold ph-whatsapp text-2xl"></i> Contáctame
-                            </button>
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between"><div class="flex items-center gap-3"><div class="bg-emerald-500 text-white p-2 rounded-lg"><i class="ph-bold ph-trend-down text-lg"></i></div><div><p class="text-[11px] text-emerald-700 font-medium">Respecto a normal</p><p class="text-sm font-bold text-emerald-950">Te ahorras:</p></div></div><div class="text-right"><span class="font-black text-emerald-600 text-xl block" id="savings-total">8.00 €</span><span class="text-[10px] uppercase text-emerald-700 font-bold tracking-wider">Al mes</span></div></div>
+                            <button onclick="window.open('https://wa.me/34644909851?text=' + encodeURIComponent('Hola soy compraventas y me gustaría tener más información acerca de tus servicios'), '_blank')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mt-6"><i class="ph-bold ph-whatsapp text-2xl"></i> Contáctame</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- PÁGINA: SOBRE MÍ -->
                 <div id="about-view" class="page-slide bg-slate-50 flex flex-col pt-4 lg:pt-8">
-                    <div class="bg-white border-b border-slate-100 px-4 py-4 flex items-center sticky top-0 z-10 shadow-sm">
-                        <button onclick="closePage('about-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-600"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
-                        <h2 class="text-lg font-bold ml-2 text-slate-800">Sobre mí</h2>
-                    </div>
+                    <div class="bg-white border-b border-slate-100 px-4 py-4 flex items-center sticky top-0 z-10 shadow-sm"><button onclick="closePage('about-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-600"><i class="ph-bold ph-arrow-left text-2xl"></i></button><h2 class="text-lg font-bold ml-2 text-slate-800">Sobre mí</h2></div>
                     <div class="flex-1 overflow-y-auto p-6">
                         <div class="w-32 h-32 mx-auto rounded-full bg-slate-200 border-4 border-white shadow-lg overflow-hidden mb-6 flex items-center justify-center"><i class="ph-fill ph-user text-5xl text-slate-400"></i></div>
                         <h1 class="text-2xl font-bold text-center text-slate-900 mb-2">¡Hola! Soy Pablo 👋</h1>
@@ -160,7 +146,7 @@
                     </div>
                 </div>
 
-                <!-- PÁGINA: AGENDAR CITA -->
+                <!-- PÁGINA: AGENDAR CITA (COMPARTIDA CLIENTE NORMAL Y SOCIO) -->
                 <div id="booking-view" class="page-slide bg-slate-50 flex flex-col pt-4 lg:pt-8">
                     <div class="bg-white border-b border-slate-100 px-4 py-4 flex items-center sticky top-0 z-10 shadow-sm">
                         <button onclick="closePage('booking-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-600"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
@@ -176,16 +162,26 @@
 
                         <div id="time-selection" class="hidden pb-10">
                             <h3 class="font-bold text-xl mb-1 text-slate-800">Horarios para el <span id="selected-date-display" class="text-blue-600"></span></h3>
-                            <p class="text-xs text-slate-500 mb-6">* Las reservas de madrugada requieren 3h de antelación y las de día normal 30 min.</p>
+                            <p class="text-xs text-slate-500 mb-6">* Reservas de madrugada 3h antelación. Día normal 30 min.</p>
                             
-                            <!-- SELECTOR NATIVO DE HORA (TIPO RUEDECITA) -->
                             <div id="time-slots-container" class="mb-6"></div>
 
                             <div id="client-info-section" class="hidden mt-4 space-y-4 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
-                                <div><label class="block text-sm font-bold text-slate-700 mb-1">Nombre y Apellidos</label><input type="text" id="client-name" placeholder="Ej: Pablo García Pérez" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
-                                <div><label class="block text-sm font-bold text-slate-700 mb-1">Teléfono Móvil</label><input type="tel" id="client-phone" placeholder="Ej: 600123456" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
-                                <div><label class="block text-sm font-bold text-slate-700 mb-1">Dirección (Calle y Número)</label><input type="text" id="client-location" placeholder="Ej: Calle Mayor, 12" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
                                 
+                                <!-- CAMPOS PARA CLIENTE NORMAL -->
+                                <div id="fields-normal">
+                                    <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Nombre y Apellidos</label><input type="text" id="client-name" placeholder="Ej: Pablo García Pérez" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
+                                    <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Teléfono Móvil</label><input type="tel" id="client-phone" placeholder="Ej: 600123456" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
+                                </div>
+                                
+                                <!-- CAMPO DIRECCIÓN OBLIGATORIO PARA TODOS -->
+                                <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Dirección del Vehículo</label><input type="text" id="client-location" placeholder="Ej: Calle Mayor, 12 o Parking X" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
+
+                                <!-- CAMPOS EXCLUSIVOS SOCIO -->
+                                <div id="fields-socio" class="hidden">
+                                    <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Vehículo / Matrícula</label><input type="text" id="socio-car" placeholder="Ej: Ford Fiesta 1234ABC" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-500 transition-colors"></div>
+                                </div>
+
                                 <button onclick="confirmAppointment()" id="btn-confirmar" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mt-4">
                                     <i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva
                                 </button>
@@ -209,23 +205,20 @@
         try { if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e) {}
 
         let selectedDateStr = ""; let selectedTimeStr = "";
+        let currentSocio = null; // Si es distinto de null, está en modo "Socio de empresa"
         
         const ALL_HOURS = [];
-        for (let h = 0; h < 24; h++) {
-            let hourStr = h.toString().padStart(2, '0');
-            ALL_HOURS.push(`${hourStr}:00`, `${hourStr}:30`);
-        }
+        for (let h = 0; h < 24; h++) { let hs = h.toString().padStart(2, '0'); ALL_HOURS.push(`${hs}:00`, `${hs}:30`); }
 
         // TIEMPO REAL
         if (supabaseClient) {
             supabaseClient.channel('realtime-citas').on('postgres_changes', { event: '*', schema: 'public', table: 'citas' }, payload => {
                 if (selectedDateStr) {
-                    const changedRecord = payload.new || payload.old;
-                    if (changedRecord && changedRecord.fecha === selectedDateStr) {
-                        if (selectedTimeStr === changedRecord.hora && payload.eventType === 'INSERT') {
+                    const rec = payload.new || payload.old;
+                    if (rec && rec.fecha === selectedDateStr) {
+                        if (selectedTimeStr === rec.hora && payload.eventType === 'INSERT') {
                             showModal({ title: "Hora ocupada", message: "¡Lo sentimos! Esta hora acaba de ser reservada.", type: "alert" });
-                            document.getElementById('client-info-section').classList.add('hidden');
-                            selectedTimeStr = "";
+                            document.getElementById('client-info-section').classList.add('hidden'); selectedTimeStr = "";
                         }
                         renderTimeSlots(selectedDateStr);
                     }
@@ -233,53 +226,98 @@
             }).subscribe();
         }
 
-        // MODAL NATIVO
         function showModal({ title, message, type = 'alert', onConfirm }) {
-            const modal = document.getElementById('custom-modal');
-            const box = document.getElementById('custom-modal-box');
-            const btnContainer = document.getElementById('modal-buttons');
-            
-            document.getElementById('modal-title').textContent = title;
-            document.getElementById('modal-message').textContent = message;
-            btnContainer.innerHTML = ''; 
-            
-            const cleanup = () => {
-                box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => modal.classList.add('hidden'), 200);
-            };
+            const modal = document.getElementById('custom-modal'); const box = document.getElementById('custom-modal-box'); const btnContainer = document.getElementById('modal-buttons');
+            document.getElementById('modal-title').textContent = title; document.getElementById('modal-message').textContent = message; btnContainer.innerHTML = ''; 
+            const cleanup = () => { box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0'); setTimeout(() => modal.classList.add('hidden'), 200); };
 
-            const btnOk = document.createElement('button');
-            btnOk.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors active:scale-95";
-            btnOk.textContent = "Entendido";
-            btnOk.onclick = cleanup;
+            const btnOk = document.createElement('button'); btnOk.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors active:scale-95"; btnOk.textContent = "Entendido"; btnOk.onclick = cleanup;
             btnContainer.appendChild(btnOk);
-
-            modal.classList.remove('hidden');
-            setTimeout(() => { box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); }, 10);
+            modal.classList.remove('hidden'); setTimeout(() => { box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); }, 10);
         }
 
-        // INIT
         document.addEventListener("DOMContentLoaded", () => {
-            const f = new Date(2006, 0, 1); const hoy = new Date();
-            let edad = hoy.getFullYear() - f.getFullYear();
+            const f = new Date(2006, 0, 1); const hoy = new Date(); let edad = hoy.getFullYear() - f.getFullYear();
             if (hoy.getMonth() - f.getMonth() < 0 || (hoy.getMonth() - f.getMonth() === 0 && hoy.getDate() < f.getDate())) edad--;
             const ageEl = document.getElementById('dynamic-age'); if(ageEl) ageEl.textContent = edad;
             calculateProPrice();
+            
+            // Si el socio dejó la sesión abierta
+            const savedSocio = localStorage.getItem('24h_socio');
+            if (savedSocio) currentSocio = JSON.parse(savedSocio);
         });
+
+        // =====================================
+        // LÓGICA DE SOCIOS
+        // =====================================
+        function checkSocioLogin() {
+            if (currentSocio) {
+                document.getElementById('socio-name-display').textContent = currentSocio.company_name;
+                openPage('socios-dashboard-view');
+            } else {
+                openPage('socios-login-view');
+            }
+        }
+
+        async function loginSocio() {
+            const user = document.getElementById('socio-user').value.trim();
+            const pass = document.getElementById('socio-pass').value.trim();
+            const errorDiv = document.getElementById('socio-login-error');
+            const btn = document.getElementById('btn-login-socio');
+
+            if (!user || !pass) { errorDiv.textContent = "Introduce usuario y contraseña"; errorDiv.classList.remove('hidden'); return; }
+            btn.innerHTML = "Comprobando..."; btn.disabled = true; errorDiv.classList.add('hidden');
+
+            // Buscamos en la tabla de socios
+            if (supabaseClient) {
+                const { data, error } = await supabaseClient.from('socios').select('*').eq('username', user).eq('password', pass);
+                if (data && data.length > 0) {
+                    currentSocio = data[0];
+                    localStorage.setItem('24h_socio', JSON.stringify(currentSocio));
+                    document.getElementById('socio-user').value = ''; document.getElementById('socio-pass').value = '';
+                    closePage('socios-login-view');
+                    document.getElementById('socio-name-display').textContent = currentSocio.company_name;
+                    openPage('socios-dashboard-view');
+                } else {
+                    errorDiv.textContent = "Datos incorrectos. Intenta de nuevo."; errorDiv.classList.remove('hidden');
+                }
+            }
+            btn.innerHTML = "Entrar"; btn.disabled = false;
+        }
+
+        function logoutSocio() {
+            currentSocio = null;
+            localStorage.removeItem('24h_socio');
+            closePage('socios-dashboard-view');
+        }
+
+        function openBooking(mode) {
+            // mode = 'client' o 'socio'
+            if (currentSocio) {
+                document.getElementById('fields-normal').classList.add('hidden');
+                document.getElementById('fields-socio').classList.remove('hidden');
+            } else {
+                document.getElementById('fields-normal').classList.remove('hidden');
+                document.getElementById('fields-socio').classList.add('hidden');
+            }
+            openPage('booking-view');
+            renderCalendar();
+        }
 
         function calculateProPrice() {
             const slider = document.getElementById('cars-slider'); if(!slider) return;
             const cars = parseInt(slider.value); let price = Math.max(6.50, 10.00 - ((cars - 2) * 0.50));
-            const weekly = price * cars; const monthly = weekly * 4; const savings = (cars * 4 * 11.00) - monthly;
             document.getElementById('cars-count').textContent = cars; document.getElementById('price-per-car').textContent = price.toFixed(2) + ' €';
-            document.getElementById('weekly-total').textContent = weekly.toFixed(2) + ' €'; document.getElementById('monthly-total').textContent = monthly.toFixed(2) + ' €';
-            document.getElementById('savings-total').textContent = savings.toFixed(2) + ' €';
+            document.getElementById('weekly-total').textContent = (price * cars).toFixed(2) + ' €'; document.getElementById('monthly-total').textContent = (price * cars * 4).toFixed(2) + ' €';
+            document.getElementById('savings-total').textContent = ((cars * 4 * 11.00) - (price * cars * 4)).toFixed(2) + ' €';
         }
 
         function openPage(id) { document.getElementById(id).classList.add('open'); }
         function closePage(id) { document.getElementById(id).classList.remove('open'); }
 
-        // CALENDARIO
+        // =====================================
+        // CALENDARIO Y RESERVAS
+        // =====================================
         function renderCalendar() {
             const now = new Date(); const year = now.getFullYear(); const month = now.getMonth();
             const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -290,97 +328,62 @@
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
             for (let i = 0; i < emptySpaces; i++) daysContainer.innerHTML += `<div></div>`;
-
             for (let day = 1; day <= daysInMonth; day++) {
                 const isPast = day < now.getDate() && month === now.getMonth();
                 const isToday = day === now.getDate() && month === now.getMonth();
                 const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
                 
                 let cls = `py-2 rounded-lg font-medium transition-colors client-day-btn `;
-                if (isPast) {
-                    cls += "text-slate-300 cursor-not-allowed";
-                    daysContainer.innerHTML += `<div class="${cls}">${day}</div>`;
-                } else if (isToday) {
-                    cls += "bg-blue-600 text-white shadow-md cursor-pointer today-day";
-                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
-                } else {
-                    cls += "text-slate-700 bg-slate-50 cursor-pointer hover:bg-blue-100";
-                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
-                }
+                if (isPast) cls += "text-slate-300 cursor-not-allowed";
+                else if (isToday) cls += "bg-blue-600 text-white shadow-md cursor-pointer today-day";
+                else cls += "text-slate-700 bg-slate-50 cursor-pointer hover:bg-blue-100";
+                
+                daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
             }
         }
 
         async function selectDate(dateStr, el) {
             document.querySelectorAll(`.client-day-btn`).forEach(b => {
-                if(b.classList.contains('bg-slate-800')) {
-                    b.classList.remove('bg-slate-800', 'text-white', 'shadow-md');
-                    if(b.classList.contains('today-day')) b.classList.add('bg-blue-600', 'text-white');
-                    else b.classList.add('bg-slate-50', 'text-slate-700');
-                }
+                b.classList.remove('bg-slate-800', 'text-white', 'shadow-md');
+                if(b.classList.contains('today-day')) b.classList.add('bg-blue-600', 'text-white'); else b.classList.add('bg-slate-50', 'text-slate-700');
             });
-            el.classList.remove('bg-slate-50', 'text-slate-700', 'bg-blue-600');
-            el.classList.add('bg-slate-800', 'text-white', 'shadow-md');
+            el.classList.remove('bg-slate-50', 'text-slate-700', 'bg-blue-600'); el.classList.add('bg-slate-800', 'text-white', 'shadow-md');
 
-            selectedDateStr = dateStr;
-            const [y, m, d] = dateStr.split('-');
-            document.getElementById('selected-date-display').textContent = `${d}/${m}/${y}`;
-            document.getElementById('time-selection').classList.remove('hidden');
-            document.getElementById('client-info-section').classList.add('hidden');
-            
+            selectedDateStr = dateStr; document.getElementById('selected-date-display').textContent = `${dateStr.split('-')[2]}/${dateStr.split('-')[1]}/${dateStr.split('-')[0]}`;
+            document.getElementById('time-selection').classList.remove('hidden'); document.getElementById('client-info-section').classList.add('hidden');
             await renderTimeSlots(dateStr);
         }
 
-        // RENDERIZAR HORAS CLIENTE (SELECTOR NATIVO INTELIGENTE)
         async function renderTimeSlots(dateStr) {
             const container = document.getElementById('time-slots-container');
             container.innerHTML = '<div class="text-center py-6 text-slate-400"><i class="ph-bold ph-spinner animate-spin text-2xl"></i></div>';
             
             let occupiedData = [];
-            if (supabaseClient) {
-                try { const { data } = await supabaseClient.from('citas').select('hora').eq('fecha', dateStr); if (data) occupiedData = data; } catch (e) {}
-            }
+            if (supabaseClient) { try { const { data } = await supabaseClient.from('citas').select('hora').eq('fecha', dateStr); if (data) occupiedData = data; } catch (e) {} }
 
             const now = new Date();
-            let htmlFinal = `
-            <div class="relative bg-white border border-slate-300 rounded-xl px-4 py-4 shadow-sm">
-                <select id="native-time-select" class="w-full bg-transparent text-slate-800 font-bold text-lg focus:outline-none appearance-none cursor-pointer" onchange="onTimeSelected(this.value)">
-                    <option value="" selected disabled>-- Toca aquí para elegir hora --</option>
-            `;
-
+            let selectColor = currentSocio ? "focus:border-indigo-500" : "focus:border-blue-500";
+            let htmlFinal = `<div class="relative bg-white border border-slate-300 rounded-xl px-4 py-4 shadow-sm"><select id="native-time-select" class="w-full bg-transparent text-slate-800 font-bold text-lg focus:outline-none appearance-none cursor-pointer ${selectColor}" onchange="onTimeSelected(this.value)"><option value="" selected disabled>-- Toca aquí para elegir hora --</option>`;
             let hasRenderedOptions = false;
 
             ALL_HOURS.forEach(time => {
                 const [h, m] = time.split(':'); const slotDate = new Date(`${dateStr}T${time}:00`);
-                let isOccupied = false;
-                
-                if (occupiedData.find(row => row.hora === time)) isOccupied = true;
-
+                let isOccupied = !!occupiedData.find(row => row.hora === time);
                 const diffMs = slotDate - now; const diffMinutes = diffMs / (1000 * 60); const hourNum = parseInt(h);
 
                 let isPastOrTooEarly = false;
-                if (diffMs < 0) {
-                    isPastOrTooEarly = true; 
-                } else if (hourNum >= 1 && hourNum <= 9) {
-                    if (diffMinutes < 180) isPastOrTooEarly = true; 
-                } else {
-                    if (diffMinutes < 30) isPastOrTooEarly = true; 
-                }
+                if (diffMs < 0) isPastOrTooEarly = true; 
+                else if (hourNum >= 1 && hourNum <= 9) { if (diffMinutes < 180) isPastOrTooEarly = true; } 
+                else { if (diffMinutes < 30) isPastOrTooEarly = true; }
                 
                 if (isPastOrTooEarly) return; 
-                
                 hasRenderedOptions = true;
 
-                if (isOccupied) {
-                    htmlFinal += `<option value="${time}" disabled>❌ ${time} - Reservada</option>`;
-                } else {
-                    htmlFinal += `<option value="${time}">✅ ${time} - Libre</option>`;
-                }
+                if (isOccupied) htmlFinal += `<option value="${time}" disabled>❌ ${time} - Reservada</option>`;
+                else htmlFinal += `<option value="${time}">✅ ${time} - Libre</option>`;
             });
 
-            if (!hasRenderedOptions) {
-                htmlFinal += `<option value="" disabled>No quedan horas disponibles hoy</option>`;
-            }
-
+            if (!hasRenderedOptions) htmlFinal += `<option value="" disabled>No quedan horas disponibles hoy</option>`;
             htmlFinal += `</select><i class="ph-bold ph-caret-down absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none text-xl"></i></div>`;
             container.innerHTML = htmlFinal;
         }
@@ -388,17 +391,30 @@
         function onTimeSelected(time) {
             if (!time) { document.getElementById('client-info-section').classList.add('hidden'); selectedTimeStr = ""; return; }
             selectedTimeStr = time;
-            const infoSection = document.getElementById('client-info-section');
-            infoSection.classList.remove('hidden');
+            const infoSection = document.getElementById('client-info-section'); infoSection.classList.remove('hidden');
             setTimeout(() => infoSection.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
         }
 
         async function confirmAppointment() {
-            const name = document.getElementById('client-name').value.trim();
-            const phone = document.getElementById('client-phone').value.trim();
-            const location = document.getElementById('client-location').value.trim();
-            
-            if (!name || !phone || !location) return showModal({ title: "Faltan datos", message: "Rellena tu nombre, teléfono y dirección." });
+            let finalName = ""; let finalPhone = ""; let finalLocation = ""; let isSocioRes = false;
+
+            if (currentSocio) {
+                isSocioRes = true;
+                const car = document.getElementById('socio-car').value.trim();
+                const loc = document.getElementById('client-location').value.trim();
+                if (!car || !loc) return showModal({ title: "Faltan datos", message: "Rellena el vehículo y la dirección." });
+                
+                // En base de datos lo guardamos para que tú lo identifiques rápido
+                finalName = `[SOCIO] ${currentSocio.company_name} - ${car}`;
+                finalPhone = "SOCIO";
+                finalLocation = loc;
+            } else {
+                const name = document.getElementById('client-name').value.trim();
+                const phone = document.getElementById('client-phone').value.trim();
+                const loc = document.getElementById('client-location').value.trim();
+                if (!name || !phone || !loc) return showModal({ title: "Faltan datos", message: "Rellena tu nombre, teléfono y dirección." });
+                finalName = name; finalPhone = phone; finalLocation = loc;
+            }
             
             const btn = document.getElementById('btn-confirmar');
             btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-2xl"></i> Guardando...`; btn.disabled = true;
@@ -412,21 +428,28 @@
                         document.getElementById('client-info-section').classList.add('hidden');
                         return renderTimeSlots(selectedDateStr);
                     }
-                    await supabaseClient.from('citas').insert([{ fecha: selectedDateStr, hora: selectedTimeStr, cliente: name, localizacion: location, telefono: phone }]);
+                    await supabaseClient.from('citas').insert([{ fecha: selectedDateStr, hora: selectedTimeStr, cliente: finalName, localizacion: finalLocation, telefono: finalPhone }]);
                 } catch (e) {}
             }
 
-            const telegramMsg = `🔔 <b>NUEVA RESERVA WEB</b>\n\n👤 <b>Nombre:</b> ${name}\n📞 <b>Teléfono:</b> ${phone}\n📍 <b>Dirección:</b> ${location}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
-            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: CHAT_ID, text: telegramMsg, parse_mode: 'HTML' })
-            });
+            // MENSJE A TELEGRAM DIFERENTE SI ES SOCIO
+            let telegramMsg = "";
+            let waMsg = "";
 
-            const waMsg = `¡Hola Pablo! 👋 Acabo de reservar cita en la web.\n\n👤 *Nombre:* ${name}\n📞 *Teléfono:* ${phone}\n📍 *Dirección:* ${location}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}\n\nConfírmame cuando puedas.`;
+            if (isSocioRes) {
+                telegramMsg = `🏢 <b>RESERVA DE SOCIO</b>\n\n👤 <b>Empresa:</b> ${currentSocio.company_name}\n🚗 <b>Vehículo:</b> ${document.getElementById('socio-car').value}\n📍 <b>Dirección:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
+                waMsg = `¡Hola Pablo! 👋 Acabamos de reservar desde el portal de ${currentSocio.company_name}.\n\n🚗 *Vehículo:* ${document.getElementById('socio-car').value}\n📍 *Dirección:* ${finalLocation}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}`;
+            } else {
+                telegramMsg = `🔔 <b>NUEVA RESERVA WEB</b>\n\n👤 <b>Nombre:</b> ${finalName}\n📞 <b>Teléfono:</b> ${finalPhone}\n📍 <b>Dirección:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
+                waMsg = `¡Hola Pablo! 👋 Acabo de reservar cita en la web.\n\n👤 *Nombre:* ${finalName}\n📞 *Teléfono:* ${finalPhone}\n📍 *Dirección:* ${finalLocation}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}\n\nConfírmame cuando puedas.`;
+            }
+
+            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: telegramMsg, parse_mode: 'HTML' }) });
             window.open(`https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(waMsg)}`, '_blank');
             
             closePage('booking-view');
             document.getElementById('client-name').value = ''; document.getElementById('client-phone').value = ''; document.getElementById('client-location').value = '';
+            if(document.getElementById('socio-car')) document.getElementById('socio-car').value = '';
             document.getElementById('time-selection').classList.add('hidden');
             btn.innerHTML = `<i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva`; btn.disabled = false;
         }

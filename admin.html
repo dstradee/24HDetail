@@ -3,131 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin - 24H Detailing</title>
+    <title>Terminal Admin - 24H Detailing</title>
+    
+    <!-- Tipografías de Alta Gama -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- CONFIGURACIÓN TAILWIND (STEALTH LUXURY) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#0B0C0E',
+                        basalt: '#16181C',
+                        platinum: '#F3F4F6',
+                        muted: '#9CA3AF',
+                        slateborder: '#22252A',
+                        bodytext: '#D1D5DB'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif']
+                    },
+                    letterSpacing: {
+                        luxury: '0.08em',
+                        cta: '0.05em'
+                    },
+                    borderRadius: {
+                        arch: '2px'
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { -webkit-tap-highlight-color: transparent; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        body { background-color: #0B0C0E; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col pb-32">
+<body class="text-bodytext font-sans min-h-screen flex flex-col pb-32">
 
     <!-- LOGIN ADMIN -->
-    <div id="login-view" class="fixed inset-0 z-50 bg-slate-900 flex flex-col items-center justify-center p-6">
-        <div class="w-full max-w-md bg-slate-800 p-8 rounded-3xl shadow-2xl border border-slate-700">
-            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30"><i class="ph-bold ph-shield-check text-3xl text-white"></i></div>
-            <h2 class="text-2xl font-bold text-center mb-6">Acceso Administrador</h2>
-            <div class="space-y-4">
-                <div><label class="block text-xs font-bold text-slate-400 uppercase mb-2">Correo</label><input type="email" id="admin-email" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none"></div>
-                <div><label class="block text-xs font-bold text-slate-400 uppercase mb-2">Contraseña</label><input type="password" id="admin-pass" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none"></div>
-                <div id="login-error" class="hidden text-red-400 text-sm text-center font-medium py-2"></div>
-                <button onclick="loginAdmin()" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition-transform">Entrar al Panel</button>
+    <div id="login-view" class="fixed inset-0 z-50 bg-obsidian flex flex-col items-center justify-center p-6">
+        <div class="w-full max-w-md bg-basalt p-8 rounded-arch border border-slateborder">
+            <div class="text-center mb-8">
+                <i class="ph-light ph-terminal-window text-5xl text-platinum mb-4 inline-block"></i>
+                <h2 class="text-xl font-display font-light uppercase tracking-luxury text-platinum">Terminal <br><span class="font-semibold text-white">Administrador</span></h2>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Identificador (Correo)</label>
+                    <input type="email" id="admin-email" class="w-full bg-obsidian border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Clave de Acceso</label>
+                    <input type="password" id="admin-pass" class="w-full bg-obsidian border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors">
+                </div>
+                <div id="login-error" class="hidden text-platinum text-[10px] font-display uppercase tracking-widest border border-slateborder p-3 text-center rounded-arch mt-2"></div>
+                <button onclick="loginAdmin()" id="btn-login" class="w-full bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-4 rounded-arch mt-6 active:scale-[0.98] transition-transform">
+                    Autorizar Acceso
+                </button>
             </div>
         </div>
     </div>
 
     <!-- PANEL ADMIN (DASHBOARD) -->
     <div id="admin-dashboard" class="hidden flex-1 flex flex-col max-w-6xl mx-auto w-full p-4 md:p-8">
-        <div class="flex flex-col sm:flex-row justify-between items-center bg-slate-800 p-4 md:p-6 rounded-2xl shadow-lg border border-slate-700 mb-6 gap-4">
-            <div class="flex items-center gap-3"><div class="bg-blue-600 p-2 rounded-lg"><i class="ph-bold ph-car-profile text-xl"></i></div><h1 class="text-xl font-bold">24H Detailing Admin</h1></div>
-            
-            <div class="flex bg-slate-900 rounded-xl p-1 border border-slate-700 w-full sm:w-auto">
-                <button onclick="switchTab('citas')" id="tab-citas" class="flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white transition-colors">Citas y Horarios</button>
-                <button onclick="switchTab('socios')" id="tab-socios" class="flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm text-slate-400 hover:text-white transition-colors">Gestión Socios</button>
+        <!-- HEADER -->
+        <div class="flex flex-col sm:flex-row justify-between items-center bg-basalt p-6 rounded-arch border border-slateborder mb-8 gap-6">
+            <div class="flex items-center gap-4">
+                <i class="ph-light ph-car-profile text-3xl text-platinum"></i>
+                <div>
+                    <h1 class="text-lg font-display font-semibold uppercase tracking-luxury text-platinum">SYS.v1.0</h1>
+                    <p class="text-[9px] font-display uppercase tracking-widest text-muted">24H Detailing Control</p>
+                </div>
             </div>
             
-            <button onclick="logoutAdmin()" class="text-red-400 hover:bg-red-400/10 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><i class="ph-bold ph-sign-out"></i> Salir</button>
+            <div class="flex w-full sm:w-auto border border-slateborder rounded-arch p-1 bg-obsidian">
+                <button onclick="switchTab('citas')" id="tab-citas" class="flex-1 sm:flex-none px-6 py-3 rounded-arch font-display font-semibold uppercase tracking-widest text-[9px] bg-white text-obsidian transition-colors">Agenda</button>
+                <button onclick="switchTab('socios')" id="tab-socios" class="flex-1 sm:flex-none px-6 py-3 rounded-arch font-display font-semibold uppercase tracking-widest text-[9px] text-muted hover:text-platinum transition-colors">Flotas</button>
+            </div>
+            
+            <button onclick="logoutAdmin()" class="text-muted hover:text-white text-[10px] font-display uppercase tracking-luxury transition-colors flex items-center gap-2">
+                Desconectar <i class="ph-light ph-sign-out text-lg"></i>
+            </button>
         </div>
 
-        <!-- SECCIÓN 1: CALENDARIO Y CITAS (INTACTO) -->
+        <!-- SECCIÓN 1: CALENDARIO Y CITAS -->
         <div id="section-citas" class="grid md:grid-cols-12 gap-8 relative">
-            <div class="md:col-span-5 lg:col-span-4 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700 h-fit md:sticky md:top-8 z-10">
-                <div class="flex justify-between items-center mb-4">
-                    <button onclick="changeAdminMonth(-1)" class="p-2 -ml-2 rounded-full hover:bg-slate-700 text-slate-400 transition-colors"><i class="ph-bold ph-caret-left text-xl"></i></button>
-                    <h2 class="text-lg font-bold capitalize" id="admin-calendar-month-text">Calendario</h2>
-                    <button onclick="changeAdminMonth(1)" class="p-2 -mr-2 rounded-full hover:bg-slate-700 text-slate-400 transition-colors"><i class="ph-bold ph-caret-right text-xl"></i></button>
+            <!-- CALENDARIO -->
+            <div class="md:col-span-5 lg:col-span-4 bg-basalt p-6 rounded-arch border border-slateborder h-fit md:sticky md:top-8 z-10">
+                <div class="flex justify-between items-center mb-6 border-b border-slateborder pb-4">
+                    <button onclick="changeAdminMonth(-1)" class="text-muted hover:text-platinum transition-colors"><i class="ph-light ph-caret-left text-xl"></i></button>
+                    <h2 class="text-sm font-display font-semibold uppercase tracking-luxury text-platinum" id="admin-calendar-month-text">Calendario</h2>
+                    <button onclick="changeAdminMonth(1)" class="text-muted hover:text-platinum transition-colors"><i class="ph-light ph-caret-right text-xl"></i></button>
                 </div>
-                <div class="grid grid-cols-7 gap-2 text-center text-xs font-bold text-slate-500 mb-2 uppercase"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div>
-                <div id="admin-calendar-days" class="grid grid-cols-7 gap-2 text-center text-sm"></div>
+                <div class="grid grid-cols-7 gap-2 text-center text-[10px] font-display uppercase tracking-widest text-muted mb-4"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div>
+                <div id="admin-calendar-days" class="grid grid-cols-7 gap-2 text-center text-sm font-sans"></div>
             </div>
 
-            <div class="md:col-span-7 lg:col-span-8 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700 z-0">
-                <div id="admin-placeholder" class="h-full flex flex-col items-center justify-center text-slate-500 opacity-50 py-20"><i class="ph-fill ph-calendar-check text-6xl mb-4"></i><p class="text-lg">Selecciona un día en el calendario</p></div>
+            <!-- HORAS (SELECCIÓN MÚLTIPLE) -->
+            <div class="md:col-span-7 lg:col-span-8 bg-basalt p-6 rounded-arch border border-slateborder z-0 min-h-[400px]">
+                <div id="admin-placeholder" class="h-full flex flex-col items-center justify-center text-muted py-20">
+                    <i class="ph-light ph-calendar-blank text-5xl mb-4"></i>
+                    <p class="text-[10px] font-display uppercase tracking-luxury">Inicia seleccionando una fecha</p>
+                </div>
                 <div id="admin-time-selection" class="hidden">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-slate-700 pb-4">
-                        <div><h3 class="font-bold text-2xl">Día: <span id="admin-selected-date-display" class="text-blue-400"></span></h3><p class="text-xs text-slate-400 mt-1 uppercase font-bold">Toca para seleccionar</p></div>
-                        <button onclick="selectAllDay()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-bold py-2 px-4 rounded-xl flex items-center gap-2"><i class="ph-bold ph-check-square-offset"></i> Todo el día</button>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b border-slateborder pb-6">
+                        <div>
+                            <h3 class="text-lg font-display uppercase tracking-luxury text-platinum">Franjas: <span id="admin-selected-date-display" class="font-semibold text-white"></span></h3>
+                            <p class="text-[9px] text-muted mt-2 uppercase font-display tracking-widest">Selección múltiple activada</p>
+                        </div>
+                        <button onclick="selectAllDay()" class="bg-transparent border border-slateborder hover:border-platinum text-platinum text-[9px] font-display uppercase tracking-widest py-3 px-5 rounded-arch flex items-center gap-2 transition-colors">
+                            <i class="ph-light ph-corners-out"></i> Marcar todas
+                        </button>
                     </div>
                     <div id="admin-time-slots-container"></div>
                 </div>
             </div>
         </div>
 
-        <!-- SECCIÓN 2: GESTIÓN DE SOCIOS (CON TARIFAS Y LOGOS) -->
+        <!-- SECCIÓN 2: GESTIÓN DE SOCIOS Y ESTADÍSTICAS -->
         <div id="section-socios" class="hidden grid md:grid-cols-12 gap-8 relative">
-            <div class="md:col-span-5 lg:col-span-4 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700 h-fit">
-                <h2 class="text-xl font-bold mb-2 flex items-center gap-2 text-emerald-400"><i class="ph-bold ph-user-plus"></i> Crear Socio</h2>
-                <p class="text-xs text-slate-400 mb-6">Añade una empresa, configura sus tarifas y logo.</p>
-                <div class="space-y-4">
-                    <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Nombre Empresa</label><input type="text" id="new-socio-name" placeholder="Ej: Rent a Car Paquito" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-emerald-500"></div>
+            <!-- CREAR SOCIO -->
+            <div class="md:col-span-5 lg:col-span-4 bg-basalt p-6 rounded-arch border border-slateborder h-fit">
+                <h2 class="text-sm font-display font-semibold uppercase tracking-luxury text-platinum mb-2 flex items-center gap-2 border-b border-slateborder pb-4">
+                    <i class="ph-light ph-buildings"></i> Nuevo Perfil Corporativo
+                </h2>
+                <div class="space-y-6 mt-6">
+                    <div><label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Razón Social / Empresa</label><input type="text" id="new-socio-name" class="w-full bg-obsidian border border-slateborder rounded-arch px-4 py-3 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors"></div>
                     
                     <div class="grid grid-cols-2 gap-4">
-                        <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Usuario</label><input type="text" id="new-socio-user" placeholder="paquito123" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-emerald-500"></div>
-                        <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Contraseña</label><input type="text" id="new-socio-pass" placeholder="1234" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-emerald-500"></div>
+                        <div><label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Usuario</label><input type="text" id="new-socio-user" class="w-full bg-obsidian border border-slateborder rounded-arch px-4 py-3 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors"></div>
+                        <div><label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Clave</label><input type="text" id="new-socio-pass" class="w-full bg-obsidian border border-slateborder rounded-arch px-4 py-3 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors"></div>
                     </div>
 
-                    <div class="border-t border-slate-700 pt-4 mt-2">
-                        <label class="block text-xs font-bold text-emerald-400 uppercase mb-3">Tarifas Pactadas (€)</label>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div><label class="block text-[10px] text-slate-400 mb-1 text-center">Solo Fuera</label><input type="number" id="new-socio-p1" placeholder="Ej: 10" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-center text-white outline-none"></div>
-                            <div><label class="block text-[10px] text-slate-400 mb-1 text-center">Solo Dentro</label><input type="number" id="new-socio-p2" placeholder="Ej: 10" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-center text-white outline-none"></div>
-                            <div><label class="block text-[10px] text-slate-400 mb-1 text-center">Completo</label><input type="number" id="new-socio-p3" placeholder="Ej: 18" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-center text-white outline-none"></div>
+                    <div class="border-t border-slateborder pt-6">
+                        <label class="block text-[10px] font-display uppercase tracking-luxury text-platinum mb-4">Acuerdo de Tarifas (€)</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div><label class="block text-[9px] font-display uppercase text-muted mb-2 text-center">Exterior</label><input type="number" id="new-socio-p1" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum text-sm outline-none focus:border-platinum"></div>
+                            <div><label class="block text-[9px] font-display uppercase text-muted mb-2 text-center">Interior</label><input type="number" id="new-socio-p2" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum text-sm outline-none focus:border-platinum"></div>
+                            <div><label class="block text-[9px] font-display uppercase text-muted mb-2 text-center">Completo</label><input type="number" id="new-socio-p3" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum text-sm outline-none focus:border-platinum"></div>
                         </div>
                     </div>
 
-                    <div class="border-t border-slate-700 pt-4 mt-2">
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Logo de la empresa (Opcional)</label>
-                        <input type="file" id="new-socio-logo" accept="image/*" class="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
+                    <div class="border-t border-slateborder pt-6">
+                        <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-4">Logotipo (Opcional)</label>
+                        <input type="file" id="new-socio-logo" accept="image/*" class="w-full text-xs text-muted file:mr-4 file:py-2 file:px-4 file:rounded-arch file:border file:border-slateborder file:bg-obsidian file:text-platinum hover:file:bg-basalt file:text-[10px] file:font-display file:uppercase file:cursor-pointer transition-colors cursor-pointer">
                     </div>
 
-                    <button id="btn-crear-socio" onclick="createSocio()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl mt-4 active:scale-95 transition-transform flex items-center justify-center gap-2"><i class="ph-bold ph-plus"></i> Guardar Socio</button>
+                    <button id="btn-crear-socio" onclick="createSocio()" class="w-full bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-4 rounded-arch mt-6 active:scale-[0.98] transition-transform">
+                        Registrar Perfil
+                    </button>
                 </div>
             </div>
 
-            <div class="md:col-span-7 lg:col-span-8 bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700">
-                <h2 class="text-xl font-bold mb-6 flex items-center gap-2"><i class="ph-bold ph-buildings"></i> Dashboard de Socios</h2>
-                <div id="socios-list-container" class="max-h-[700px] overflow-y-auto pr-2">
-                    <div class="text-center py-10 text-slate-500"><i class="ph-bold ph-spinner animate-spin text-3xl"></i></div>
+            <!-- DASHBOARD DE SOCIOS -->
+            <div class="md:col-span-7 lg:col-span-8 bg-basalt p-6 rounded-arch border border-slateborder">
+                <h2 class="text-sm font-display font-semibold uppercase tracking-luxury text-platinum mb-6 border-b border-slateborder pb-4">
+                    Directorio Operativo
+                </h2>
+                <div id="socios-list-container" class="max-h-[700px] overflow-y-auto pr-2 space-y-6">
+                    <div class="text-center py-10 text-muted"><i class="ph-light ph-spinner animate-spin text-3xl"></i></div>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- BARRA FLOTANTE CITAS -->
-    <div id="action-bar" class="fixed bottom-0 left-0 w-full bg-slate-950/95 backdrop-blur-md border-t border-slate-800 p-4 transform translate-y-full transition-transform duration-300 z-40 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+    <!-- BARRA FLOTANTE DE ACCIONES (CITAS) -->
+    <div id="action-bar" class="fixed bottom-0 left-0 w-full bg-obsidian/95 backdrop-blur-md border-t border-slateborder p-4 transform translate-y-full transition-transform duration-300 z-40">
         <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-4">
-                <button onclick="deselectAll()" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 text-slate-400"><i class="ph-bold ph-x text-xl"></i></button>
-                <div><p class="text-lg font-bold text-white"><span id="selected-count" class="text-blue-400">0</span> horas seleccionadas</p><p class="text-xs text-slate-400">Elige qué hacer con ellas</p></div>
+                <button onclick="deselectAll()" class="text-muted hover:text-white transition-colors"><i class="ph-light ph-x text-2xl"></i></button>
+                <div>
+                    <p class="text-sm font-display uppercase tracking-luxury text-platinum"><span id="selected-count" class="font-bold text-white">0</span> franjas</p>
+                    <p class="text-[9px] font-display uppercase tracking-widest text-muted mt-1">Pendientes de instrucción</p>
+                </div>
             </div>
             <div class="flex gap-3 w-full sm:w-auto">
-                <button onclick="executeBulkAction('unblock')" class="flex-1 sm:flex-none bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 py-3 px-6 rounded-xl font-bold active:scale-95 flex justify-center items-center gap-2"><i class="ph-bold ph-lock-open"></i> Liberar</button>
-                <button onclick="executeBulkAction('block')" class="flex-1 sm:flex-none bg-red-500/20 text-red-400 border border-red-500/50 py-3 px-6 rounded-xl font-bold active:scale-95 flex justify-center items-center gap-2"><i class="ph-bold ph-lock-key"></i> Bloquear</button>
+                <button onclick="executeBulkAction('unblock')" class="flex-1 sm:flex-none bg-transparent border border-slateborder text-platinum font-display font-semibold uppercase tracking-cta py-3 px-8 rounded-arch active:scale-[0.98] transition-all hover:border-platinum text-[10px]">
+                    Liberar
+                </button>
+                <button onclick="executeBulkAction('block')" class="flex-1 sm:flex-none bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-3 px-8 rounded-arch active:scale-[0.98] transition-transform text-[10px]">
+                    Bloquear
+                </button>
             </div>
         </div>
     </div>
 
     <!-- MODAL CONFIRMACIONES MULTIUSOS -->
-    <div id="admin-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-        <div class="bg-slate-800 p-6 rounded-3xl shadow-2xl w-full max-w-md border border-slate-700 transform scale-95 opacity-0 transition-all" id="admin-modal-box">
-            <h3 class="text-xl font-bold text-white mb-2" id="admin-modal-title">Título</h3>
-            <div class="text-slate-300 text-sm mb-6 whitespace-pre-line" id="admin-modal-message">Mensaje</div>
-            <div class="flex gap-3" id="admin-modal-buttons"></div>
+    <div id="admin-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-obsidian/90 backdrop-blur-md px-6">
+        <div class="bg-basalt p-8 rounded-arch w-full max-w-sm border border-slateborder transform scale-95 opacity-0 transition-all" id="admin-modal-box">
+            <h3 class="text-lg font-display uppercase tracking-luxury text-platinum mb-4" id="admin-modal-title">Título</h3>
+            <div class="text-bodytext text-sm mb-8 leading-relaxed whitespace-pre-line font-sans" id="admin-modal-message">Mensaje</div>
+            <div class="flex gap-4" id="admin-modal-buttons"></div>
         </div>
     </div>
 
@@ -158,12 +234,12 @@
 
         async function loginAdmin() {
             const email = document.getElementById('admin-email').value; const password = document.getElementById('admin-pass').value;
-            document.getElementById('btn-login').innerHTML = "Cargando..."; document.getElementById('btn-login').disabled = true;
+            document.getElementById('btn-login').innerHTML = "Verificando..."; document.getElementById('btn-login').disabled = true;
             const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) {
-                document.getElementById('login-error').textContent = "Credenciales incorrectas.";
+                document.getElementById('login-error').textContent = "Credenciales no válidas.";
                 document.getElementById('login-error').classList.remove('hidden');
-                document.getElementById('btn-login').textContent = "Entrar al Panel"; document.getElementById('btn-login').disabled = false;
+                document.getElementById('btn-login').textContent = "Autorizar Acceso"; document.getElementById('btn-login').disabled = false;
             } else window.location.reload();
         }
         async function logoutAdmin() { await supabaseClient.auth.signOut(); window.location.reload(); }
@@ -171,28 +247,29 @@
         function switchTab(tab) {
             document.getElementById('section-citas').classList.add('hidden');
             document.getElementById('section-socios').classList.add('hidden');
-            document.getElementById('tab-citas').className = "flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm text-slate-400 hover:text-white transition-colors";
-            document.getElementById('tab-socios').className = "flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm text-slate-400 hover:text-white transition-colors";
+            
+            document.getElementById('tab-citas').className = "flex-1 sm:flex-none px-6 py-3 rounded-arch font-display font-semibold uppercase tracking-widest text-[9px] bg-transparent text-muted hover:text-platinum transition-colors";
+            document.getElementById('tab-socios').className = "flex-1 sm:flex-none px-6 py-3 rounded-arch font-display font-semibold uppercase tracking-widest text-[9px] bg-transparent text-muted hover:text-platinum transition-colors";
             
             document.getElementById(`section-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-${tab}`).className = "flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white transition-colors";
+            document.getElementById(`tab-${tab}`).className = "flex-1 sm:flex-none px-6 py-3 rounded-arch font-display font-semibold uppercase tracking-widest text-[9px] bg-white text-obsidian transition-colors";
             
             if(tab === 'citas') updateActionBar(); else document.getElementById('action-bar').classList.add('translate-y-full');
             if(tab === 'socios') loadSocios();
         }
 
         // ========================================================
-        // 🚀 GESTIÓN DE SOCIOS: LOGOS Y TARIFAS (LO NUEVO)
+        // GESTIÓN DE SOCIOS
         // ========================================================
         async function loadSocios() {
             const container = document.getElementById('socios-list-container');
-            container.innerHTML = '<div class="text-center py-10 text-slate-500"><i class="ph-bold ph-spinner animate-spin text-3xl"></i></div>';
+            container.innerHTML = '<div class="text-center py-10 text-muted"><i class="ph-light ph-spinner animate-spin text-3xl"></i></div>';
             
             const { data: socios, error: errS } = await supabaseClient.from('socios').select('*').order('created_at', { ascending: false });
             const { data: citas, error: errC } = await supabaseClient.from('citas').select('socio_id, estado, fecha').not('socio_id', 'is', null);
 
-            if (errS) { container.innerHTML = '<p class="text-red-400 text-center">Error cargando socios</p>'; return; }
-            if (socios.length === 0) { container.innerHTML = '<p class="text-slate-500 text-center py-6">No hay socios creados todavía.</p>'; return; }
+            if (errS) { container.innerHTML = '<p class="text-red-400 text-[10px] font-display uppercase tracking-widest text-center">Error de sistema</p>'; return; }
+            if (socios.length === 0) { container.innerHTML = '<p class="text-muted text-[10px] font-display uppercase tracking-widest text-center py-6">Directorio vacío.</p>'; return; }
             
             globalStats = {}; globalSocios = socios;
             socios.forEach(s => globalStats[s.id] = { pendientes: 0, completados: 0 });
@@ -206,62 +283,70 @@
             }
 
             let html = `
-                <div class="mb-6">
-                    <button onclick="sendGlobalReport()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
-                        <i class="ph-bold ph-telegram-logo text-2xl"></i> Enviar Reporte Global a Telegram
+                <div class="mb-8 border-b border-slateborder pb-6">
+                    <button onclick="sendGlobalReport()" class="w-full bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-4 rounded-arch active:scale-[0.98] transition-transform">
+                        Transmitir Reporte Global
                     </button>
                 </div>
-                <div class="space-y-4">
+                <div class="space-y-6">
             `;
 
             socios.forEach(s => {
                 const p = globalStats[s.id].pendientes;
                 const c = globalStats[s.id].completados;
                 
-                // Si tiene logo lo mostramos, si no un edificio
                 const logoHtml = s.logo_url 
-                    ? `<img src="${s.logo_url}" class="w-12 h-12 rounded-lg object-cover bg-white">`
-                    : `<div class="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center"><i class="ph-fill ph-buildings text-2xl text-slate-400"></i></div>`;
+                    ? `<img src="${s.logo_url}" class="w-10 h-10 rounded-arch object-cover grayscale opacity-80 border border-slateborder">`
+                    : `<div class="w-10 h-10 bg-obsidian border border-slateborder text-muted rounded-arch flex items-center justify-center"><i class="ph-light ph-buildings text-xl"></i></div>`;
 
                 html += `
-                <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl hover:border-slate-500 transition-colors">
-                    <div class="flex justify-between items-start gap-4 mb-4">
+                <div class="bg-obsidian border border-slateborder p-6 rounded-arch">
+                    <div class="flex justify-between items-start gap-4 mb-6 border-b border-slateborder pb-4">
                         <div class="flex items-center gap-4">
                             ${logoHtml}
                             <div>
-                                <h4 class="font-bold text-xl text-emerald-400">${s.company_name}</h4>
-                                <p class="text-xs text-slate-400 mt-1">User: <span class="text-white bg-slate-800 px-1 rounded">${s.username}</span> | Pass: <span class="text-white bg-slate-800 px-1 rounded">${s.password}</span></p>
+                                <h4 class="font-display font-light uppercase tracking-luxury text-platinum text-sm">${s.company_name}</h4>
+                                <p class="text-[9px] font-display uppercase tracking-widest text-muted mt-1">ID: <span class="text-platinum">${s.username}</span> | Pwd: <span class="text-platinum">${s.password}</span></p>
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="editSocio('${s.id}', '${s.company_name}', ${s.precio_fuera}, ${s.precio_dentro}, ${s.precio_completo})" class="bg-blue-500/20 text-blue-400 hover:bg-blue-500/40 p-2.5 rounded-lg transition-colors" title="Editar Tarifas"><i class="ph-bold ph-pencil-simple text-lg"></i></button>
-                            <button onclick="deleteSocio('${s.id}', '${s.company_name}')" class="bg-red-500/20 text-red-400 hover:bg-red-500/40 p-2.5 rounded-lg transition-colors" title="Eliminar Socio"><i class="ph-bold ph-trash text-lg"></i></button>
+                            <button onclick="editSocio('${s.id}', '${s.company_name}', ${s.precio_fuera}, ${s.precio_dentro}, ${s.precio_completo})" class="text-muted hover:text-platinum p-2 transition-colors"><i class="ph-light ph-pencil-simple text-lg"></i></button>
+                            <button onclick="deleteSocio('${s.id}', '${s.company_name}')" class="text-muted hover:text-white p-2 transition-colors"><i class="ph-light ph-trash text-lg"></i></button>
                         </div>
                     </div>
                     
-                    <div class="bg-slate-800 rounded-xl p-3 mb-4 flex justify-around text-center text-xs">
-                        <div><span class="block text-slate-400 mb-1">Exterior</span><span class="font-bold text-white">${s.precio_fuera || 0}€</span></div>
-                        <div><span class="block text-slate-400 mb-1">Interior</span><span class="font-bold text-white">${s.precio_dentro || 0}€</span></div>
-                        <div><span class="block text-slate-400 mb-1">Completo</span><span class="font-bold text-emerald-400">${s.precio_completo || 0}€</span></div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700">
-                            <span class="block text-2xl font-black text-amber-400">${p}</span>
-                            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Pendientes</span>
+                    <div class="grid grid-cols-3 gap-2 mb-6">
+                        <div class="bg-basalt border border-slateborder p-3 rounded-arch text-center">
+                            <span class="block text-[9px] uppercase font-display tracking-widest text-muted mb-1">EXT</span>
+                            <span class="font-sans text-sm text-platinum">${s.precio_fuera || 0}€</span>
                         </div>
-                        <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700">
-                            <span class="block text-2xl font-black text-emerald-400">${c}</span>
-                            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Historial</span>
+                        <div class="bg-basalt border border-slateborder p-3 rounded-arch text-center">
+                            <span class="block text-[9px] uppercase font-display tracking-widest text-muted mb-1">INT</span>
+                            <span class="font-sans text-sm text-platinum">${s.precio_dentro || 0}€</span>
+                        </div>
+                        <div class="bg-basalt border border-slateborder p-3 rounded-arch text-center">
+                            <span class="block text-[9px] uppercase font-display tracking-widest text-muted mb-1">COMP</span>
+                            <span class="font-sans text-sm text-platinum">${s.precio_completo || 0}€</span>
                         </div>
                     </div>
 
-                    <div class="flex gap-2">
-                        <button onclick="sendIndividualReport('${s.company_name}', ${p}, ${c})" class="flex-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 text-xs font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
-                            <i class="ph-bold ph-paper-plane-right"></i> Resumen
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-transparent border border-slateborder p-4 rounded-arch flex justify-between items-center">
+                            <span class="text-[9px] font-display uppercase tracking-widest text-muted">Ejecutado</span>
+                            <span class="font-sans text-lg text-platinum">${c}</span>
+                        </div>
+                        <div class="bg-transparent border border-slateborder p-4 rounded-arch flex justify-between items-center">
+                            <span class="text-[9px] font-display uppercase tracking-widest text-muted">Activo</span>
+                            <span class="font-sans text-lg text-platinum">${p}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="sendIndividualReport('${s.company_name}', ${p}, ${c})" class="flex-1 bg-basalt border border-slateborder hover:border-platinum text-platinum text-[9px] font-display uppercase tracking-widest py-3 rounded-arch transition-colors">
+                            Resumen Ops
                         </button>
-                        <button onclick="openCleanupModal('${s.id}', '${s.company_name}')" class="flex-1 bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 text-xs font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
-                            <i class="ph-bold ph-broom"></i> Limpiar Historial
+                        <button onclick="openCleanupModal('${s.id}', '${s.company_name}')" class="flex-1 bg-basalt border border-slateborder hover:border-platinum text-platinum text-[9px] font-display uppercase tracking-widest py-3 rounded-arch transition-colors">
+                            Purgar Datos
                         </button>
                     </div>
                 </div>`;
@@ -274,20 +359,17 @@
             const name = document.getElementById('new-socio-name').value.trim();
             const user = document.getElementById('new-socio-user').value.trim();
             const pass = document.getElementById('new-socio-pass').value.trim();
-            
             const p1 = document.getElementById('new-socio-p1').value || 0;
             const p2 = document.getElementById('new-socio-p2').value || 0;
             const p3 = document.getElementById('new-socio-p3').value || 0;
             const logoFile = document.getElementById('new-socio-logo').files[0];
 
-            if(!name || !user || !pass) return showAdminModal("Error", "El nombre, usuario y contraseña son obligatorios.", ()=>{});
+            if(!name || !user || !pass) return showAdminModal("Incompleto", "Identificador y Clave son mandatorios.", ()=>{});
             
             const btn = document.getElementById('btn-crear-socio');
-            btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Guardando...`; btn.disabled = true;
+            btn.innerHTML = `Procesando...`; btn.disabled = true;
 
             let finalLogoUrl = null;
-
-            // SI HAY LOGO, LO SUBIMOS A STORAGE PRIMERO
             if (logoFile) {
                 const fileExt = logoFile.name.split('.').pop();
                 const fileName = `logo_${Date.now()}.${fileExt}`;
@@ -296,52 +378,44 @@
                     if (!error) {
                         const { data: urlData } = supabaseClient.storage.from('logos').getPublicUrl(fileName);
                         finalLogoUrl = urlData.publicUrl;
-                    } else {
-                        console.error("Error subiendo logo", error);
                     }
                 } catch(e) {}
             }
             
             const { error } = await supabaseClient.from('socios').insert([{ 
                 company_name: name, username: user, password: pass, 
-                precio_fuera: p1, precio_dentro: p2, precio_completo: p3,
-                logo_url: finalLogoUrl
+                precio_fuera: p1, precio_dentro: p2, precio_completo: p3, logo_url: finalLogoUrl
             }]);
 
-            if(error) showAdminModal("Error", "Ese usuario ya existe o hubo un error en BD.", ()=>{});
+            if(error) showAdminModal("Error de Sistema", "Colisión de identificador.", ()=>{});
             else {
                 document.getElementById('new-socio-name').value = ''; document.getElementById('new-socio-user').value = ''; document.getElementById('new-socio-pass').value = '';
                 document.getElementById('new-socio-p1').value = ''; document.getElementById('new-socio-p2').value = ''; document.getElementById('new-socio-p3').value = '';
                 document.getElementById('new-socio-logo').value = '';
                 loadSocios();
             }
-            btn.innerHTML = `<i class="ph-bold ph-plus"></i> Guardar Socio`; btn.disabled = false;
+            btn.innerHTML = `Registrar Perfil`; btn.disabled = false;
         }
 
-        // EDITAR TARIFAS DE UN SOCIO YA CREADO
         function editSocio(id, name, p1, p2, p3) {
             const htmlMessage = `
-                <div class="grid grid-cols-3 gap-2 mt-4">
-                    <div><label class="block text-[10px] text-slate-400 mb-1 text-center">Solo Fuera</label><input type="number" id="edit-p1" value="${p1}" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-center text-white outline-none"></div>
-                    <div><label class="block text-[10px] text-slate-400 mb-1 text-center">Solo Dentro</label><input type="number" id="edit-p2" value="${p2}" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-center text-white outline-none"></div>
-                    <div><label class="block text-[10px] text-slate-400 mb-1 text-center">Completo</label><input type="number" id="edit-p3" value="${p3}" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-center text-white outline-none"></div>
+                <div class="grid grid-cols-3 gap-3 mt-6">
+                    <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-2 text-center">EXT</label><input type="number" id="edit-p1" value="${p1}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
+                    <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-2 text-center">INT</label><input type="number" id="edit-p2" value="${p2}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
+                    <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-2 text-center">COMP</label><input type="number" id="edit-p3" value="${p3}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
                 </div>
             `;
-            showAdminModal(`Editar Tarifas: ${name}`, htmlMessage, async () => {
+            showAdminModal(`Revisión Tarifas: ${name}`, htmlMessage, async () => {
                 const np1 = document.getElementById('edit-p1').value || 0;
                 const np2 = document.getElementById('edit-p2').value || 0;
                 const np3 = document.getElementById('edit-p3').value || 0;
-                
-                await supabaseClient.from('socios').update({ 
-                    precio_fuera: np1, precio_dentro: np2, precio_completo: np3 
-                }).eq('id', id);
-                
+                await supabaseClient.from('socios').update({ precio_fuera: np1, precio_dentro: np2, precio_completo: np3 }).eq('id', id);
                 loadSocios();
             }, true);
         }
 
         function deleteSocio(id, name) {
-            showAdminModal("Eliminar Socio", `¿Seguro que quieres eliminar la empresa ${name}? No podrán entrar más.`, async () => {
+            showAdminModal("Revocar Acceso", `La corporación ${name} perderá acceso al sistema permanentemente.`, async () => {
                 await supabaseClient.from('socios').delete().eq('id', id);
                 loadSocios();
             }, false);
@@ -349,14 +423,14 @@
 
         function openCleanupModal(socioId, name) {
             const htmlMessage = `
-                <p class="mb-4 text-slate-300 text-sm">Selecciona qué historial de citas <b>COMPLETADAS</b> deseas borrar.</p>
-                <select id="cleanup-timeframe" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 outline-none">
-                    <option value="1">Borrar anteriores a 1 mes</option>
-                    <option value="2">Borrar anteriores a 2 meses</option>
-                    <option value="all">Borrar TODAS las completadas</option>
+                <p class="mb-6 text-bodytext text-sm font-sans">Selecciona el rango de datos ejecutados a purgar.</p>
+                <select id="cleanup-timeframe" class="w-full bg-obsidian border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum outline-none appearance-none">
+                    <option value="1">Registros de > 30 días</option>
+                    <option value="2">Registros de > 60 días</option>
+                    <option value="all">Purgado Total de Historial</option>
                 </select>
             `;
-            showAdminModal(`Limpiar datos de ${name}`, htmlMessage, async () => {
+            showAdminModal(`Limpieza: ${name}`, htmlMessage, async () => {
                 const val = document.getElementById('cleanup-timeframe').value;
                 let query = supabaseClient.from('citas').delete().eq('socio_id', socioId).eq('estado', 'completado');
                 if (val !== 'all') {
@@ -369,26 +443,26 @@
         }
 
         function sendGlobalReport() {
-            let msg = "📊 <b>REPORTE GLOBAL DE EMPRESAS</b>\n\n";
+            let msg = "📊 <b>INFORME GLOBAL CORPORATIVO</b>\n\n";
             let totalP = 0; let totalC = 0;
             globalSocios.forEach(s => {
                 const p = globalStats[s.id].pendientes; const c = globalStats[s.id].completados;
                 totalP += p; totalC += c;
-                msg += `🏢 <b>${s.company_name}</b>\n✅ Historial: ${c} | ⏳ Pendientes: ${p}\n\n`;
+                msg += `🏢 <b>${s.company_name}</b>\n✅ Ejecutados: ${c} | ⏳ Activos: ${p}\n\n`;
             });
-            msg += `📈 <b>TOTAL GENERAL:</b> ${totalC} completados y ${totalP} pendientes.`;
+            msg += `📈 <b>BALANCE TOTAL:</b> ${totalC} ejecutados / ${totalP} activos.`;
             fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' }) });
-            showAdminModal("Reporte Enviado", "El reporte global se ha enviado a tu Telegram.", ()=>{}, false);
+            showAdminModal("Confirmación", "El reporte ha sido transmitido a la terminal externa.", ()=>{}, false);
         }
 
         function sendIndividualReport(name, p, c) {
-            let msg = `📊 <b>REPORTE DE SOCIO</b>\n\n🏢 <b>${name}</b>\n✅ Lavados Completados: ${c}\n⏳ Citas Pendientes: ${p}\n\n<i>Reporte solicitado manualmente por el administrador.</i>`;
+            let msg = `📊 <b>INFORME CORPORATIVO</b>\n\n🏢 <b>${name}</b>\n✅ Volumen Ejecutado: ${c}\n⏳ Volumen Activo: ${p}\n\n<i>SYS.v1.0 Auto-Report</i>`;
             fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' }) });
-            showAdminModal("Reporte Enviado", `El reporte de ${name} se ha enviado a tu Telegram.`, ()=>{}, false);
+            showAdminModal("Confirmación", `Reporte de ${name} transmitido.`, ()=>{}, false);
         }
 
         // ========================================================
-        // CALENDARIO ADMIN (CON NAVEGACIÓN) INTACTO
+        // CALENDARIO ADMIN E INSTRUCCIONES
         // ========================================================
         function setupRealtime() {
             supabaseClient.channel('admin-realtime').on('postgres_changes', { event: '*', schema: 'public', table: 'citas' }, payload => {
@@ -401,134 +475,3 @@
             if (displayAdminMonth > 11) { displayAdminMonth = 0; displayAdminYear++; }
             else if (displayAdminMonth < 0) { displayAdminMonth = 11; displayAdminYear--; }
             renderAdminCalendar();
-        }
-
-        function renderAdminCalendar() {
-            const now = new Date(); const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            document.getElementById('admin-calendar-month-text').textContent = `${monthNames[displayAdminMonth]} ${displayAdminYear}`;
-            const container = document.getElementById('admin-calendar-days'); container.innerHTML = '';
-            
-            let firstDay = new Date(displayAdminYear, displayAdminMonth, 1).getDay(); 
-            let emptySpaces = firstDay === 0 ? 6 : firstDay - 1; 
-            const daysInMonth = new Date(displayAdminYear, displayAdminMonth + 1, 0).getDate();
-            
-            for (let i = 0; i < emptySpaces; i++) container.innerHTML += `<div></div>`;
-            for (let day = 1; day <= daysInMonth; day++) {
-                const isToday = day === now.getDate() && displayAdminMonth === now.getMonth() && displayAdminYear === now.getFullYear();
-                const dateStr = `${displayAdminYear}-${String(displayAdminMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-                const isSelected = (dateStr === selectedDateStr);
-                let cls = "py-3 rounded-xl font-bold cursor-pointer transition-colors admin-day-btn ";
-                if (isSelected) cls += "bg-white text-slate-900 shadow-xl";
-                else if (isToday) cls += "bg-blue-600 text-white today-day shadow-lg shadow-blue-500/30";
-                else cls += "bg-slate-900 border border-slate-700 text-slate-300 hover:bg-slate-700";
-                container.innerHTML += `<div class="${cls}" onclick="selectAdminDate('${dateStr}', this)">${day}</div>`;
-            }
-        }
-
-        function selectAdminDate(dateStr, el) {
-            document.querySelectorAll('.admin-day-btn').forEach(b => {
-                b.classList.remove('bg-white', 'text-slate-900', 'shadow-xl');
-                if(b.classList.contains('today-day')) b.classList.add('bg-blue-600', 'text-white'); else b.classList.add('bg-slate-900', 'text-slate-300');
-            });
-            el.classList.remove('bg-slate-900', 'text-slate-300', 'bg-blue-600'); el.classList.add('bg-white', 'text-slate-900', 'shadow-xl');
-            selectedDateStr = dateStr; document.getElementById('admin-selected-date-display').textContent = `${dateStr.split('-')[2]}/${dateStr.split('-')[1]}/${dateStr.split('-')[0]}`;
-            document.getElementById('admin-placeholder').classList.add('hidden'); document.getElementById('admin-time-selection').classList.remove('hidden');
-            deselectAll(); renderAdminTimeSlots(dateStr, true);
-        }
-
-        async function renderAdminTimeSlots(dateStr, showLoader = true) {
-            const container = document.getElementById('admin-time-slots-container');
-            if (showLoader) container.innerHTML = '<div class="text-center py-10"><i class="ph-bold ph-spinner animate-spin text-3xl text-blue-500"></i></div>';
-            let occupiedData = [];
-            const { data } = await supabaseClient.from('citas').select('*').eq('fecha', dateStr); if (data) occupiedData = data;
-            const categorias = { 'Madrugada': [], 'Mañana': [], 'Mediodía y Tarde': [], 'Noche': [] };
-            ALL_HOURS.forEach(t => { const h = parseInt(t.split(':')[0]); if (h < 6) categorias['Madrugada'].push(t); else if (h < 12) categorias['Mañana'].push(t); else if (h < 18) categorias['Mediodía y Tarde'].push(t); else categorias['Noche'].push(t); });
-            
-            let htmlFinal = '';
-            for (const [catName, times] of Object.entries(categorias)) {
-                if(times.length === 0) continue;
-                let bloqueHtml = `<div class="mb-8"><h4 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-widest">${catName}</h4><div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">`;
-                times.forEach(time => {
-                    const dbSlot = occupiedData.find(row => row.hora === time); const isSelected = selectedSlotsMap.has(time); const isBlocked = !!dbSlot;
-                    let baseCls = "time-slot-btn relative p-3 rounded-2xl text-left font-bold cursor-pointer transition-all duration-200 border border-transparent overflow-hidden group ";
-                    let ringCls = isSelected ? "ring-4 ring-blue-500 ring-offset-2 ring-offset-slate-800 scale-95" : "hover:scale-[1.02] hover:shadow-lg";
-                    let contentHtml = "", slotDataStr = "null";
-                    if (isBlocked) {
-                        baseCls += "bg-red-500/10 border-red-500/30 text-red-100"; slotDataStr = encodeURIComponent(JSON.stringify(dbSlot));
-                        const name = dbSlot.cliente === "BLOQUEADO (Admin)" ? "BLOQUEO" : dbSlot.cliente.split(' ')[0];
-                        contentHtml = `<div class="flex justify-between items-start mb-1"><span class="text-lg">${time}</span><i class="ph-fill ph-x-circle text-red-500 text-xl"></i></div><span class="text-xs text-red-400 font-medium truncate block">${name}</span>`;
-                    } else {
-                        baseCls += "bg-emerald-500/10 border-emerald-500/20 text-emerald-100";
-                        contentHtml = `<div class="flex justify-between items-start mb-1"><span class="text-lg">${time}</span><i class="ph-bold ph-check-circle text-emerald-500 text-xl opacity-50 group-hover:opacity-100 transition-opacity"></i></div><span class="text-xs text-emerald-400 font-medium truncate block">Libre</span>`;
-                    }
-                    bloqueHtml += `<div id="slot-${time}" onclick="toggleSlot('${time}', ${isBlocked}, '${slotDataStr}')" class="${baseCls} ${ringCls}">${contentHtml}</div>`;
-                });
-                bloqueHtml += `</div></div>`; htmlFinal += bloqueHtml;
-            }
-            container.innerHTML = htmlFinal;
-        }
-
-        function toggleSlot(time, isBlocked, slotDataEncoded) {
-            const el = document.getElementById(`slot-${time}`);
-            if (selectedSlotsMap.has(time)) {
-                selectedSlotsMap.delete(time); el.classList.remove('ring-4', 'ring-blue-500', 'ring-offset-2', 'ring-offset-slate-800', 'scale-95'); el.classList.add('hover:scale-[1.02]', 'hover:shadow-lg');
-            } else {
-                let dbData = null; if (slotDataEncoded !== 'null') dbData = JSON.parse(decodeURIComponent(slotDataEncoded));
-                selectedSlotsMap.set(time, { isBlocked, dbData }); el.classList.add('ring-4', 'ring-blue-500', 'ring-offset-2', 'ring-offset-slate-800', 'scale-95'); el.classList.remove('hover:scale-[1.02]', 'hover:shadow-lg');
-            }
-            updateActionBar();
-        }
-        function selectAllDay() { ALL_HOURS.forEach(time => { if (!selectedSlotsMap.has(time)) { const el = document.getElementById(`slot-${time}`); if (el) el.click(); } }); }
-        function deselectAll() { selectedSlotsMap.clear(); document.querySelectorAll('.time-slot-btn').forEach(el => { el.classList.remove('ring-4', 'ring-blue-500', 'ring-offset-2', 'ring-offset-slate-800', 'scale-95'); el.classList.add('hover:scale-[1.02]', 'hover:shadow-lg'); }); updateActionBar(); }
-        
-        function updateActionBar() {
-            const bar = document.getElementById('action-bar');
-            if(document.getElementById('section-citas').classList.contains('hidden')) return bar.classList.add('translate-y-full'); 
-            document.getElementById('selected-count').textContent = selectedSlotsMap.size;
-            if (selectedSlotsMap.size > 0) bar.classList.remove('translate-y-full'); else bar.classList.add('translate-y-full');
-        }
-
-        function showAdminModal(title, message, onConfirm, isHtml = false) {
-            const modal = document.getElementById('admin-modal'); const box = document.getElementById('admin-modal-box');
-            document.getElementById('admin-modal-title').textContent = title; 
-            if(isHtml) document.getElementById('admin-modal-message').innerHTML = message;
-            else document.getElementById('admin-modal-message').textContent = message;
-            
-            const btnContainer = document.getElementById('admin-modal-buttons'); btnContainer.innerHTML = '';
-            const cleanup = () => { box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0'); setTimeout(() => modal.classList.add('hidden'), 200); };
-            
-            const btnCancel = document.createElement('button'); btnCancel.className = "flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl"; btnCancel.textContent = "Atrás"; btnCancel.onclick = cleanup;
-            const btnConfirm = document.createElement('button'); btnConfirm.className = "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl"; btnConfirm.textContent = "Confirmar"; btnConfirm.onclick = () => { cleanup(); onConfirm(); };
-            
-            btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnConfirm);
-            modal.classList.remove('hidden'); setTimeout(() => { box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); }, 10);
-        }
-
-        async function executeBulkAction(actionType) {
-            const slots = Array.from(selectedSlotsMap.entries());
-            if (actionType === 'block') {
-                const toBlock = slots.filter(([time, data]) => !data.isBlocked);
-                if (toBlock.length === 0) return showAdminModal("Atención", "Todas las horas seleccionadas ya están ocupadas.", () => {}, false);
-                showAdminModal("Bloquear Horas", `Vas a bloquear ${toBlock.length} horas.\n\n¿Estás seguro?`, async () => {
-                    const inserts = toBlock.map(([time]) => ({ fecha: selectedDateStr, hora: time, cliente: "BLOQUEADO (Admin)", localizacion: "N/A", telefono: "N/A" }));
-                    await supabaseClient.from('citas').insert(inserts); deselectAll(); renderAdminTimeSlots(selectedDateStr, false);
-                }, false);
-            } else if (actionType === 'unblock') {
-                const toUnblock = slots.filter(([time, data]) => data.isBlocked);
-                if (toUnblock.length === 0) return showAdminModal("Atención", "Todas las horas seleccionadas ya están libres.", () => {}, false);
-                if (toUnblock.length === 1) {
-                    const data = toUnblock[0][1].dbData; const isOwnerBlock = data.cliente === "BLOQUEADO (Admin)";
-                    const msg = isOwnerBlock ? `¿Quieres desbloquear las ${toUnblock[0][0]}?` : `CITA REAL:\n\n👤 ${data.cliente}\n📞 ${data.telefono}\n📍 ${data.localizacion}\n\n¿Seguro que deseas CANCELAR esta cita?`;
-                    showAdminModal(isOwnerBlock ? "Desbloquear" : "Cancelar Cita", msg, async () => {
-                        await supabaseClient.from('citas').delete().eq('id', data.id); deselectAll(); renderAdminTimeSlots(selectedDateStr, false);
-                    }, false);
-                } else {
-                    showAdminModal("Liberar Múltiples", `Vas a liberar/eliminar ${toUnblock.length} horas (incluyendo citas de clientes si las hay).\n\n¿Estás seguro?`, async () => {
-                        const ids = toUnblock.map(([time, data]) => data.dbData.id); await supabaseClient.from('citas').delete().in('id', ids); deselectAll(); renderAdminTimeSlots(selectedDateStr, false);
-                    }, false);
-                }
-            }
-        }
-    </script>
-</body>
-</html>

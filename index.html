@@ -1,4 +1,4 @@
-¡<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -21,6 +21,7 @@
     <div class="min-h-screen w-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-slate-800 to-blue-950 flex justify-center items-center lg:p-12">
         <div class="max-w-6xl w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12">
             
+            <!-- LADO IZQUIERDO PC -->
             <div class="hidden lg:flex flex-col text-white max-w-lg z-10">
                 <div class="inline-block bg-blue-500/20 text-blue-300 font-semibold px-4 py-1.5 rounded-full mb-6 border border-blue-400/30 w-fit text-sm tracking-wide uppercase">Servicio Premium de Detallado</div>
                 <h1 class="text-6xl font-black mb-6 leading-tight">Dejamos tu coche <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">como nuevo</span></h1>
@@ -65,8 +66,16 @@
                             <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors"><i class="ph-fill ph-whatsapp-logo text-3xl text-emerald-500"></i><span class="text-sm font-semibold text-slate-700 text-center leading-tight">Contacto</span></button>
                         </div>
 
-                        <button onclick="checkSocioLogin()" class="mt-2 w-full bg-indigo-600 text-white p-4 rounded-2xl shadow-md shadow-indigo-600/20 flex items-center justify-between active:scale-95 transition-transform">
-                            <div class="flex items-center gap-3"><i class="ph-fill ph-buildings text-2xl text-indigo-300"></i><div class="text-left"><span class="font-semibold text-sm block">Acceso Socios / Empresas</span><span class="text-xs text-indigo-200">Rent a Car & Flotas</span></div></div><i class="ph-bold ph-caret-right text-lg opacity-50"></i>
+                        <!-- BOTÓN DE SOCIOS INTELIGENTE -->
+                        <button id="btn-main-socio" onclick="checkSocioLogin()" class="mt-2 w-full bg-indigo-600 text-white p-4 rounded-2xl shadow-md shadow-indigo-600/20 flex items-center justify-between active:scale-95 transition-transform">
+                            <div class="flex items-center gap-3">
+                                <i class="ph-fill ph-buildings text-2xl text-white/70"></i>
+                                <div class="text-left">
+                                    <span id="btn-main-socio-title" class="font-semibold text-sm block">Acceso Socios / Empresas</span>
+                                    <span id="btn-main-socio-sub" class="text-xs text-white/70">Rent a Car & Flotas</span>
+                                </div>
+                            </div>
+                            <i class="ph-bold ph-caret-right text-lg opacity-50"></i>
                         </button>
 
                         <button onclick="openPage('pro-view')" class="mt-2 w-full bg-slate-800 text-white p-4 rounded-2xl shadow-md flex items-center justify-between active:scale-95 transition-transform">
@@ -98,22 +107,59 @@
                     </div>
                     <div class="flex-1 overflow-y-auto p-5 pb-12">
                         
+                        <!-- CABECERA EMPRESA CON LOGO -->
                         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-center mb-6">
+                            <div id="socio-logo-container" class="mx-auto mb-4 flex justify-center"></div>
                             <h2 class="text-2xl font-black text-slate-800">¡Hola, <span id="socio-name-display" class="text-indigo-600">Empresa</span>!</h2>
-                            <p class="text-slate-500 text-sm mt-2 mb-4">Bienvenido a tu portal de reservas.</p>
+                            <p class="text-slate-500 text-sm mt-1 mb-6">Bienvenido a tu portal de reservas.</p>
+                            
                             <button onclick="openBooking('socio')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-transform flex items-center justify-center gap-2">
                                 <i class="ph-bold ph-calendar-plus text-2xl"></i> Nueva Reserva
                             </button>
                         </div>
 
+                        <!-- TARJETAS FINANCIERAS -->
+                        <h3 class="font-bold text-lg text-slate-800 mb-3 flex items-center gap-2"><i class="ph-fill ph-wallet text-indigo-500"></i> Resumen de Facturación</h3>
+                        
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-3">
+                            <div class="flex justify-between items-center mb-3 pb-3 border-b border-slate-100">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Lavado Exterior</span>
+                                <span class="font-bold text-slate-700" id="socio-price-1">0€</span>
+                            </div>
+                            <div class="flex justify-between items-center mb-3 pb-3 border-b border-slate-100">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Lavado Interior</span>
+                                <span class="font-bold text-slate-700" id="socio-price-2">0€</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Lavado Completo</span>
+                                <span class="font-bold text-indigo-600" id="socio-price-3">0€</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-8">
+                            <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl">
+                                <p class="text-[10px] uppercase font-bold text-indigo-400 tracking-wider mb-1">Facturado Mes</p>
+                                <p class="text-2xl font-black text-indigo-900" id="socio-facturado">0€</p>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-100 p-4 rounded-2xl">
+                                <p class="text-[10px] uppercase font-bold text-amber-500 tracking-wider mb-1">Proyectado</p>
+                                <p class="text-2xl font-black text-amber-700" id="socio-proyectado">0€</p>
+                            </div>
+                            <div class="col-span-2 bg-emerald-50 border border-emerald-100 p-4 rounded-2xl flex justify-between items-center">
+                                <p class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Total Mensual Estimado</p>
+                                <p class="text-2xl font-black text-emerald-700" id="socio-total">0€</p>
+                            </div>
+                        </div>
+
+                        <!-- LISTAS DE CITAS -->
                         <h3 class="font-bold text-lg text-slate-800 mb-3 flex items-center gap-2"><i class="ph-fill ph-clock text-indigo-500"></i> Próximas Citas</h3>
                         <div id="socio-upcoming-list" class="space-y-3 mb-8"></div>
 
                         <h3 class="font-bold text-lg text-slate-800 mb-3 flex items-center gap-2"><i class="ph-fill ph-check-circle text-emerald-500"></i> Historial</h3>
                         <div id="socio-history-list" class="space-y-3 mb-6"></div>
 
-                        <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="mt-4 w-full bg-white border border-slate-200 text-slate-700 font-bold py-4 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
-                            <i class="ph-bold ph-whatsapp text-xl text-emerald-500"></i> Contacto Soporte
+                        <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="mt-4 w-full bg-slate-800 text-white font-bold py-4 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-whatsapp text-xl text-emerald-400"></i> Contacto Soporte
                         </button>
                     </div>
                 </div>
@@ -162,7 +208,6 @@
                         <p class="text-slate-500 text-sm mb-6">Elige el día que mejor te venga para dejar tu coche impoluto.</p>
                         
                         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
-                            <!-- NAVEGACIÓN DE MESES AÑADIDA AQUÍ -->
                             <div class="flex justify-between items-center mb-4">
                                 <button onclick="changeMonth(-1)" class="p-2 -ml-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors"><i class="ph-bold ph-caret-left text-xl"></i></button>
                                 <h3 class="font-bold text-lg text-slate-800 capitalize" id="calendar-month-text">Cargando...</h3>
@@ -228,13 +273,13 @@
         let selectedDateStr = ""; let selectedTimeStr = "";
         let currentSocio = null; 
         
-        // VARIABLES NAVEGACIÓN CALENDARIO
         let displayMonth = new Date().getMonth();
         let displayYear = new Date().getFullYear();
 
         const ALL_HOURS = [];
         for (let h = 0; h < 24; h++) { let hs = h.toString().padStart(2, '0'); ALL_HOURS.push(`${hs}:00`, `${hs}:30`); }
 
+        // TIEMPO REAL
         if (supabaseClient) {
             supabaseClient.channel('realtime-citas').on('postgres_changes', { event: '*', schema: 'public', table: 'citas' }, payload => {
                 if (selectedDateStr) {
@@ -285,8 +330,27 @@
             calculateProPrice();
             
             const savedSocio = localStorage.getItem('24h_socio');
-            if (savedSocio) { currentSocio = JSON.parse(savedSocio); checkSocioLogin(); }
+            if (savedSocio) { currentSocio = JSON.parse(savedSocio); updateSocioButton(); }
         });
+
+        // BOTÓN INTELIGENTE MAIN
+        function updateSocioButton() {
+            const btn = document.getElementById('btn-main-socio');
+            const title = document.getElementById('btn-main-socio-title');
+            const sub = document.getElementById('btn-main-socio-sub');
+            
+            if (currentSocio) {
+                title.textContent = `🚗 Mi Panel Corporativo`;
+                sub.textContent = currentSocio.company_name;
+                btn.classList.remove('bg-indigo-600', 'shadow-indigo-600/20');
+                btn.classList.add('bg-emerald-600', 'shadow-emerald-600/20');
+            } else {
+                title.textContent = "Acceso Socios / Empresas";
+                sub.textContent = "Rent a Car & Flotas";
+                btn.classList.remove('bg-emerald-600', 'shadow-emerald-600/20');
+                btn.classList.add('bg-indigo-600', 'shadow-indigo-600/20');
+            }
+        }
 
         // =====================================
         // LÓGICA DE SOCIOS
@@ -318,6 +382,7 @@
                     document.getElementById('socio-user').value = ''; document.getElementById('socio-pass').value = '';
                     closePage('socios-login-view');
                     document.getElementById('socio-name-display').textContent = currentSocio.company_name;
+                    updateSocioButton();
                     openPage('socios-dashboard-view');
                     loadSocioDashboard();
                 } else {
@@ -330,6 +395,7 @@
         function logoutSocio() {
             currentSocio = null;
             localStorage.removeItem('24h_socio');
+            updateSocioButton();
             closePage('socios-dashboard-view');
         }
 
@@ -339,19 +405,44 @@
             upcomingContainer.innerHTML = '<div class="text-center py-4"><i class="ph-bold ph-spinner animate-spin text-2xl text-indigo-500"></i></div>';
             historyContainer.innerHTML = '<div class="text-center py-4"><i class="ph-bold ph-spinner animate-spin text-2xl text-indigo-500"></i></div>';
 
+            // Logo Update
+            const logoContainer = document.getElementById('socio-logo-container');
+            if (currentSocio.logo_url) {
+                logoContainer.innerHTML = `<img src="${currentSocio.logo_url}" class="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-sm">`;
+            } else {
+                logoContainer.innerHTML = `<div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center shadow-sm"><i class="ph-bold ph-buildings text-3xl"></i></div>`;
+            }
+
+            // Prices Update
+            document.getElementById('socio-price-1').textContent = `${currentSocio.precio_fuera || 0}€`;
+            document.getElementById('socio-price-2').textContent = `${currentSocio.precio_dentro || 0}€`;
+            document.getElementById('socio-price-3').textContent = `${currentSocio.precio_completo || 0}€`;
+
             const { data, error } = await supabaseClient.from('citas').select('*').eq('socio_id', currentSocio.id).order('fecha', { ascending: false });
             if(error || !data) return;
 
             const now = new Date();
             const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
             let upcomingHtml = ''; let historyHtml = '';
+            let facturado = 0; let proyectado = 0;
 
             data.forEach(cita => {
                 const isPast = cita.fecha < todayStr || cita.estado === 'completado';
                 const match = cita.cliente.match(/-\s*(.*?)\s*\((.*)\)/);
-                const vehicle = match ? match[1] : "No especificado";
-                const service = match ? match[2] : "No especificado";
+                const vehicle = match ? match[1] : "No espec.";
+                const service = match ? match[2] : "No espec.";
+
+                // Finanzas solo del mes actual
+                if (cita.fecha.startsWith(currentMonthStr)) {
+                    let p = 0;
+                    if (service === 'Limpieza por fuera') p = parseFloat(currentSocio.precio_fuera) || 0;
+                    else if (service === 'Limpieza por dentro') p = parseFloat(currentSocio.precio_dentro) || 0;
+                    else if (service === 'Limpieza por dentro y fuera') p = parseFloat(currentSocio.precio_completo) || 0;
+                    
+                    if (isPast) facturado += p; else proyectado += p;
+                }
 
                 if (isPast) {
                     historyHtml += `
@@ -376,6 +467,10 @@
                         </div>`;
                 }
             });
+
+            document.getElementById('socio-facturado').textContent = `${facturado}€`;
+            document.getElementById('socio-proyectado').textContent = `${proyectado}€`;
+            document.getElementById('socio-total').textContent = `${facturado + proyectado}€`;
 
             upcomingContainer.innerHTML = upcomingHtml || '<p class="text-xs text-slate-400">No tienes citas pendientes.</p>';
             historyContainer.innerHTML = historyHtml || '<p class="text-xs text-slate-400">No hay historial de citas.</p>';
@@ -402,8 +497,6 @@
                 document.getElementById('fields-socio').classList.add('hidden');
             }
             openPage('booking-view');
-            
-            // Al abrir la reserva, siempre forzamos que se muestre el mes y año actuales.
             displayMonth = new Date().getMonth();
             displayYear = new Date().getFullYear();
             renderCalendar();
@@ -440,8 +533,6 @@
             const daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
 
             for (let i = 0; i < emptySpaces; i++) daysContainer.innerHTML += `<div></div>`;
-            
-            // Guardamos el día de hoy a las 00:00:00 para hacer la comprobación de pasados correcta
             const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
             for (let day = 1; day <= daysInMonth; day++) {
@@ -451,22 +542,12 @@
                 const dateStr = `${displayYear}-${String(displayMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
                 
                 const isSelected = (dateStr === selectedDateStr);
-                
                 let cls = `py-2 rounded-lg font-medium transition-colors client-day-btn `;
                 
-                if (isPast) {
-                    cls += "text-slate-300 cursor-not-allowed";
-                    daysContainer.innerHTML += `<div class="${cls}">${day}</div>`;
-                } else if (isSelected) {
-                    cls += "bg-slate-800 text-white shadow-md";
-                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
-                } else if (isToday) {
-                    cls += "bg-blue-600 text-white shadow-md cursor-pointer today-day";
-                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
-                } else {
-                    cls += "text-slate-700 bg-slate-50 cursor-pointer hover:bg-blue-100";
-                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
-                }
+                if (isPast) { cls += "text-slate-300 cursor-not-allowed"; daysContainer.innerHTML += `<div class="${cls}">${day}</div>`; } 
+                else if (isSelected) { cls += "bg-slate-800 text-white shadow-md"; daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`; } 
+                else if (isToday) { cls += "bg-blue-600 text-white shadow-md cursor-pointer today-day"; daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`; } 
+                else { cls += "text-slate-700 bg-slate-50 cursor-pointer hover:bg-blue-100"; daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`; }
             }
         }
 

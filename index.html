@@ -128,7 +128,7 @@
                         <div class="grid grid-cols-2 gap-4 mt-2">
                             <button onclick="openPage('about-view')" class="bg-transparent border border-slateborder p-5 rounded-arch flex flex-col items-center justify-center gap-3 active:bg-basalt transition-colors">
                                 <i class="ph-light ph-fingerprint text-2xl text-platinum"></i>
-                                <span class="text-[10px] font-display uppercase tracking-luxury text-platinum">Estudio</span>
+                                <span class="text-[10px] font-display uppercase tracking-luxury text-platinum">Sobre nosotros</span>
                             </button>
                             <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="bg-transparent border border-slateborder p-5 rounded-arch flex flex-col items-center justify-center gap-3 active:bg-basalt transition-colors">
                                 <i class="ph-light ph-chat-circle text-2xl text-platinum"></i>
@@ -139,9 +139,9 @@
                         <!-- BOTÓN SOCIOS -->
                         <button id="btn-main-socio" onclick="checkSocioLogin()" class="mt-4 w-full bg-basalt border border-slateborder text-platinum p-5 rounded-arch flex items-center justify-between active:bg-obsidian transition-colors">
                             <div class="flex items-center gap-4">
-                                <i class="ph-light ph-buildings text-xl"></i>
+                                <i id="btn-main-socio-icon" class="ph-light ph-buildings text-xl"></i>
                                 <div class="text-left">
-                                    <span id="btn-main-socio-title" class="font-display font-semibold uppercase tracking-luxury text-[10px] block">Portal Corporativo</span>
+                                    <span id="btn-main-socio-title" class="font-display font-semibold uppercase tracking-luxury text-[10px] block transition-colors">Portal Corporativo</span>
                                     <span id="btn-main-socio-sub" class="text-[9px] text-muted uppercase tracking-widest mt-1 block">Flotas & Rent a Car</span>
                                 </div>
                             </div>
@@ -340,20 +340,32 @@
 
                             <div id="client-info-section" class="hidden space-y-6">
                                 
+                                <!-- FORMULARIO CLIENTE NORMAL -->
                                 <div id="fields-normal" class="space-y-6">
-                                    <div><label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Identidad</label><input type="text" id="client-name" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors"></div>
-                                    <div><label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Contacto</label><input type="tel" id="client-phone" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors"></div>
+                                    <div>
+                                        <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Nombre</label>
+                                        <input type="text" id="client-name" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Contacto (Número de teléfono)</label>
+                                        <!-- SOLO NÚMEROS -->
+                                        <input type="tel" id="client-phone" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors">
+                                    </div>
                                 </div>
                                 
-                                <div><label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Ubicación Estratégica</label><input type="text" id="client-location" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors"></div>
+                                <div>
+                                    <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Ubicación</label>
+                                    <input type="text" id="client-location" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors">
+                                </div>
 
+                                <!-- FORMULARIO SOCIO -->
                                 <div id="fields-socio" class="hidden space-y-6">
                                     <div>
-                                        <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">ID Activo / Matrícula <span class="text-slateborder">(Opcional)</span></label>
+                                        <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Vehículo / Matrícula <span class="text-slateborder">(Opcional)</span></label>
                                         <input type="text" id="socio-car" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors">
                                     </div>
                                     <div>
-                                        <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Nivel de Intervención</label>
+                                        <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Servicio</label>
                                         <select id="socio-service" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors cursor-pointer appearance-none">
                                             <option value="" disabled selected>-- SELECCIONAR --</option>
                                             <option value="Limpieza por fuera">EXTERIOR</option>
@@ -364,7 +376,7 @@
                                 </div>
 
                                 <button onclick="confirmAppointment()" id="btn-confirmar" class="w-full bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-4 rounded-arch active:scale-[0.98] transition-transform mt-4">
-                                    Emitir Instrucción
+                                    RESERVAR
                                 </button>
                             </div>
                         </div>
@@ -448,22 +460,35 @@
             if (savedSocio) { currentSocio = JSON.parse(savedSocio); updateSocioButton(); }
         });
 
-        // BOTÓN INTELIGENTE MAIN
+        // BOTÓN INTELIGENTE MAIN (CON ARREGLO DE CONTRASTES)
         function updateSocioButton() {
             const btn = document.getElementById('btn-main-socio');
             const title = document.getElementById('btn-main-socio-title');
             const sub = document.getElementById('btn-main-socio-sub');
+            const icon = document.getElementById('btn-main-socio-icon');
             
             if (currentSocio) {
                 title.textContent = `Panel Corporativo`;
                 sub.textContent = currentSocio.company_name;
-                btn.classList.remove('bg-basalt');
-                btn.classList.add('bg-white', 'text-obsidian', 'border-transparent');
+                
+                // Mantenemos el fondo transparente/oscuro pero le damos un borde brillante para destacar sin romper visibilidad
+                btn.classList.remove('bg-basalt', 'border-slateborder');
+                btn.classList.add('bg-transparent', 'border-platinum');
+                
+                title.classList.replace('text-[10px]', 'text-[11px]');
+                title.classList.add('text-white');
+                if(icon) icon.classList.add('text-white');
             } else {
                 title.textContent = "Portal Corporativo";
                 sub.textContent = "Flotas & Rent a Car";
-                btn.classList.add('bg-basalt', 'text-platinum', 'border-slateborder');
-                btn.classList.remove('bg-white', 'text-obsidian', 'border-transparent');
+                
+                // Estado normal oscuro
+                btn.classList.remove('bg-transparent', 'border-platinum');
+                btn.classList.add('bg-basalt', 'border-slateborder');
+                
+                title.classList.replace('text-[11px]', 'text-[10px]');
+                title.classList.remove('text-white');
+                if(icon) icon.classList.remove('text-white');
             }
         }
 
@@ -609,6 +634,8 @@
                 document.getElementById('fields-socio').classList.add('hidden');
             }
             openPage('booking-view');
+            
+            // Forzamos calendario a mes actual
             displayMonth = new Date().getMonth();
             displayYear = new Date().getFullYear();
             renderCalendar();
@@ -727,11 +754,11 @@
 
             if (currentSocio) {
                 isSocioRes = true;
-                const car = document.getElementById('socio-car').value.trim() || 'N/A';
+                const car = document.getElementById('socio-car').value.trim() || 'No especificado';
                 const loc = document.getElementById('client-location').value.trim();
                 serviceType = document.getElementById('socio-service').value;
 
-                if (!loc || !serviceType) return showModal({ title: "Incompleto", message: "Ubicación y nivel de intervención requeridos." });
+                if (!loc || !serviceType) return showModal({ title: "Incompleto", message: "Ubicación y servicio requeridos." });
                 
                 finalName = `[SOCIO] ${currentSocio.company_name} - ${car} (${serviceType})`;
                 finalPhone = "SOCIO";
@@ -740,7 +767,7 @@
                 const name = document.getElementById('client-name').value.trim();
                 const phone = document.getElementById('client-phone').value.trim();
                 const loc = document.getElementById('client-location').value.trim();
-                if (!name || !phone || !loc) return showModal({ title: "Incompleto", message: "Identidad, contacto y ubicación requeridos." });
+                if (!name || !phone || !loc) return showModal({ title: "Incompleto", message: "Nombre, contacto y ubicación requeridos." });
                 finalName = name; finalPhone = phone; finalLocation = loc;
             }
             
@@ -752,7 +779,7 @@
                     const { data: check } = await supabaseClient.from('citas').select('id').eq('fecha', selectedDateStr).eq('hora', selectedTimeStr);
                     if (check && check.length > 0) {
                         showModal({ title: "Conflicto", message: "La franja acaba de ser ocupada." });
-                        btn.innerHTML = `Emitir Instrucción`; btn.disabled = false;
+                        btn.innerHTML = `RESERVAR`; btn.disabled = false;
                         document.getElementById('client-info-section').classList.add('hidden');
                         return renderTimeSlots(selectedDateStr);
                     }
@@ -766,7 +793,7 @@
 
             let telegramMsg = ""; let waMsg = "";
             if (isSocioRes) {
-                telegramMsg = `🏢 <b>INSTRUCCIÓN CORPORATIVA</b>\n\n👤 <b>Socio:</b> ${currentSocio.company_name}\n🧼 <b>Intervención:</b> ${serviceType}\n🚗 <b>ID:</b> ${document.getElementById('socio-car').value || 'N/A'}\n📍 <b>Ub:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
+                telegramMsg = `🏢 <b>INSTRUCCIÓN CORPORATIVA</b>\n\n👤 <b>Socio:</b> ${currentSocio.company_name}\n🧼 <b>Servicio:</b> ${serviceType}\n🚗 <b>Vehículo:</b> ${document.getElementById('socio-car').value || 'N/A'}\n📍 <b>Ub:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
                 waMsg = `¡Hola Pablo! 👋 Instrucción corporativa de ${currentSocio.company_name}.\n\n🧼 *Nivel:* ${serviceType}\n🚗 *ID:* ${document.getElementById('socio-car').value || 'N/A'}\n📍 *Ub:* ${finalLocation}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}`;
             } else {
                 telegramMsg = `🔔 <b>INSTRUCCIÓN PÚBLICA</b>\n\n👤 <b>Cliente:</b> ${finalName}\n📞 <b>Tfno:</b> ${finalPhone}\n📍 <b>Ub:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
@@ -781,7 +808,7 @@
             if(document.getElementById('socio-car')) document.getElementById('socio-car').value = '';
             if(document.getElementById('socio-service')) document.getElementById('socio-service').value = '';
             document.getElementById('time-selection').classList.add('hidden');
-            btn.innerHTML = `Emitir Instrucción`; btn.disabled = false;
+            btn.innerHTML = `RESERVAR`; btn.disabled = false;
             
             if(isSocioRes) loadSocioDashboard(); 
         }

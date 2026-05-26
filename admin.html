@@ -45,7 +45,9 @@
 
     <style>
         body { background-color: #0B0C0E; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     </style>
 </head>
 <body class="text-bodytext font-sans min-h-screen flex flex-col pb-32">
@@ -98,6 +100,7 @@
 
         <!-- SECCIÓN 1: CALENDARIO Y CITAS -->
         <div id="section-citas" class="grid md:grid-cols-12 gap-8 relative">
+            <!-- CALENDARIO -->
             <div class="md:col-span-5 lg:col-span-4 bg-basalt p-6 rounded-arch border border-slateborder h-fit md:sticky md:top-8 z-10">
                 <div class="flex justify-between items-center mb-6 border-b border-slateborder pb-4">
                     <button onclick="changeAdminMonth(-1)" class="text-muted hover:text-platinum transition-colors"><i class="ph-light ph-caret-left text-xl"></i></button>
@@ -108,6 +111,7 @@
                 <div id="admin-calendar-days" class="grid grid-cols-7 gap-2 text-center text-sm font-sans"></div>
             </div>
 
+            <!-- HORAS (SELECCIÓN MÚLTIPLE) -->
             <div class="md:col-span-7 lg:col-span-8 bg-basalt p-6 rounded-arch border border-slateborder z-0 min-h-[400px]">
                 <div id="admin-placeholder" class="h-full flex flex-col items-center justify-center text-muted py-20">
                     <i class="ph-light ph-calendar-blank text-5xl mb-4"></i>
@@ -130,6 +134,7 @@
 
         <!-- SECCIÓN 2: GESTIÓN DE SOCIOS Y ESTADÍSTICAS -->
         <div id="section-socios" class="hidden grid md:grid-cols-12 gap-8 relative">
+            <!-- CREAR SOCIO -->
             <div class="md:col-span-5 lg:col-span-4 bg-basalt p-6 rounded-arch border border-slateborder h-fit">
                 <h2 class="text-sm font-display font-semibold uppercase tracking-luxury text-platinum mb-2 flex items-center gap-2 border-b border-slateborder pb-4">
                     <i class="ph-light ph-buildings"></i> Nuevo Perfil Corporativo
@@ -162,6 +167,7 @@
                 </div>
             </div>
 
+            <!-- DASHBOARD DE SOCIOS -->
             <div class="md:col-span-7 lg:col-span-8 bg-basalt p-6 rounded-arch border border-slateborder">
                 <h2 class="text-sm font-display font-semibold uppercase tracking-luxury text-platinum mb-6 border-b border-slateborder pb-4">
                     Directorio Operativo
@@ -195,8 +201,9 @@
     </div>
 
     <!-- MODAL CONFIRMACIONES MULTIUSOS -->
-    <div id="admin-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-obsidian/90 backdrop-blur-md px-6">
-        <div class="bg-basalt p-8 rounded-arch w-full max-w-sm border border-slateborder transform scale-95 opacity-0 transition-all" id="admin-modal-box">
+    <div id="admin-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-obsidian/90 backdrop-blur-md px-6 py-10">
+        <!-- El max-w-md permite que la ventana de edición sea más ancha y cómoda. El max-h y overflow permite scroll si el móvil es pequeño -->
+        <div class="bg-basalt p-8 rounded-arch w-full max-w-md max-h-[90vh] overflow-y-auto border border-slateborder transform scale-95 opacity-0 transition-all" id="admin-modal-box">
             <h3 class="text-lg font-display uppercase tracking-luxury text-platinum mb-4" id="admin-modal-title">Título</h3>
             <div class="text-bodytext text-sm mb-8 leading-relaxed whitespace-pre-line font-sans" id="admin-modal-message">Mensaje</div>
             <div class="flex gap-4" id="admin-modal-buttons"></div>
@@ -255,7 +262,7 @@
         }
 
         // ========================================================
-        // GESTIÓN DE SOCIOS (CON EDICIÓN TOTAL)
+        // GESTIÓN DE SOCIOS
         // ========================================================
         async function loadSocios() {
             const container = document.getElementById('socios-list-container');
@@ -295,7 +302,6 @@
                     ? `<img src="${s.logo_url}" class="w-10 h-10 rounded-arch object-cover grayscale opacity-80 border border-slateborder">`
                     : `<div class="w-10 h-10 bg-obsidian border border-slateborder text-muted rounded-arch flex items-center justify-center"><i class="ph-light ph-buildings text-xl"></i></div>`;
 
-                // Codificamos variables para el botón de editar
                 const nameEnc = encodeURIComponent(s.company_name);
                 const userEnc = encodeURIComponent(s.username);
                 const passEnc = encodeURIComponent(s.password);
@@ -365,7 +371,7 @@
             const p3 = document.getElementById('new-socio-p3').value || 0;
             const logoFile = document.getElementById('new-socio-logo').files[0];
 
-            if(!name || !user || !pass) return showAdminModal("Incompleto", "Razón social, Identificador y Clave son obligatorios.", ()=>{});
+            if(!name || !user || !pass) return showAdminModal("Incompleto", "Identificador y Clave son mandatorios.", ()=>{});
             
             const btn = document.getElementById('btn-crear-socio');
             btn.innerHTML = `Procesando...`; btn.disabled = true;
@@ -399,7 +405,7 @@
         }
 
         // =========================================================
-        // EDICIÓN TOTAL DE SOCIOS
+        // EDICIÓN TOTAL DE SOCIOS (CON LOGO)
         // =========================================================
         function editSocio(id, nameEnc, userEnc, passEnc, p1, p2, p3) {
             const name = decodeURIComponent(nameEnc);
@@ -408,40 +414,74 @@
 
             const htmlMessage = `
                 <div class="space-y-4 mt-6 text-left">
-                    <div><label class="block text-[9px] font-display uppercase text-muted mb-1">Razón Social</label><input type="text" id="edit-name" value="${name}" class="w-full bg-obsidian border border-slateborder rounded-arch px-3 py-3 text-platinum outline-none text-sm"></div>
+                    <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-2">Razón Social</label><input type="text" id="edit-name" value="${name}" class="w-full bg-obsidian border border-slateborder rounded-arch px-3 py-3 text-platinum outline-none text-sm"></div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="block text-[9px] font-display uppercase text-muted mb-1">Usuario</label><input type="text" id="edit-user" value="${user}" class="w-full bg-obsidian border border-slateborder rounded-arch px-3 py-3 text-platinum outline-none text-sm"></div>
-                        <div><label class="block text-[9px] font-display uppercase text-muted mb-1">Clave</label><input type="text" id="edit-pass" value="${pass}" class="w-full bg-obsidian border border-slateborder rounded-arch px-3 py-3 text-platinum outline-none text-sm"></div>
+                        <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-2">Usuario</label><input type="text" id="edit-user" value="${user}" class="w-full bg-obsidian border border-slateborder rounded-arch px-3 py-3 text-platinum outline-none text-sm"></div>
+                        <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-2">Clave</label><input type="text" id="edit-pass" value="${pass}" class="w-full bg-obsidian border border-slateborder rounded-arch px-3 py-3 text-platinum outline-none text-sm"></div>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 mt-4">
-                        <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-1 text-center">EXT (€)</label><input type="number" id="edit-p1" value="${p1}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
-                        <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-1 text-center">INT (€)</label><input type="number" id="edit-p2" value="${p2}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
-                        <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-1 text-center">COMP (€)</label><input type="number" id="edit-p3" value="${p3}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
+                    <div class="grid grid-cols-3 gap-2 mt-2">
+                        <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-2 text-center">EXT (€)</label><input type="number" id="edit-p1" value="${p1}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
+                        <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-2 text-center">INT (€)</label><input type="number" id="edit-p2" value="${p2}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
+                        <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-2 text-center">COMP (€)</label><input type="number" id="edit-p3" value="${p3}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
+                    </div>
+                    <div class="border-t border-slateborder pt-4 mt-2">
+                        <label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-3">Sustituir Logotipo (Opcional)</label>
+                        <input type="file" id="edit-logo" accept="image/*" class="w-full text-xs text-muted file:mr-4 file:py-2 file:px-4 file:rounded-arch file:border file:border-slateborder file:bg-obsidian file:text-platinum hover:file:bg-basalt file:text-[10px] file:font-display file:uppercase file:cursor-pointer transition-colors cursor-pointer">
                     </div>
                 </div>
             `;
+            
             showAdminModal(`Revisión Perfil`, htmlMessage, async () => {
+                // Al darle a Confirmar, recogemos los datos
                 const nName = document.getElementById('edit-name').value;
                 const nUser = document.getElementById('edit-user').value;
                 const nPass = document.getElementById('edit-pass').value;
                 const np1 = document.getElementById('edit-p1').value || 0;
                 const np2 = document.getElementById('edit-p2').value || 0;
                 const np3 = document.getElementById('edit-p3').value || 0;
+                const logoFile = document.getElementById('edit-logo').files[0];
                 
-                await supabaseClient.from('socios').update({ 
+                // Creamos el objeto con los datos a actualizar
+                let updateData = { 
                     company_name: nName, username: nUser, password: nPass,
                     precio_fuera: np1, precio_dentro: np2, precio_completo: np3 
-                }).eq('id', id);
-                
+                };
+
+                // Si hay un logo nuevo, lo subimos
+                if (logoFile) {
+                    const fileExt = logoFile.name.split('.').pop();
+                    const fileName = `logo_${Date.now()}.${fileExt}`;
+                    const { data, error } = await supabaseClient.storage.from('logos').upload(fileName, logoFile);
+                    if (!error) {
+                        const { data: urlData } = supabaseClient.storage.from('logos').getPublicUrl(fileName);
+                        updateData.logo_url = urlData.publicUrl;
+                    }
+                }
+
+                // Actualizamos y recargamos
+                await supabaseClient.from('socios').update(updateData).eq('id', id);
                 loadSocios();
             }, true);
         }
 
+        // =========================================================
+        // BORRADO SEGURO DE SOCIOS (Elimina citas antes para no chocar)
+        // =========================================================
         function deleteSocio(id, nameEnc) {
             const name = decodeURIComponent(nameEnc);
-            showAdminModal("Revocar Acceso", `La corporación ${name} perderá acceso al sistema permanentemente.`, async () => {
-                await supabaseClient.from('socios').delete().eq('id', id);
-                loadSocios();
+            showAdminModal("Revocar Acceso", `La corporación ${name} perderá acceso al sistema permanentemente.\n\nIMPORTANTE: Esto purgará también todo su historial de registros para evitar datos huérfanos.`, async () => {
+                
+                // Primero borramos todas las citas de ese socio
+                await supabaseClient.from('citas').delete().eq('socio_id', id);
+                
+                // Ahora borramos al socio de forma segura
+                const { error } = await supabaseClient.from('socios').delete().eq('id', id);
+                
+                if(error) {
+                    alert("No se pudo eliminar el socio: " + error.message);
+                } else {
+                    loadSocios();
+                }
             }, false);
         }
 
@@ -603,10 +643,15 @@
             else document.getElementById('admin-modal-message').textContent = message;
             
             const btnContainer = document.getElementById('admin-modal-buttons'); btnContainer.innerHTML = '';
+            
+            // Si le pasas algo async, no queremos que se cierre antes de acabar para evitar fallos visuales.
+            // Para la confirmación, se ejecutará el callback. Depende de la acción, a veces no hay callback o es síncrono.
             const cleanup = () => { box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0'); setTimeout(() => modal.classList.add('hidden'), 400); };
             
             const btnCancel = document.createElement('button'); btnCancel.className = "flex-1 bg-obsidian border border-slateborder text-platinum font-display font-semibold uppercase tracking-cta py-3 rounded-arch transition-colors text-[10px]"; btnCancel.textContent = "Atrás"; btnCancel.onclick = cleanup;
-            const btnConfirm = document.createElement('button'); btnConfirm.className = "flex-1 bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-3 rounded-arch transition-colors text-[10px]"; btnConfirm.textContent = "Confirmar"; btnConfirm.onclick = () => { cleanup(); onConfirm(); };
+            
+            const btnConfirm = document.createElement('button'); btnConfirm.className = "flex-1 bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-3 rounded-arch transition-colors text-[10px]"; btnConfirm.textContent = "Confirmar"; 
+            btnConfirm.onclick = () => { cleanup(); onConfirm(); };
             
             btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnConfirm);
             modal.classList.remove('hidden'); setTimeout(() => { box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); }, 10);

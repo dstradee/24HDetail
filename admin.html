@@ -98,7 +98,6 @@
 
         <!-- SECCIÓN 1: CALENDARIO Y CITAS -->
         <div id="section-citas" class="grid md:grid-cols-12 gap-8 relative">
-            <!-- CALENDARIO -->
             <div class="md:col-span-5 lg:col-span-4 bg-basalt p-6 rounded-arch border border-slateborder h-fit md:sticky md:top-8 z-10">
                 <div class="flex justify-between items-center mb-6 border-b border-slateborder pb-4">
                     <button onclick="changeAdminMonth(-1)" class="text-muted hover:text-platinum transition-colors"><i class="ph-light ph-caret-left text-xl"></i></button>
@@ -109,7 +108,6 @@
                 <div id="admin-calendar-days" class="grid grid-cols-7 gap-2 text-center text-sm font-sans"></div>
             </div>
 
-            <!-- HORAS (SELECCIÓN MÚLTIPLE) -->
             <div class="md:col-span-7 lg:col-span-8 bg-basalt p-6 rounded-arch border border-slateborder z-0 min-h-[400px]">
                 <div id="admin-placeholder" class="h-full flex flex-col items-center justify-center text-muted py-20">
                     <i class="ph-light ph-calendar-blank text-5xl mb-4"></i>
@@ -132,7 +130,6 @@
 
         <!-- SECCIÓN 2: GESTIÓN DE SOCIOS Y ESTADÍSTICAS -->
         <div id="section-socios" class="hidden grid md:grid-cols-12 gap-8 relative">
-            <!-- CREAR SOCIO -->
             <div class="md:col-span-5 lg:col-span-4 bg-basalt p-6 rounded-arch border border-slateborder h-fit">
                 <h2 class="text-sm font-display font-semibold uppercase tracking-luxury text-platinum mb-2 flex items-center gap-2 border-b border-slateborder pb-4">
                     <i class="ph-light ph-buildings"></i> Nuevo Perfil Corporativo
@@ -165,7 +162,6 @@
                 </div>
             </div>
 
-            <!-- DASHBOARD DE SOCIOS -->
             <div class="md:col-span-7 lg:col-span-8 bg-basalt p-6 rounded-arch border border-slateborder">
                 <h2 class="text-sm font-display font-semibold uppercase tracking-luxury text-platinum mb-6 border-b border-slateborder pb-4">
                     Directorio Operativo
@@ -259,7 +255,7 @@
         }
 
         // ========================================================
-        // GESTIÓN DE SOCIOS
+        // GESTIÓN DE SOCIOS (CON EDICIÓN TOTAL)
         // ========================================================
         async function loadSocios() {
             const container = document.getElementById('socios-list-container');
@@ -268,7 +264,7 @@
             const { data: socios, error: errS } = await supabaseClient.from('socios').select('*').order('created_at', { ascending: false });
             const { data: citas, error: errC } = await supabaseClient.from('citas').select('socio_id, estado, fecha').not('socio_id', 'is', null);
 
-            if (errS) { container.innerHTML = '<p class="text-red-400 text-[10px] font-display uppercase tracking-widest text-center">Error de sistema</p>'; return; }
+            if (errS) { container.innerHTML = '<p class="text-[#FCA5A5] text-[10px] font-display uppercase tracking-widest text-center">Error de sistema</p>'; return; }
             if (socios.length === 0) { container.innerHTML = '<p class="text-muted text-[10px] font-display uppercase tracking-widest text-center py-6">Directorio vacío.</p>'; return; }
             
             globalStats = {}; globalSocios = socios;
@@ -299,6 +295,11 @@
                     ? `<img src="${s.logo_url}" class="w-10 h-10 rounded-arch object-cover grayscale opacity-80 border border-slateborder">`
                     : `<div class="w-10 h-10 bg-obsidian border border-slateborder text-muted rounded-arch flex items-center justify-center"><i class="ph-light ph-buildings text-xl"></i></div>`;
 
+                // Codificamos variables para el botón de editar
+                const nameEnc = encodeURIComponent(s.company_name);
+                const userEnc = encodeURIComponent(s.username);
+                const passEnc = encodeURIComponent(s.password);
+
                 html += `
                 <div class="bg-obsidian border border-slateborder p-6 rounded-arch">
                     <div class="flex justify-between items-start gap-4 mb-6 border-b border-slateborder pb-4">
@@ -310,8 +311,8 @@
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="editSocio('${s.id}', '${s.company_name}', ${s.precio_fuera}, ${s.precio_dentro}, ${s.precio_completo})" class="text-muted hover:text-platinum p-2 transition-colors"><i class="ph-light ph-pencil-simple text-lg"></i></button>
-                            <button onclick="deleteSocio('${s.id}', '${s.company_name}')" class="text-muted hover:text-white p-2 transition-colors"><i class="ph-light ph-trash text-lg"></i></button>
+                            <button onclick="editSocio('${s.id}', '${nameEnc}', '${userEnc}', '${passEnc}', ${s.precio_fuera}, ${s.precio_dentro}, ${s.precio_completo})" class="text-muted hover:text-platinum p-2 transition-colors" title="Editar Perfil Completo"><i class="ph-light ph-pencil-simple text-lg"></i></button>
+                            <button onclick="deleteSocio('${s.id}', '${nameEnc}')" class="text-muted hover:text-[#FCA5A5] p-2 transition-colors" title="Eliminar Socio"><i class="ph-light ph-trash text-lg"></i></button>
                         </div>
                     </div>
                     
@@ -342,10 +343,10 @@
                     </div>
 
                     <div class="flex gap-3">
-                        <button onclick="sendIndividualReport('${s.company_name}', ${p}, ${c})" class="flex-1 bg-basalt border border-slateborder hover:border-platinum text-platinum text-[9px] font-display uppercase tracking-widest py-3 rounded-arch transition-colors">
+                        <button onclick="sendIndividualReport('${nameEnc}', ${p}, ${c})" class="flex-1 bg-basalt border border-slateborder hover:border-platinum text-platinum text-[9px] font-display uppercase tracking-widest py-3 rounded-arch transition-colors">
                             Resumen Ops
                         </button>
-                        <button onclick="openCleanupModal('${s.id}', '${s.company_name}')" class="flex-1 bg-basalt border border-slateborder hover:border-platinum text-platinum text-[9px] font-display uppercase tracking-widest py-3 rounded-arch transition-colors">
+                        <button onclick="openCleanupModal('${s.id}', '${nameEnc}')" class="flex-1 bg-basalt border border-slateborder hover:border-platinum text-platinum text-[9px] font-display uppercase tracking-widest py-3 rounded-arch transition-colors">
                             Purgar Datos
                         </button>
                     </div>
@@ -364,7 +365,7 @@
             const p3 = document.getElementById('new-socio-p3').value || 0;
             const logoFile = document.getElementById('new-socio-logo').files[0];
 
-            if(!name || !user || !pass) return showAdminModal("Incompleto", "Identificador y Clave son mandatorios.", ()=>{});
+            if(!name || !user || !pass) return showAdminModal("Incompleto", "Razón social, Identificador y Clave son obligatorios.", ()=>{});
             
             const btn = document.getElementById('btn-crear-socio');
             btn.innerHTML = `Procesando...`; btn.disabled = true;
@@ -387,7 +388,7 @@
                 precio_fuera: p1, precio_dentro: p2, precio_completo: p3, logo_url: finalLogoUrl
             }]);
 
-            if(error) showAdminModal("Error de Sistema", "Colisión de identificador.", ()=>{});
+            if(error) showAdminModal("Error de Sistema", "Colisión de identificador (el usuario ya existe).", ()=>{});
             else {
                 document.getElementById('new-socio-name').value = ''; document.getElementById('new-socio-user').value = ''; document.getElementById('new-socio-pass').value = '';
                 document.getElementById('new-socio-p1').value = ''; document.getElementById('new-socio-p2').value = ''; document.getElementById('new-socio-p3').value = '';
@@ -397,34 +398,58 @@
             btn.innerHTML = `Registrar Perfil`; btn.disabled = false;
         }
 
-        function editSocio(id, name, p1, p2, p3) {
+        // =========================================================
+        // EDICIÓN TOTAL DE SOCIOS
+        // =========================================================
+        function editSocio(id, nameEnc, userEnc, passEnc, p1, p2, p3) {
+            const name = decodeURIComponent(nameEnc);
+            const user = decodeURIComponent(userEnc);
+            const pass = decodeURIComponent(passEnc);
+
             const htmlMessage = `
-                <div class="grid grid-cols-3 gap-3 mt-6">
-                    <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-2 text-center">EXT</label><input type="number" id="edit-p1" value="${p1}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
-                    <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-2 text-center">INT</label><input type="number" id="edit-p2" value="${p2}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
-                    <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-2 text-center">COMP</label><input type="number" id="edit-p3" value="${p3}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
+                <div class="space-y-4 mt-6 text-left">
+                    <div><label class="block text-[9px] font-display uppercase text-muted mb-1">Razón Social</label><input type="text" id="edit-name" value="${name}" class="w-full bg-obsidian border border-slateborder rounded-arch px-3 py-3 text-platinum outline-none text-sm"></div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="block text-[9px] font-display uppercase text-muted mb-1">Usuario</label><input type="text" id="edit-user" value="${user}" class="w-full bg-obsidian border border-slateborder rounded-arch px-3 py-3 text-platinum outline-none text-sm"></div>
+                        <div><label class="block text-[9px] font-display uppercase text-muted mb-1">Clave</label><input type="text" id="edit-pass" value="${pass}" class="w-full bg-obsidian border border-slateborder rounded-arch px-3 py-3 text-platinum outline-none text-sm"></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mt-4">
+                        <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-1 text-center">EXT (€)</label><input type="number" id="edit-p1" value="${p1}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
+                        <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-1 text-center">INT (€)</label><input type="number" id="edit-p2" value="${p2}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
+                        <div><label class="block text-[9px] font-display uppercase tracking-widest text-muted mb-1 text-center">COMP (€)</label><input type="number" id="edit-p3" value="${p3}" class="w-full bg-obsidian border border-slateborder rounded-arch px-2 py-3 text-center text-platinum outline-none"></div>
+                    </div>
                 </div>
             `;
-            showAdminModal(`Revisión Tarifas: ${name}`, htmlMessage, async () => {
+            showAdminModal(`Revisión Perfil`, htmlMessage, async () => {
+                const nName = document.getElementById('edit-name').value;
+                const nUser = document.getElementById('edit-user').value;
+                const nPass = document.getElementById('edit-pass').value;
                 const np1 = document.getElementById('edit-p1').value || 0;
                 const np2 = document.getElementById('edit-p2').value || 0;
                 const np3 = document.getElementById('edit-p3').value || 0;
-                await supabaseClient.from('socios').update({ precio_fuera: np1, precio_dentro: np2, precio_completo: np3 }).eq('id', id);
+                
+                await supabaseClient.from('socios').update({ 
+                    company_name: nName, username: nUser, password: nPass,
+                    precio_fuera: np1, precio_dentro: np2, precio_completo: np3 
+                }).eq('id', id);
+                
                 loadSocios();
             }, true);
         }
 
-        function deleteSocio(id, name) {
+        function deleteSocio(id, nameEnc) {
+            const name = decodeURIComponent(nameEnc);
             showAdminModal("Revocar Acceso", `La corporación ${name} perderá acceso al sistema permanentemente.`, async () => {
                 await supabaseClient.from('socios').delete().eq('id', id);
                 loadSocios();
             }, false);
         }
 
-        function openCleanupModal(socioId, name) {
+        function openCleanupModal(socioId, nameEnc) {
+            const name = decodeURIComponent(nameEnc);
             const htmlMessage = `
                 <p class="mb-6 text-bodytext text-sm font-sans">Selecciona el rango de datos ejecutados a purgar.</p>
-                <select id="cleanup-timeframe" class="w-full bg-obsidian border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum outline-none appearance-none">
+                <select id="cleanup-timeframe" class="w-full bg-obsidian border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum outline-none appearance-none cursor-pointer">
                     <option value="1">Registros de > 30 días</option>
                     <option value="2">Registros de > 60 días</option>
                     <option value="all">Purgado Total de Historial</option>
@@ -455,7 +480,8 @@
             showAdminModal("Confirmación", "El reporte ha sido transmitido a la terminal externa.", ()=>{}, false);
         }
 
-        function sendIndividualReport(name, p, c) {
+        function sendIndividualReport(nameEnc, p, c) {
+            const name = decodeURIComponent(nameEnc);
             let msg = `📊 <b>INFORME CORPORATIVO</b>\n\n🏢 <b>${name}</b>\n✅ Volumen Ejecutado: ${c}\n⏳ Volumen Activo: ${p}\n\n<i>SYS.v1.0 Auto-Report</i>`;
             fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' }) });
             showAdminModal("Confirmación", `Reporte de ${name} transmitido.`, ()=>{}, false);

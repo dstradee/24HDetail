@@ -3,253 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>24H Detailing</title>
+    <title>24H Detailing | Stealth Luxury</title>
+    
+    <!-- Tipografías de Alta Gama -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- CONFIGURACIÓN TAILWIND (STEALTH LUXURY) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#0B0C0E',
+                        basalt: '#16181C',
+                        platinum: '#F3F4F6',
+                        muted: '#9CA3AF',
+                        slateborder: '#22252A',
+                        bodytext: '#D1D5DB'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif']
+                    },
+                    letterSpacing: {
+                        luxury: '0.08em',
+                        cta: '0.05em'
+                    },
+                    borderRadius: {
+                        arch: '2px'
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { background-color: #0f172a; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
+        body { background-color: #0B0C0E; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 0px; background: transparent; }
-        .page-slide { position: absolute; inset: 0; z-index: 50; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s; visibility: hidden; }
+        
+        .page-slide { position: absolute; inset: 0; z-index: 50; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s; visibility: hidden; }
         .page-slide.open { transform: translateX(0); visibility: visible; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: #2563eb; cursor: pointer; margin-top: -8px; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4); }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: #e2e8f0; border-radius: 4px; }
+        
+        /* Slider Arquitectónico */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 20px; width: 20px; border-radius: 2px;
+            background: #F3F4F6; cursor: pointer; margin-top: -8px;
+        }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #22252A; border-radius: 2px; }
+        
+        /* Dropdown Nativo Modificado */
+        select option { background: #0B0C0E; color: #F3F4F6; }
+        select option:disabled { color: #22252A; }
     </style>
 </head>
-<body class="text-slate-800 antialiased font-sans">
+<body class="text-bodytext antialiased font-sans">
 
-    <div class="min-h-screen w-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-slate-800 to-blue-950 flex justify-center items-center lg:p-12">
+    <!-- WRAPPER PARA ESCRITORIO -->
+    <div class="min-h-screen w-full bg-obsidian flex justify-center items-center lg:p-12">
         <div class="max-w-6xl w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12">
             
             <!-- LADO IZQUIERDO PC -->
-            <div class="hidden lg:flex flex-col text-white max-w-lg z-10">
-                <div class="inline-block bg-blue-500/20 text-blue-300 font-semibold px-4 py-1.5 rounded-full mb-6 border border-blue-400/30 w-fit text-sm tracking-wide uppercase">Servicio Premium de Detallado</div>
-                <h1 class="text-6xl font-black mb-6 leading-tight">Dejamos tu coche <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">como nuevo</span></h1>
-                <p class="text-lg text-slate-300 mb-10 leading-relaxed">Reserva tu cita de forma rápida y sencilla. Nos dedicamos a devolverle a tu vehículo ese brillo del primer día.</p>
+            <div class="hidden lg:flex flex-col text-platinum max-w-lg z-10">
+                <div class="inline-block border border-slateborder text-muted font-display uppercase tracking-luxury px-4 py-2 rounded-arch mb-6 text-[10px]">
+                    Ingeniería Estética Avanzada
+                </div>
+                <h1 class="text-5xl font-display font-light uppercase tracking-luxury leading-tight mb-6">
+                    La restauración <br><span class="font-semibold text-white">estética al estándar</span><br>del 1%
+                </h1>
+                <p class="text-base text-muted mb-10 leading-relaxed font-sans">
+                    Arquitectura visual y precisión matemática aplicada al detailing de alto rendimiento.
+                </p>
                 <div class="grid grid-cols-2 gap-6">
-                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10"><div class="bg-amber-500/20 p-3 rounded-xl"><i class="ph-fill ph-sparkle text-2xl text-amber-400"></i></div><span class="font-medium text-slate-100">Acabado Premium</span></div>
-                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10"><div class="bg-blue-500/20 p-3 rounded-xl"><i class="ph-fill ph-clock text-2xl text-blue-400"></i></div><span class="font-medium text-slate-100">Ahorra Tiempo</span></div>
-                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10"><div class="bg-emerald-500/20 p-3 rounded-xl"><i class="ph-fill ph-shield-check text-2xl text-emerald-400"></i></div><span class="font-medium text-slate-100">Máxima Calidad</span></div>
-                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10"><div class="bg-purple-500/20 p-3 rounded-xl"><i class="ph-fill ph-handshake text-2xl text-purple-400"></i></div><span class="font-medium text-slate-100">Compraventas</span></div>
+                    <div class="flex items-center gap-4 bg-basalt p-4 rounded-arch border border-slateborder"><i class="ph-light ph-crosshair text-2xl text-platinum"></i><span class="font-display uppercase tracking-luxury text-[10px] text-platinum">Precisión</span></div>
+                    <div class="flex items-center gap-4 bg-basalt p-4 rounded-arch border border-slateborder"><i class="ph-light ph-shield-check text-2xl text-platinum"></i><span class="font-display uppercase tracking-luxury text-[10px] text-platinum">Exclusividad</span></div>
+                    <div class="flex items-center gap-4 bg-basalt p-4 rounded-arch border border-slateborder"><i class="ph-light ph-aperture text-2xl text-platinum"></i><span class="font-display uppercase tracking-luxury text-[10px] text-platinum">Tecnología</span></div>
+                    <div class="flex items-center gap-4 bg-basalt p-4 rounded-arch border border-slateborder"><i class="ph-light ph-buildings text-2xl text-platinum"></i><span class="font-display uppercase tracking-luxury text-[10px] text-platinum">Corporativo</span></div>
                 </div>
             </div>
 
-            <div id="app-container" class="relative w-full h-[100dvh] lg:h-[800px] lg:w-[390px] bg-slate-50 lg:rounded-[3rem] lg:shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden lg:border-[12px] border-slate-950 shrink-0 z-20">
-                <div class="hidden lg:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-slate-950 rounded-b-3xl z-50"></div>
+            <!-- LA APLICACIÓN -->
+            <div id="app-container" class="relative w-full h-[100dvh] lg:h-[800px] lg:w-[390px] bg-obsidian lg:rounded-[40px] lg:border-[8px] border-[#16181C] shrink-0 z-20 shadow-2xl overflow-hidden">
+                <div class="hidden lg:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-[#16181C] rounded-b-xl z-50"></div>
 
-                <div id="custom-modal" class="hidden absolute inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-5">
-                    <div class="bg-white p-6 rounded-3xl shadow-2xl w-full transform transition-all scale-95 opacity-0" id="custom-modal-box">
-                        <h3 class="text-xl font-bold text-slate-800 mb-2" id="modal-title">Título</h3>
-                        <p class="text-slate-600 text-sm mb-6 leading-relaxed" id="modal-message">Mensaje...</p>
-                        <div class="flex gap-3" id="modal-buttons"></div>
+                <!-- MODAL DE AVISOS -->
+                <div id="custom-modal" class="hidden absolute inset-0 z-[100] flex items-center justify-center bg-obsidian/90 backdrop-blur-md px-6">
+                    <div class="bg-basalt p-8 rounded-arch w-full transform transition-all scale-95 opacity-0 border border-slateborder" id="custom-modal-box">
+                        <h3 class="text-lg font-display uppercase tracking-luxury text-platinum mb-4" id="modal-title">Título</h3>
+                        <p class="text-bodytext text-sm mb-8 leading-relaxed" id="modal-message">Mensaje...</p>
+                        <div class="flex gap-4" id="modal-buttons"></div>
                     </div>
                 </div>
 
                 <main id="main-view" class="h-full flex flex-col w-full relative z-10 overflow-y-auto pb-6">
-                    <header class="bg-slate-900 text-white rounded-b-3xl pt-14 pb-8 px-6 shadow-lg relative overflow-hidden shrink-0">
-                        <div class="absolute -top-16 -right-16 w-48 h-48 bg-blue-500 rounded-full opacity-20 blur-2xl"></div>
+                    
+                    <!-- HERO SECTION STEALTH -->
+                    <header class="bg-obsidian border-b border-slateborder pt-16 pb-10 px-6 relative shrink-0">
                         <div class="relative z-10">
-                            <div class="flex justify-between items-center mb-6">
-                                <div><p class="text-blue-400 text-sm font-semibold uppercase tracking-wider mb-1">24H Detailing</p><h1 class="text-2xl font-bold leading-tight">Reserva tu <br>lavado hoy</h1></div>
-                                <i class="ph-fill ph-car-profile text-5xl text-blue-400 opacity-80"></i>
-                            </div>
+                            <p class="text-muted text-[10px] font-display uppercase tracking-luxury mb-4">Detailing de Precisión Comprometida</p>
+                            <h1 class="text-2xl font-display font-light uppercase tracking-luxury leading-tight text-platinum">
+                                Restauración estética <br>al estándar del <span class="font-semibold text-white">1%</span>
+                            </h1>
                         </div>
                     </header>
 
-                    <div class="flex-1 px-5 py-6 flex flex-col gap-4 relative z-20">
-                        <button onclick="openBooking('client');" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-5 rounded-2xl shadow-xl shadow-blue-600/20 flex items-center justify-between transition-transform active:scale-95">
-                            <div class="flex items-center gap-4"><div class="bg-white/20 p-3 rounded-xl"><i class="ph ph-calendar-plus text-2xl"></i></div><div class="text-left"><h2 class="text-lg font-bold">Agendar una cita</h2><p class="text-blue-100 text-xs">Reserva tu hueco ahora</p></div></div><i class="ph-bold ph-caret-right text-xl opacity-70"></i>
+                    <div class="flex-1 px-6 py-8 flex flex-col gap-4 relative z-20">
+                        
+                        <!-- CTA PRIMARIO -->
+                        <button onclick="openBooking('client');" class="w-full bg-white text-obsidian py-5 px-6 rounded-arch flex items-center justify-between transition-transform active:scale-[0.98]">
+                            <div class="flex items-center gap-4">
+                                <div class="text-left">
+                                    <h2 class="text-sm font-display font-semibold uppercase tracking-cta">Reserva tu Cita</h2>
+                                    <p class="text-obsidian/70 text-[10px] font-display uppercase tracking-widest mt-1">Acceso a agenda</p>
+                                </div>
+                            </div>
+                            <i class="ph-light ph-arrow-right text-xl"></i>
                         </button>
 
                         <div class="grid grid-cols-2 gap-4 mt-2">
-                            <button onclick="openPage('about-view')" class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors"><i class="ph-fill ph-user text-3xl text-slate-700"></i><span class="text-sm font-semibold text-slate-700">Sobre mí</span></button>
-                            <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 active:bg-slate-100 transition-colors"><i class="ph-fill ph-whatsapp-logo text-3xl text-emerald-500"></i><span class="text-sm font-semibold text-slate-700 text-center leading-tight">Contacto</span></button>
+                            <button onclick="openPage('about-view')" class="bg-transparent border border-slateborder p-5 rounded-arch flex flex-col items-center justify-center gap-3 active:bg-basalt transition-colors">
+                                <i class="ph-light ph-fingerprint text-2xl text-platinum"></i>
+                                <span class="text-[10px] font-display uppercase tracking-luxury text-platinum">Estudio</span>
+                            </button>
+                            <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="bg-transparent border border-slateborder p-5 rounded-arch flex flex-col items-center justify-center gap-3 active:bg-basalt transition-colors">
+                                <i class="ph-light ph-chat-circle text-2xl text-platinum"></i>
+                                <span class="text-[10px] font-display uppercase tracking-luxury text-platinum">Contacto</span>
+                            </button>
                         </div>
 
-                        <!-- BOTÓN DE SOCIOS INTELIGENTE -->
-                        <button id="btn-main-socio" onclick="checkSocioLogin()" class="mt-2 w-full bg-indigo-600 text-white p-4 rounded-2xl shadow-md shadow-indigo-600/20 flex items-center justify-between active:scale-95 transition-transform">
-                            <div class="flex items-center gap-3">
-                                <i class="ph-fill ph-buildings text-2xl text-white/70"></i>
+                        <!-- BOTÓN SOCIOS -->
+                        <button id="btn-main-socio" onclick="checkSocioLogin()" class="mt-4 w-full bg-basalt border border-slateborder text-platinum p-5 rounded-arch flex items-center justify-between active:bg-obsidian transition-colors">
+                            <div class="flex items-center gap-4">
+                                <i class="ph-light ph-buildings text-xl"></i>
                                 <div class="text-left">
-                                    <span id="btn-main-socio-title" class="font-semibold text-sm block">Acceso Socios / Empresas</span>
-                                    <span id="btn-main-socio-sub" class="text-xs text-white/70">Rent a Car & Flotas</span>
+                                    <span id="btn-main-socio-title" class="font-display font-semibold uppercase tracking-luxury text-[10px] block">Portal Corporativo</span>
+                                    <span id="btn-main-socio-sub" class="text-[9px] text-muted uppercase tracking-widest mt-1 block">Flotas & Rent a Car</span>
                                 </div>
                             </div>
-                            <i class="ph-bold ph-caret-right text-lg opacity-50"></i>
                         </button>
 
-                        <button onclick="openPage('pro-view')" class="mt-2 w-full bg-slate-800 text-white p-4 rounded-2xl shadow-md flex items-center justify-between active:scale-95 transition-transform">
-                            <div class="flex items-center gap-3"><i class="ph-fill ph-handshake text-2xl text-emerald-400"></i><div class="text-left"><span class="font-semibold text-sm block">Soy Compraventas</span><span class="text-xs text-slate-400">Calculadora de Tarifas</span></div></div><i class="ph-bold ph-caret-right text-lg opacity-50"></i>
+                        <button onclick="openPage('pro-view')" class="mt-2 w-full bg-transparent border border-slateborder text-platinum p-5 rounded-arch flex items-center justify-between active:bg-basalt transition-colors">
+                            <div class="flex items-center gap-4">
+                                <i class="ph-light ph-calculator text-xl"></i>
+                                <div class="text-left">
+                                    <span class="font-display font-semibold uppercase tracking-luxury text-[10px] block">Tarifas Compraventa</span>
+                                </div>
+                            </div>
                         </button>
                     </div>
-                    <footer class="text-center py-4 text-slate-400 text-xs mt-auto relative z-30">&copy; 2026 24H Detailing <button onclick="window.location.href='admin.html'" class="p-2 hover:bg-slate-200 rounded-full transition-colors active:scale-90 cursor-pointer pointer-events-auto text-slate-500"><i class="ph-fill ph-lock-key text-lg"></i></button></footer>
+                    
+                    <footer class="text-center py-6 text-muted text-[10px] font-display uppercase tracking-widest mt-auto relative z-30 flex justify-center items-center gap-4 border-t border-slateborder mx-6">
+                        <span>SYS.v1.0</span>
+                        <button onclick="window.location.href='admin.html'" class="p-2 hover:text-platinum transition-colors"><i class="ph-light ph-terminal-window text-lg"></i></button>
+                    </footer>
                 </main>
 
                 <!-- LOGIN SOCIOS -->
-                <div id="socios-login-view" class="page-slide bg-indigo-950 flex flex-col pt-4 lg:pt-8 text-white">
-                    <div class="px-4 py-4 flex items-center sticky top-0 z-10"><button onclick="closePage('socios-login-view')" class="p-2 -ml-2 rounded-full hover:bg-indigo-900 transition-colors"><i class="ph-bold ph-x text-2xl"></i></button></div>
-                    <div class="flex-1 px-6 flex flex-col justify-center pb-20">
-                        <div class="text-center mb-8"><div class="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/30"><i class="ph-bold ph-buildings text-3xl text-white"></i></div><h2 class="text-2xl font-bold">Portal de Socios</h2><p class="text-indigo-300 text-sm mt-2">Acceso exclusivo para empresas</p></div>
-                        <div class="space-y-4">
-                            <div><label class="block text-xs font-bold text-indigo-300 uppercase tracking-wider mb-2">Usuario</label><input type="text" id="socio-user" placeholder="tu_usuario" class="w-full bg-indigo-900 border border-indigo-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500"></div>
-                            <div><label class="block text-xs font-bold text-indigo-300 uppercase tracking-wider mb-2">Contraseña</label><input type="password" id="socio-pass" placeholder="••••••••" class="w-full bg-indigo-900 border border-indigo-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500"></div>
-                            <div id="socio-login-error" class="hidden text-red-400 text-sm text-center font-medium py-2"></div>
-                            <button onclick="loginSocio()" id="btn-login-socio" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg mt-4 active:scale-95 transition-transform">Entrar</button>
+                <div id="socios-login-view" class="page-slide bg-obsidian flex flex-col">
+                    <div class="px-6 py-6 flex items-center border-b border-slateborder">
+                        <button onclick="closePage('socios-login-view')" class="p-2 -ml-2 text-platinum hover:text-white transition-colors"><i class="ph-light ph-x text-xl"></i></button>
+                        <span class="ml-auto text-[10px] font-display uppercase tracking-luxury text-muted">Auth_Sys</span>
+                    </div>
+                    <div class="flex-1 px-8 flex flex-col justify-center pb-20">
+                        <div class="text-center mb-10">
+                            <h2 class="text-xl font-display font-light uppercase tracking-luxury text-platinum">Acceso <br><span class="font-semibold text-white">Restringido</span></h2>
+                        </div>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Identificador</label>
+                                <input type="text" id="socio-user" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Clave de Acceso</label>
+                                <input type="password" id="socio-pass" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors">
+                            </div>
+                            <div id="socio-login-error" class="hidden text-platinum text-[10px] font-display uppercase tracking-widest border border-slateborder p-3 text-center rounded-arch mt-2"></div>
+                            
+                            <button onclick="loginSocio()" id="btn-login-socio" class="w-full bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-4 rounded-arch mt-6 active:scale-[0.98] transition-transform">
+                                Autorizar
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- DASHBOARD SOCIO -->
-                <div id="socios-dashboard-view" class="page-slide bg-slate-50 flex flex-col pt-4 lg:pt-8">
-                    <div class="bg-indigo-900 text-white px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow-md">
-                        <div class="flex items-center"><button onclick="closePage('socios-dashboard-view')" class="p-2 -ml-2 rounded-full hover:bg-indigo-800 transition-colors"><i class="ph-bold ph-arrow-left text-2xl"></i></button><h2 class="text-lg font-bold ml-2">Panel Socio</h2></div>
-                        <button onclick="logoutSocio()" class="text-indigo-300 hover:text-white font-bold text-sm"><i class="ph-bold ph-sign-out"></i> Salir</button>
+                <div id="socios-dashboard-view" class="page-slide bg-obsidian flex flex-col">
+                    <div class="px-6 py-6 flex items-center justify-between border-b border-slateborder">
+                        <div class="flex items-center">
+                            <button onclick="closePage('socios-dashboard-view')" class="p-2 -ml-2 text-platinum"><i class="ph-light ph-arrow-left text-xl"></i></button>
+                        </div>
+                        <button onclick="logoutSocio()" class="text-[10px] font-display uppercase tracking-luxury text-muted hover:text-platinum">Desconectar</button>
                     </div>
-                    <div class="flex-1 overflow-y-auto p-5 pb-12">
-                        
-                        <!-- CABECERA EMPRESA CON LOGO -->
-                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-center mb-6">
-                            <div id="socio-logo-container" class="mx-auto mb-4 flex justify-center"></div>
-                            <h2 class="text-2xl font-black text-slate-800">¡Hola, <span id="socio-name-display" class="text-indigo-600">Empresa</span>!</h2>
-                            <p class="text-slate-500 text-sm mt-1 mb-6">Bienvenido a tu portal de reservas.</p>
-                            
-                            <button onclick="openBooking('socio')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-transform flex items-center justify-center gap-2">
-                                <i class="ph-bold ph-calendar-plus text-2xl"></i> Nueva Reserva
-                            </button>
+                    
+                    <div class="flex-1 overflow-y-auto px-6 py-8">
+                        <div class="mb-10">
+                            <div id="socio-logo-container" class="mb-6"></div>
+                            <h2 class="text-2xl font-display font-light uppercase tracking-luxury text-platinum">Panel <br><span class="font-semibold text-white" id="socio-name-display">Empresa</span></h2>
                         </div>
 
-                        <!-- TARJETAS FINANCIERAS -->
-                        <h3 class="font-bold text-lg text-slate-800 mb-3 flex items-center gap-2"><i class="ph-fill ph-wallet text-indigo-500"></i> Resumen de Facturación</h3>
-                        
-                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-3">
-                            <div class="flex justify-between items-center mb-3 pb-3 border-b border-slate-100">
-                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Lavado Exterior</span>
-                                <span class="font-bold text-slate-700" id="socio-price-1">0€</span>
-                            </div>
-                            <div class="flex justify-between items-center mb-3 pb-3 border-b border-slate-100">
-                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Lavado Interior</span>
-                                <span class="font-bold text-slate-700" id="socio-price-2">0€</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Lavado Completo</span>
-                                <span class="font-bold text-indigo-600" id="socio-price-3">0€</span>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3 mb-8">
-                            <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl">
-                                <p class="text-[10px] uppercase font-bold text-indigo-400 tracking-wider mb-1">Facturado Mes</p>
-                                <p class="text-2xl font-black text-indigo-900" id="socio-facturado">0€</p>
-                            </div>
-                            <div class="bg-amber-50 border border-amber-100 p-4 rounded-2xl">
-                                <p class="text-[10px] uppercase font-bold text-amber-500 tracking-wider mb-1">Proyectado</p>
-                                <p class="text-2xl font-black text-amber-700" id="socio-proyectado">0€</p>
-                            </div>
-                            <div class="col-span-2 bg-emerald-50 border border-emerald-100 p-4 rounded-2xl flex justify-between items-center">
-                                <p class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Total Mensual Estimado</p>
-                                <p class="text-2xl font-black text-emerald-700" id="socio-total">0€</p>
-                            </div>
-                        </div>
-
-                        <!-- LISTAS DE CITAS -->
-                        <h3 class="font-bold text-lg text-slate-800 mb-3 flex items-center gap-2"><i class="ph-fill ph-clock text-indigo-500"></i> Próximas Citas</h3>
-                        <div id="socio-upcoming-list" class="space-y-3 mb-8"></div>
-
-                        <h3 class="font-bold text-lg text-slate-800 mb-3 flex items-center gap-2"><i class="ph-fill ph-check-circle text-emerald-500"></i> Historial</h3>
-                        <div id="socio-history-list" class="space-y-3 mb-6"></div>
-
-                        <button onclick="window.open('https://wa.me/34644909851', '_blank')" class="mt-4 w-full bg-slate-800 text-white font-bold py-4 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
-                            <i class="ph-bold ph-whatsapp text-xl text-emerald-400"></i> Contacto Soporte
+                        <button onclick="openBooking('socio')" class="w-full bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-4 rounded-arch mb-10 active:scale-[0.98] transition-transform flex items-center justify-center gap-3">
+                            Generar Instrucción
                         </button>
+
+                        <div class="mb-10">
+                            <h3 class="text-[10px] font-display uppercase tracking-luxury text-muted mb-4 border-b border-slateborder pb-2">Parámetros Financieros</h3>
+                            <div class="grid grid-cols-3 gap-2 mb-6">
+                                <div class="bg-basalt border border-slateborder p-4 rounded-arch text-center">
+                                    <span class="block text-[9px] uppercase tracking-widest text-muted mb-2">EXT</span>
+                                    <span class="font-sans text-sm text-platinum" id="socio-price-1">0€</span>
+                                </div>
+                                <div class="bg-basalt border border-slateborder p-4 rounded-arch text-center">
+                                    <span class="block text-[9px] uppercase tracking-widest text-muted mb-2">INT</span>
+                                    <span class="font-sans text-sm text-platinum" id="socio-price-2">0€</span>
+                                </div>
+                                <div class="bg-basalt border border-slateborder p-4 rounded-arch text-center">
+                                    <span class="block text-[9px] uppercase tracking-widest text-muted mb-2">COMP</span>
+                                    <span class="font-sans text-sm text-platinum" id="socio-price-3">0€</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="bg-transparent border border-slateborder p-4 rounded-arch">
+                                    <p class="text-[9px] uppercase tracking-widest text-muted mb-2">Facturado</p>
+                                    <p class="text-xl font-display font-light text-platinum" id="socio-facturado">0€</p>
+                                </div>
+                                <div class="bg-transparent border border-slateborder p-4 rounded-arch">
+                                    <p class="text-[9px] uppercase tracking-widest text-muted mb-2">Proyectado</p>
+                                    <p class="text-xl font-display font-light text-platinum" id="socio-proyectado">0€</p>
+                                </div>
+                                <div class="col-span-2 bg-basalt border border-slateborder p-5 rounded-arch flex justify-between items-center">
+                                    <p class="text-[10px] font-display uppercase tracking-luxury text-muted">Total Estimado</p>
+                                    <p class="text-xl font-display font-semibold text-white" id="socio-total">0€</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <h3 class="text-[10px] font-display uppercase tracking-luxury text-muted mb-4 border-b border-slateborder pb-2">Instrucciones Activas</h3>
+                            <div id="socio-upcoming-list" class="space-y-4"></div>
+                        </div>
+
+                        <div class="mb-10">
+                            <h3 class="text-[10px] font-display uppercase tracking-luxury text-muted mb-4 border-b border-slateborder pb-2">Registro de Operaciones</h3>
+                            <div id="socio-history-list" class="space-y-4"></div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- PÁGINA: PROFESIONALES COMPRAVENTA -->
-                <div id="pro-view" class="page-slide bg-slate-50 flex flex-col pt-4 lg:pt-8">
-                    <div class="bg-slate-900 px-4 py-4 flex items-center sticky top-0 z-10 text-white shadow-md"><button onclick="closePage('pro-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-800 active:bg-slate-700 transition-colors"><i class="ph-bold ph-arrow-left text-2xl"></i></button><h2 class="text-lg font-bold ml-2">Planes Compraventa</h2></div>
-                    <div class="flex-1 overflow-y-auto p-5 pb-10">
-                        <div class="text-center mb-6 mt-2"><i class="ph-fill ph-handshake text-5xl text-emerald-500 mb-2"></i><h3 class="text-xl font-bold text-slate-800">Suscripción Mensual</h3><p class="text-xs text-slate-500 mt-2">¿Tienes volumen de stock? Ahorra dinero fijando tus lavados al mes. Tarifa pública normal: 11 €/coche.</p></div>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 text-center">¿Coches a la semana? (Máx. 20)</label>
-                            <div class="flex items-center gap-4 mb-5"><span class="text-slate-400 text-sm font-bold">2</span><input type="range" id="cars-slider" min="2" max="20" value="2" class="w-full appearance-none bg-transparent" oninput="calculateProPrice()"><span class="text-slate-400 text-sm font-bold">20</span></div>
-                            <div class="text-center mb-5"><div class="inline-block bg-blue-50 px-4 py-1.5 rounded-xl border border-blue-100"><span class="text-blue-800 font-bold text-xl" id="cars-count">2</span> <span class="text-blue-600 text-xs font-semibold">coches / sem</span></div></div>
-                            <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
-                                <div class="flex justify-between items-center text-sm"><span class="text-slate-500">Precio por coche:</span><span class="font-bold text-slate-800" id="price-per-car">10.00 €</span></div>
-                                <div class="flex justify-between items-center text-sm"><span class="text-slate-500">Total semanal:</span><span class="font-semibold text-slate-700" id="weekly-total">20.00 €</span></div>
-                                <div class="flex justify-between items-center pt-2 border-t border-slate-200"><span class="text-slate-800 font-bold text-sm">Tu Suscripción:</span><span class="font-black text-blue-600 text-xl" id="monthly-total">80.00 €</span></div>
+                <div id="pro-view" class="page-slide bg-obsidian flex flex-col">
+                    <div class="px-6 py-6 flex items-center border-b border-slateborder">
+                        <button onclick="closePage('pro-view')" class="p-2 -ml-2 text-platinum hover:text-white"><i class="ph-light ph-arrow-left text-xl"></i></button>
+                        <span class="ml-auto text-[10px] font-display uppercase tracking-luxury text-muted">Calculadora Vol.</span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto px-6 py-8">
+                        <h2 class="text-2xl font-display font-light uppercase tracking-luxury text-platinum mb-8">Volumen <br><span class="font-semibold text-white">Operativo</span></h2>
+                        
+                        <div class="bg-basalt border border-slateborder p-6 rounded-arch">
+                            <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-6 text-center">Unidades / Semana</label>
+                            
+                            <div class="flex items-center gap-4 mb-8">
+                                <span class="text-muted text-xs font-display">02</span>
+                                <input type="range" id="cars-slider" min="2" max="20" value="2" class="w-full appearance-none bg-transparent" oninput="calculateProPrice()">
+                                <span class="text-muted text-xs font-display">20</span>
                             </div>
-                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between"><div class="flex items-center gap-3"><div class="bg-emerald-500 text-white p-2 rounded-lg"><i class="ph-bold ph-trend-down text-lg"></i></div><div><p class="text-[11px] text-emerald-700 font-medium">Respecto a normal</p><p class="text-sm font-bold text-emerald-950">Te ahorras:</p></div></div><div class="text-right"><span class="font-black text-emerald-600 text-xl block" id="savings-total">8.00 €</span><span class="text-[10px] uppercase text-emerald-700 font-bold tracking-wider">Al mes</span></div></div>
-                            <button onclick="window.open('https://wa.me/34644909851?text=' + encodeURIComponent('Hola soy compraventas y me gustaría tener más información acerca de tus servicios'), '_blank')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mt-6"><i class="ph-bold ph-whatsapp text-2xl"></i> Contáctame</button>
+                            
+                            <div class="text-center mb-8 border-b border-slateborder pb-8">
+                                <span class="font-display text-4xl font-light text-platinum block mb-1" id="cars-count">2</span> 
+                                <span class="text-[10px] font-display uppercase tracking-luxury text-muted">Unidades</span>
+                            </div>
+
+                            <div class="space-y-4 mb-8">
+                                <div class="flex justify-between items-center"><span class="text-[10px] font-display uppercase tracking-widest text-muted">Costo Unitario</span><span class="font-sans text-sm text-platinum" id="price-per-car">10.00 €</span></div>
+                                <div class="flex justify-between items-center"><span class="text-[10px] font-display uppercase tracking-widest text-muted">Costo Semanal</span><span class="font-sans text-sm text-platinum" id="weekly-total">20.00 €</span></div>
+                                <div class="flex justify-between items-center pt-4 border-t border-slateborder"><span class="text-[10px] font-display font-semibold uppercase tracking-luxury text-white">Compromiso Mensual</span><span class="font-sans text-lg text-white" id="monthly-total">80.00 €</span></div>
+                            </div>
+                            
+                            <div class="bg-transparent border border-slateborder p-4 rounded-arch flex items-center justify-between mb-8">
+                                <span class="text-[10px] font-display uppercase tracking-luxury text-muted">Ahorro Mensual</span>
+                                <span class="font-sans text-base text-platinum" id="savings-total">8.00 €</span>
+                            </div>
+                            
+                            <button onclick="window.open('https://wa.me/34644909851?text=' + encodeURIComponent('Solicitud de evaluación para acuerdo de volumen.'), '_blank')" class="w-full bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-4 rounded-arch active:scale-[0.98] transition-transform">
+                                Solicitar Evaluación
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- PÁGINA: SOBRE MÍ -->
-                <div id="about-view" class="page-slide bg-slate-50 flex flex-col pt-4 lg:pt-8">
-                    <div class="bg-white border-b border-slate-100 px-4 py-4 flex items-center sticky top-0 z-10 shadow-sm"><button onclick="closePage('about-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-600"><i class="ph-bold ph-arrow-left text-2xl"></i></button><h2 class="text-lg font-bold ml-2 text-slate-800">Sobre mí</h2></div>
-                    <div class="flex-1 overflow-y-auto p-6">
-                        <div class="w-32 h-32 mx-auto rounded-full bg-slate-200 border-4 border-white shadow-lg overflow-hidden mb-6 flex items-center justify-center"><i class="ph-fill ph-user text-5xl text-slate-400"></i></div>
-                        <h1 class="text-2xl font-bold text-center text-slate-900 mb-2">¡Hola! Soy Pablo 👋</h1>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mt-6 text-slate-700 leading-relaxed text-sm space-y-4">
-                            <p>Tengo <strong class="text-blue-600" id="dynamic-age">20</strong> años y soy un apasionado absoluto del motor, de conducir y, sobre todo, de dejar los coches impecables.</p>
-                            <p>Soy empresario y en mi día a día me dedico al trading. Mucha gente me suele preguntar: <em>«Si te dedicas al trading, ¿por qué limpias coches?»</em>.</p>
-                            <p>La respuesta es sencilla: el trading, como cualquier otro negocio real, necesita paciencia y capital. Así que esto me sirve para ir retroalimentando mis inversiones. Pero la razón principal es que <strong>me encanta limpiar coches</strong> y disfruto muchísimo estando conectado con este mundillo. ¡Es pura pasión!</p>
+                <div id="about-view" class="page-slide bg-obsidian flex flex-col">
+                    <div class="px-6 py-6 flex items-center border-b border-slateborder">
+                        <button onclick="closePage('about-view')" class="p-2 -ml-2 text-platinum hover:text-white"><i class="ph-light ph-arrow-left text-xl"></i></button>
+                        <span class="ml-auto text-[10px] font-display uppercase tracking-luxury text-muted">Protocolo</span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto px-6 py-8">
+                        <h2 class="text-2xl font-display font-light uppercase tracking-luxury text-platinum mb-10">Filosofía <br><span class="font-semibold text-white">Técnica</span></h2>
+                        <div class="bg-basalt border border-slateborder p-6 rounded-arch text-bodytext text-sm leading-relaxed space-y-6 font-sans">
+                            <p>El estándar del 1% no es un eslogan, es una doctrina de ejecución.</p>
+                            <p>Tengo <span id="dynamic-age" class="text-platinum font-semibold">20</span> años. Mi operatividad diaria radica en el análisis financiero y el trading. Esta estructura enseña una lección inquebrantable: el rendimiento real exige rigor, no emociones.</p>
+                            <p>Aplico esa misma arquitectura al detailing. La limpieza automotriz tradicional es defectuosa y masificada. Este servicio está diseñado para quienes entienden que el mantenimiento estético de un vehículo es una extensión de su propio valor patrimonial y personal.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- PÁGINA: AGENDAR CITA (COMPARTIDA) -->
-                <div id="booking-view" class="page-slide bg-slate-50 flex flex-col pt-4 lg:pt-8">
-                    <div class="bg-white border-b border-slate-100 px-4 py-4 flex items-center sticky top-0 z-10 shadow-sm">
-                        <button onclick="closePage('booking-view')" class="p-2 -ml-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-600"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
-                        <h2 class="text-lg font-bold ml-2 text-slate-800">Seleccionar Cita</h2>
+                <div id="booking-view" class="page-slide bg-obsidian flex flex-col">
+                    <div class="px-6 py-6 flex items-center border-b border-slateborder sticky top-0 z-10 bg-obsidian">
+                        <button onclick="closePage('booking-view')" class="p-2 -ml-2 text-platinum hover:text-white"><i class="ph-light ph-arrow-left text-xl"></i></button>
+                        <span class="ml-auto text-[10px] font-display uppercase tracking-luxury text-muted">Terminal de Asignación</span>
                     </div>
-                    <div class="flex-1 overflow-y-auto p-5 pb-12">
-                        <p class="text-slate-500 text-sm mb-6">Elige el día que mejor te venga para dejar tu coche impoluto.</p>
+                    
+                    <div class="flex-1 overflow-y-auto px-6 py-8">
                         
-                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <button onclick="changeMonth(-1)" class="p-2 -ml-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors"><i class="ph-bold ph-caret-left text-xl"></i></button>
-                                <h3 class="font-bold text-lg text-slate-800 capitalize" id="calendar-month-text">Cargando...</h3>
-                                <button onclick="changeMonth(1)" class="p-2 -mr-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors"><i class="ph-bold ph-caret-right text-xl"></i></button>
+                        <div class="bg-basalt border border-slateborder p-6 rounded-arch mb-8">
+                            <div class="flex justify-between items-center mb-6">
+                                <button onclick="changeMonth(-1)" class="p-2 -ml-2 text-muted hover:text-platinum"><i class="ph-light ph-caret-left text-lg"></i></button>
+                                <h3 class="text-sm font-display font-semibold uppercase tracking-luxury text-platinum" id="calendar-month-text">Cargando...</h3>
+                                <button onclick="changeMonth(1)" class="p-2 -mr-2 text-muted hover:text-platinum"><i class="ph-light ph-caret-right text-lg"></i></button>
                             </div>
-                            <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-400 mb-2"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div>
-                            <div id="calendar-days" class="grid grid-cols-7 gap-2 text-center text-sm"></div>
+                            <div class="grid grid-cols-7 gap-2 text-center text-[10px] font-display uppercase tracking-widest text-muted mb-4"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div>
+                            <div id="calendar-days" class="grid grid-cols-7 gap-2 text-center text-sm font-sans"></div>
                         </div>
 
                         <div id="time-selection" class="hidden pb-10">
-                            <h3 class="font-bold text-xl mb-1 text-slate-800">Horarios para el <span id="selected-date-display" class="text-blue-600"></span></h3>
-                            <p class="text-xs text-slate-500 mb-6">* Reservas de madrugada 3h antelación. Día normal 30 min.</p>
+                            <div class="border-b border-slateborder pb-4 mb-6">
+                                <h3 class="text-sm font-display uppercase tracking-luxury text-platinum">Franja Operativa <span id="selected-date-display" class="text-white font-semibold block mt-1"></span></h3>
+                            </div>
                             
-                            <div id="time-slots-container" class="mb-6"></div>
+                            <div id="time-slots-container" class="mb-8"></div>
 
-                            <div id="client-info-section" class="hidden mt-4 space-y-4 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                            <div id="client-info-section" class="hidden space-y-6">
                                 
-                                <div id="fields-normal">
-                                    <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Nombre y Apellidos</label><input type="text" id="client-name" placeholder="Ej: Pablo García Pérez" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
-                                    <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Teléfono Móvil</label><input type="tel" id="client-phone" placeholder="Ej: 600123456" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
+                                <div id="fields-normal" class="space-y-6">
+                                    <div><label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Identidad</label><input type="text" id="client-name" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors"></div>
+                                    <div><label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Contacto</label><input type="tel" id="client-phone" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors"></div>
                                 </div>
                                 
-                                <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-1">Dirección del Vehículo</label><input type="text" id="client-location" placeholder="Ej: Calle Mayor, 12 o Parking X" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 transition-colors"></div>
+                                <div><label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Ubicación Estratégica</label><input type="text" id="client-location" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors"></div>
 
-                                <div id="fields-socio" class="hidden">
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-bold text-slate-700 mb-1">Vehículo / Matrícula <span class="text-slate-400 font-normal">(Opcional)</span></label>
-                                        <input type="text" id="socio-car" placeholder="Ej: Ford Fiesta 1234ABC" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-500 transition-colors">
+                                <div id="fields-socio" class="hidden space-y-6">
+                                    <div>
+                                        <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">ID Activo / Matrícula <span class="text-slateborder">(Opcional)</span></label>
+                                        <input type="text" id="socio-car" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors">
                                     </div>
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-bold text-slate-700 mb-1">Tipo de Servicio</label>
-                                        <select id="socio-service" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer text-slate-700">
-                                            <option value="" disabled selected>Selecciona el servicio...</option>
-                                            <option value="Limpieza por fuera">Limpieza por fuera</option>
-                                            <option value="Limpieza por dentro">Limpieza por dentro</option>
-                                            <option value="Limpieza por dentro y fuera">Limpieza por dentro y fuera</option>
+                                    <div>
+                                        <label class="block text-[10px] font-display uppercase tracking-luxury text-muted mb-3">Nivel de Intervención</label>
+                                        <select id="socio-service" class="w-full bg-basalt border border-slateborder rounded-arch px-4 py-4 text-platinum text-sm focus:outline-none focus:border-platinum transition-colors cursor-pointer appearance-none">
+                                            <option value="" disabled selected>-- SELECCIONAR --</option>
+                                            <option value="Limpieza por fuera">EXTERIOR</option>
+                                            <option value="Limpieza por dentro">INTERIOR</option>
+                                            <option value="Limpieza por dentro y fuera">COMPLETO</option>
                                         </select>
                                     </div>
                                 </div>
 
-                                <button onclick="confirmAppointment()" id="btn-confirmar" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mt-4">
-                                    <i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva
+                                <button onclick="confirmAppointment()" id="btn-confirmar" class="w-full bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-4 rounded-arch active:scale-[0.98] transition-transform mt-4">
+                                    Emitir Instrucción
                                 </button>
                             </div>
                         </div>
@@ -286,7 +401,7 @@
                     const rec = payload.new || payload.old;
                     if (rec && rec.fecha === selectedDateStr) {
                         if (selectedTimeStr === rec.hora && payload.eventType === 'INSERT') {
-                            showModal({ title: "Hora ocupada", message: "¡Lo sentimos! Esta hora acaba de ser reservada.", type: "alert" });
+                            showModal({ title: "Inviabilidad", message: "La franja seleccionada ha sido bloqueada por el sistema.", type: "alert" });
                             document.getElementById('client-info-section').classList.add('hidden'); selectedTimeStr = "";
                         }
                         renderTimeSlots(selectedDateStr);
@@ -298,14 +413,14 @@
         function showModal({ title, message, type = 'alert', onConfirm }) {
             const modal = document.getElementById('custom-modal'); const box = document.getElementById('custom-modal-box'); const btnContainer = document.getElementById('modal-buttons');
             document.getElementById('modal-title').textContent = title; document.getElementById('modal-message').textContent = message; btnContainer.innerHTML = ''; 
-            const cleanup = () => { box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0'); setTimeout(() => modal.classList.add('hidden'), 200); };
+            const cleanup = () => { box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0'); setTimeout(() => modal.classList.add('hidden'), 400); };
 
             if (type === 'confirm') {
-                const btnNo = document.createElement('button'); btnNo.className = "flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors active:scale-95"; btnNo.textContent = "Cancelar"; btnNo.onclick = cleanup;
-                const btnYes = document.createElement('button'); btnYes.className = "flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors active:scale-95"; btnYes.textContent = "Sí, eliminar"; btnYes.onclick = () => { cleanup(); if(onConfirm) onConfirm(); };
+                const btnNo = document.createElement('button'); btnNo.className = "flex-1 bg-obsidian border border-slateborder text-platinum font-display font-semibold uppercase tracking-cta py-3 rounded-arch transition-colors text-[10px]"; btnNo.textContent = "Cancelar"; btnNo.onclick = cleanup;
+                const btnYes = document.createElement('button'); btnYes.className = "flex-1 bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-3 rounded-arch transition-colors text-[10px]"; btnYes.textContent = "Proceder"; btnYes.onclick = () => { cleanup(); if(onConfirm) onConfirm(); };
                 btnContainer.appendChild(btnNo); btnContainer.appendChild(btnYes);
             } else {
-                const btnOk = document.createElement('button'); btnOk.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors active:scale-95"; btnOk.textContent = "Entendido"; btnOk.onclick = cleanup;
+                const btnOk = document.createElement('button'); btnOk.className = "w-full bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-3 rounded-arch transition-colors text-[10px]"; btnOk.textContent = "Confirmar"; btnOk.onclick = cleanup;
                 btnContainer.appendChild(btnOk);
             }
 
@@ -340,15 +455,15 @@
             const sub = document.getElementById('btn-main-socio-sub');
             
             if (currentSocio) {
-                title.textContent = `🚗 Mi Panel Corporativo`;
+                title.textContent = `Panel Corporativo`;
                 sub.textContent = currentSocio.company_name;
-                btn.classList.remove('bg-indigo-600', 'shadow-indigo-600/20');
-                btn.classList.add('bg-emerald-600', 'shadow-emerald-600/20');
+                btn.classList.remove('bg-basalt');
+                btn.classList.add('bg-white', 'text-obsidian', 'border-transparent');
             } else {
-                title.textContent = "Acceso Socios / Empresas";
-                sub.textContent = "Rent a Car & Flotas";
-                btn.classList.remove('bg-emerald-600', 'shadow-emerald-600/20');
-                btn.classList.add('bg-indigo-600', 'shadow-indigo-600/20');
+                title.textContent = "Portal Corporativo";
+                sub.textContent = "Flotas & Rent a Car";
+                btn.classList.add('bg-basalt', 'text-platinum', 'border-slateborder');
+                btn.classList.remove('bg-white', 'text-obsidian', 'border-transparent');
             }
         }
 
@@ -371,8 +486,8 @@
             const errorDiv = document.getElementById('socio-login-error');
             const btn = document.getElementById('btn-login-socio');
 
-            if (!user || !pass) { errorDiv.textContent = "Introduce usuario y contraseña"; errorDiv.classList.remove('hidden'); return; }
-            btn.innerHTML = "Comprobando..."; btn.disabled = true; errorDiv.classList.add('hidden');
+            if (!user || !pass) { errorDiv.textContent = "Requiere Identificador y Clave"; errorDiv.classList.remove('hidden'); return; }
+            btn.innerHTML = "Verificando..."; btn.disabled = true; errorDiv.classList.add('hidden');
 
             if (supabaseClient) {
                 const { data, error } = await supabaseClient.from('socios').select('*').ilike('username', user).eq('password', pass);
@@ -386,10 +501,10 @@
                     openPage('socios-dashboard-view');
                     loadSocioDashboard();
                 } else {
-                    errorDiv.textContent = "Datos incorrectos. Intenta de nuevo."; errorDiv.classList.remove('hidden');
+                    errorDiv.textContent = "Credenciales no válidas."; errorDiv.classList.remove('hidden');
                 }
             }
-            btn.innerHTML = "Entrar"; btn.disabled = false;
+            btn.innerHTML = "Autorizar"; btn.disabled = false;
         }
 
         function logoutSocio() {
@@ -402,18 +517,16 @@
         async function loadSocioDashboard() {
             const upcomingContainer = document.getElementById('socio-upcoming-list');
             const historyContainer = document.getElementById('socio-history-list');
-            upcomingContainer.innerHTML = '<div class="text-center py-4"><i class="ph-bold ph-spinner animate-spin text-2xl text-indigo-500"></i></div>';
-            historyContainer.innerHTML = '<div class="text-center py-4"><i class="ph-bold ph-spinner animate-spin text-2xl text-indigo-500"></i></div>';
+            upcomingContainer.innerHTML = '<div class="text-center py-4"><i class="ph-light ph-spinner animate-spin text-2xl text-muted"></i></div>';
+            historyContainer.innerHTML = '<div class="text-center py-4"><i class="ph-light ph-spinner animate-spin text-2xl text-muted"></i></div>';
 
-            // Logo Update
             const logoContainer = document.getElementById('socio-logo-container');
             if (currentSocio.logo_url) {
-                logoContainer.innerHTML = `<img src="${currentSocio.logo_url}" class="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-sm">`;
+                logoContainer.innerHTML = `<img src="${currentSocio.logo_url}" class="w-16 h-16 rounded-arch object-cover grayscale opacity-80 border border-slateborder">`;
             } else {
-                logoContainer.innerHTML = `<div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center shadow-sm"><i class="ph-bold ph-buildings text-3xl"></i></div>`;
+                logoContainer.innerHTML = `<div class="w-16 h-16 bg-basalt border border-slateborder text-muted rounded-arch flex items-center justify-center"><i class="ph-light ph-buildings text-2xl"></i></div>`;
             }
 
-            // Prices Update
             document.getElementById('socio-price-1').textContent = `${currentSocio.precio_fuera || 0}€`;
             document.getElementById('socio-price-2').textContent = `${currentSocio.precio_dentro || 0}€`;
             document.getElementById('socio-price-3').textContent = `${currentSocio.precio_completo || 0}€`;
@@ -431,10 +544,9 @@
             data.forEach(cita => {
                 const isPast = cita.fecha < todayStr || cita.estado === 'completado';
                 const match = cita.cliente.match(/-\s*(.*?)\s*\((.*)\)/);
-                const vehicle = match ? match[1] : "No espec.";
-                const service = match ? match[2] : "No espec.";
+                const vehicle = match ? match[1] : "N/A";
+                const service = match ? match[2] : "N/A";
 
-                // Finanzas solo del mes actual
                 if (cita.fecha.startsWith(currentMonthStr)) {
                     let p = 0;
                     if (service === 'Limpieza por fuera') p = parseFloat(currentSocio.precio_fuera) || 0;
@@ -446,24 +558,24 @@
 
                 if (isPast) {
                     historyHtml += `
-                        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm opacity-70">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="font-bold text-slate-800">${cita.fecha.split('-').reverse().join('/')} a las ${cita.hora}</span>
-                                <span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Completado</span>
+                        <div class="bg-transparent border border-slateborder p-4 rounded-arch opacity-50">
+                            <div class="flex justify-between items-start border-b border-slateborder pb-2 mb-3">
+                                <span class="font-sans text-xs text-platinum">${cita.fecha.split('-').reverse().join('/')} | ${cita.hora}</span>
+                                <span class="text-muted text-[9px] font-display uppercase tracking-widest border border-slateborder px-1">Ejecutado</span>
                             </div>
-                            <p class="text-xs text-slate-500 mb-1"><i class="ph-fill ph-car mr-1"></i> ${vehicle}</p>
-                            <p class="text-xs text-slate-500"><i class="ph-fill ph-sparkle mr-1"></i> ${service}</p>
+                            <p class="text-xs text-muted mb-1 font-sans">ID: ${vehicle}</p>
+                            <p class="text-xs text-muted font-sans">SVC: ${service}</p>
                         </div>`;
                 } else {
                     upcomingHtml += `
-                        <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm ring-1 ring-indigo-50 mb-3">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="font-bold text-indigo-900">${cita.fecha.split('-').reverse().join('/')} a las ${cita.hora}</span>
-                                <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Pendiente</span>
+                        <div class="bg-basalt border border-slateborder p-4 rounded-arch mb-3">
+                            <div class="flex justify-between items-start border-b border-slateborder pb-2 mb-3">
+                                <span class="font-sans text-xs font-semibold text-platinum">${cita.fecha.split('-').reverse().join('/')} | ${cita.hora}</span>
+                                <span class="text-platinum text-[9px] font-display uppercase tracking-widest border border-platinum px-1">Pendiente</span>
                             </div>
-                            <p class="text-xs text-slate-600 mb-1"><i class="ph-fill ph-car mr-1"></i> ${vehicle}</p>
-                            <p class="text-xs text-slate-600 mb-4"><i class="ph-fill ph-sparkle mr-1"></i> ${service}</p>
-                            <button onclick="cancelSocioAppointment('${cita.id}')" class="w-full bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold py-2.5 rounded-xl transition-colors">Cancelar Cita</button>
+                            <p class="text-xs text-platinum mb-1 font-sans">ID: ${vehicle}</p>
+                            <p class="text-xs text-platinum mb-4 font-sans">SVC: ${service}</p>
+                            <button onclick="cancelSocioAppointment('${cita.id}')" class="w-full bg-obsidian border border-slateborder text-muted hover:text-platinum text-[10px] font-display uppercase tracking-widest py-3 rounded-arch transition-colors">Revocar Instrucción</button>
                         </div>`;
                 }
             });
@@ -472,14 +584,14 @@
             document.getElementById('socio-proyectado').textContent = `${proyectado}€`;
             document.getElementById('socio-total').textContent = `${facturado + proyectado}€`;
 
-            upcomingContainer.innerHTML = upcomingHtml || '<p class="text-xs text-slate-400">No tienes citas pendientes.</p>';
-            historyContainer.innerHTML = historyHtml || '<p class="text-xs text-slate-400">No hay historial de citas.</p>';
+            upcomingContainer.innerHTML = upcomingHtml || '<p class="text-[10px] font-display uppercase tracking-widest text-muted border border-slateborder p-4 rounded-arch text-center">Operativa limpia</p>';
+            historyContainer.innerHTML = historyHtml || '<p class="text-[10px] font-display uppercase tracking-widest text-muted border border-slateborder p-4 rounded-arch text-center">Sin registros</p>';
         }
 
         function cancelSocioAppointment(id) {
             showModal({
-                title: "Cancelar Cita",
-                message: "¿Estás seguro de que deseas cancelar esta reserva? La hora volverá a quedar libre para otros clientes.",
+                title: "Revocación",
+                message: "Se procederá a cancelar la instrucción en el sistema central.",
                 type: "confirm",
                 onConfirm: async () => {
                     await supabaseClient.from('citas').delete().eq('id', id);
@@ -542,39 +654,43 @@
                 const dateStr = `${displayYear}-${String(displayMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
                 
                 const isSelected = (dateStr === selectedDateStr);
-                let cls = `py-2 rounded-lg font-medium transition-colors client-day-btn `;
+                let cls = `py-3 rounded-arch transition-colors text-[11px] font-sans border `;
                 
-                if (isPast) { cls += "text-slate-300 cursor-not-allowed"; daysContainer.innerHTML += `<div class="${cls}">${day}</div>`; } 
-                else if (isSelected) { cls += "bg-slate-800 text-white shadow-md"; daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`; } 
-                else if (isToday) { cls += "bg-blue-600 text-white shadow-md cursor-pointer today-day"; daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`; } 
-                else { cls += "text-slate-700 bg-slate-50 cursor-pointer hover:bg-blue-100"; daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`; }
+                if (isPast) { 
+                    cls += "border-transparent text-slateborder cursor-not-allowed"; 
+                    daysContainer.innerHTML += `<div class="${cls}">${day}</div>`; 
+                } 
+                else if (isSelected) { 
+                    cls += "bg-white border-white text-obsidian font-bold"; 
+                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`; 
+                } 
+                else if (isToday) { 
+                    cls += "bg-basalt border-platinum text-platinum cursor-pointer"; 
+                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`; 
+                } 
+                else { 
+                    cls += "bg-basalt border-slateborder text-platinum cursor-pointer hover:border-muted"; 
+                    daysContainer.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}', this)">${day}</div>`; 
+                }
             }
         }
 
         async function selectDate(dateStr, el) {
-            document.querySelectorAll(`.client-day-btn`).forEach(b => {
-                if(b.classList.contains('bg-slate-800')) {
-                    b.classList.remove('bg-slate-800', 'text-white', 'shadow-md');
-                    if(b.classList.contains('today-day')) b.classList.add('bg-blue-600', 'text-white'); else b.classList.add('bg-slate-50', 'text-slate-700');
-                }
-            });
-            el.classList.remove('bg-slate-50', 'text-slate-700', 'bg-blue-600'); el.classList.add('bg-slate-800', 'text-white', 'shadow-md');
-
             selectedDateStr = dateStr; document.getElementById('selected-date-display').textContent = `${dateStr.split('-')[2]}/${dateStr.split('-')[1]}/${dateStr.split('-')[0]}`;
             document.getElementById('time-selection').classList.remove('hidden'); document.getElementById('client-info-section').classList.add('hidden');
+            renderCalendar(); // Rerender to update selected styles
             await renderTimeSlots(dateStr);
         }
 
         async function renderTimeSlots(dateStr) {
             const container = document.getElementById('time-slots-container');
-            container.innerHTML = '<div class="text-center py-6 text-slate-400"><i class="ph-bold ph-spinner animate-spin text-2xl"></i></div>';
+            container.innerHTML = '<div class="text-center py-6 text-slateborder"><i class="ph-light ph-spinner animate-spin text-2xl"></i></div>';
             
             let occupiedData = [];
             if (supabaseClient) { try { const { data } = await supabaseClient.from('citas').select('hora').eq('fecha', dateStr); if (data) occupiedData = data; } catch (e) {} }
 
             const now = new Date();
-            let selectColor = currentSocio ? "focus:border-indigo-500" : "focus:border-blue-500";
-            let htmlFinal = `<div class="relative bg-white border border-slate-300 rounded-xl px-4 py-4 shadow-sm"><select id="native-time-select" class="w-full bg-transparent text-slate-800 font-bold text-lg focus:outline-none appearance-none cursor-pointer ${selectColor}" onchange="onTimeSelected(this.value)"><option value="" selected disabled>-- Toca aquí para elegir hora --</option>`;
+            let htmlFinal = `<div class="relative bg-basalt border border-slateborder rounded-arch px-4 py-4 shadow-none"><select id="native-time-select" class="w-full bg-transparent text-platinum font-display font-light text-lg focus:outline-none appearance-none cursor-pointer" onchange="onTimeSelected(this.value)"><option value="" selected disabled>-- SELECCIONA HORA --</option>`;
             let hasRenderedOptions = false;
 
             ALL_HOURS.forEach(time => {
@@ -591,11 +707,11 @@
                 hasRenderedOptions = true;
 
                 if (isOccupied) htmlFinal += `<option value="${time}" disabled>❌ ${time} - Reservada</option>`;
-                else htmlFinal += `<option value="${time}">✅ ${time} - Libre</option>`;
+                else htmlFinal += `<option value="${time}">✅ ${time} - Disponible</option>`;
             });
 
-            if (!hasRenderedOptions) htmlFinal += `<option value="" disabled>No quedan horas disponibles para este día</option>`;
-            htmlFinal += `</select><i class="ph-bold ph-caret-down absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none text-xl"></i></div>`;
+            if (!hasRenderedOptions) htmlFinal += `<option value="" disabled>Capacidad operativa agotada</option>`;
+            htmlFinal += `</select><i class="ph-light ph-caret-down absolute right-4 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none text-xl"></i></div>`;
             container.innerHTML = htmlFinal;
         }
 
@@ -611,11 +727,11 @@
 
             if (currentSocio) {
                 isSocioRes = true;
-                const car = document.getElementById('socio-car').value.trim() || 'No especificado';
+                const car = document.getElementById('socio-car').value.trim() || 'N/A';
                 const loc = document.getElementById('client-location').value.trim();
                 serviceType = document.getElementById('socio-service').value;
 
-                if (!loc || !serviceType) return showModal({ title: "Faltan datos", message: "La dirección y el tipo de servicio son obligatorios." });
+                if (!loc || !serviceType) return showModal({ title: "Incompleto", message: "Ubicación y nivel de intervención requeridos." });
                 
                 finalName = `[SOCIO] ${currentSocio.company_name} - ${car} (${serviceType})`;
                 finalPhone = "SOCIO";
@@ -624,19 +740,19 @@
                 const name = document.getElementById('client-name').value.trim();
                 const phone = document.getElementById('client-phone').value.trim();
                 const loc = document.getElementById('client-location').value.trim();
-                if (!name || !phone || !loc) return showModal({ title: "Faltan datos", message: "Rellena tu nombre, teléfono y dirección." });
+                if (!name || !phone || !loc) return showModal({ title: "Incompleto", message: "Identidad, contacto y ubicación requeridos." });
                 finalName = name; finalPhone = phone; finalLocation = loc;
             }
             
             const btn = document.getElementById('btn-confirmar');
-            btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-2xl"></i> Guardando...`; btn.disabled = true;
+            btn.innerHTML = `<i class="ph-light ph-spinner animate-spin text-xl"></i> Proceso...`; btn.disabled = true;
 
             if (supabaseClient) {
                 try {
                     const { data: check } = await supabaseClient.from('citas').select('id').eq('fecha', selectedDateStr).eq('hora', selectedTimeStr);
                     if (check && check.length > 0) {
-                        showModal({ title: "Hora ocupada", message: "Alguien acaba de reservar esta hora." });
-                        btn.innerHTML = `<i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva`; btn.disabled = false;
+                        showModal({ title: "Conflicto", message: "La franja acaba de ser ocupada." });
+                        btn.innerHTML = `Emitir Instrucción`; btn.disabled = false;
                         document.getElementById('client-info-section').classList.add('hidden');
                         return renderTimeSlots(selectedDateStr);
                     }
@@ -650,11 +766,11 @@
 
             let telegramMsg = ""; let waMsg = "";
             if (isSocioRes) {
-                telegramMsg = `🏢 <b>RESERVA DE SOCIO</b>\n\n👤 <b>Empresa:</b> ${currentSocio.company_name}\n🧼 <b>Servicio:</b> ${serviceType}\n🚗 <b>Vehículo:</b> ${document.getElementById('socio-car').value || 'No espec.'}\n📍 <b>Dirección:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
-                waMsg = `¡Hola Pablo! 👋 Acabamos de reservar desde el portal de ${currentSocio.company_name}.\n\n🧼 *Servicio:* ${serviceType}\n🚗 *Vehículo:* ${document.getElementById('socio-car').value || 'No especificado'}\n📍 *Dirección:* ${finalLocation}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}`;
+                telegramMsg = `🏢 <b>INSTRUCCIÓN CORPORATIVA</b>\n\n👤 <b>Socio:</b> ${currentSocio.company_name}\n🧼 <b>Intervención:</b> ${serviceType}\n🚗 <b>ID:</b> ${document.getElementById('socio-car').value || 'N/A'}\n📍 <b>Ub:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
+                waMsg = `¡Hola Pablo! 👋 Instrucción corporativa de ${currentSocio.company_name}.\n\n🧼 *Nivel:* ${serviceType}\n🚗 *ID:* ${document.getElementById('socio-car').value || 'N/A'}\n📍 *Ub:* ${finalLocation}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}`;
             } else {
-                telegramMsg = `🔔 <b>NUEVA RESERVA WEB</b>\n\n👤 <b>Nombre:</b> ${finalName}\n📞 <b>Teléfono:</b> ${finalPhone}\n📍 <b>Dirección:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
-                waMsg = `¡Hola Pablo! 👋 Acabo de reservar cita en la web.\n\n👤 *Nombre:* ${finalName}\n📞 *Teléfono:* ${finalPhone}\n📍 *Dirección:* ${finalLocation}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}\n\nConfírmame cuando puedas.`;
+                telegramMsg = `🔔 <b>INSTRUCCIÓN PÚBLICA</b>\n\n👤 <b>Cliente:</b> ${finalName}\n📞 <b>Tfno:</b> ${finalPhone}\n📍 <b>Ub:</b> ${finalLocation}\n🗓️ <b>Día:</b> ${selectedDateStr}\n⏰ <b>Hora:</b> ${selectedTimeStr}`;
+                waMsg = `¡Hola Pablo! 👋 Solicitud de intervención.\n\n👤 *Cliente:* ${finalName}\n📞 *Tfno:* ${finalPhone}\n📍 *Ub:* ${finalLocation}\n🗓️ *Día:* ${selectedDateStr}\n⏰ *Hora:* ${selectedTimeStr}\n\nQuedo a la espera.`;
             }
 
             fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: telegramMsg, parse_mode: 'HTML' }) });
@@ -665,7 +781,7 @@
             if(document.getElementById('socio-car')) document.getElementById('socio-car').value = '';
             if(document.getElementById('socio-service')) document.getElementById('socio-service').value = '';
             document.getElementById('time-selection').classList.add('hidden');
-            btn.innerHTML = `<i class="ph-bold ph-whatsapp text-2xl"></i> Confirmar Reserva`; btn.disabled = false;
+            btn.innerHTML = `Emitir Instrucción`; btn.disabled = false;
             
             if(isSocioRes) loadSocioDashboard(); 
         }

@@ -475,3 +475,142 @@
             if (displayAdminMonth > 11) { displayAdminMonth = 0; displayAdminYear++; }
             else if (displayAdminMonth < 0) { displayAdminMonth = 11; displayAdminYear--; }
             renderAdminCalendar();
+        }
+
+        function renderAdminCalendar() {
+            const now = new Date(); const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('admin-calendar-month-text').textContent = `${monthNames[displayAdminMonth]} ${displayAdminYear}`;
+            const container = document.getElementById('admin-calendar-days'); container.innerHTML = '';
+            
+            let firstDay = new Date(displayAdminYear, displayAdminMonth, 1).getDay(); 
+            let emptySpaces = firstDay === 0 ? 6 : firstDay - 1; 
+            const daysInMonth = new Date(displayAdminYear, displayAdminMonth + 1, 0).getDate();
+            
+            for (let i = 0; i < emptySpaces; i++) container.innerHTML += `<div></div>`;
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isToday = day === now.getDate() && displayAdminMonth === now.getMonth() && displayAdminYear === now.getFullYear();
+                const dateStr = `${displayAdminYear}-${String(displayAdminMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const isSelected = (dateStr === selectedDateStr);
+                
+                let cls = "py-3 rounded-arch transition-colors text-[11px] font-sans border ";
+                
+                if (isSelected) cls += "bg-white border-white text-obsidian font-bold shadow-lg";
+                else if (isToday) cls += "bg-basalt border-platinum text-platinum cursor-pointer";
+                else cls += "bg-obsidian border-slateborder text-muted hover:border-muted cursor-pointer";
+                
+                container.innerHTML += `<div class="${cls}" onclick="selectAdminDate('${dateStr}', this)">${day}</div>`;
+            }
+        }
+
+        function selectAdminDate(dateStr, el) {
+            document.querySelectorAll('.admin-day-btn').forEach(b => {
+                b.classList.remove('bg-white', 'border-white', 'text-obsidian', 'font-bold', 'shadow-lg');
+                if(b.classList.contains('today-day')) b.classList.add('bg-basalt', 'border-platinum', 'text-platinum'); 
+                else b.classList.add('bg-obsidian', 'border-slateborder', 'text-muted');
+            });
+            el.classList.remove('bg-obsidian', 'border-slateborder', 'text-muted', 'bg-basalt', 'border-platinum', 'text-platinum'); 
+            el.classList.add('bg-white', 'border-white', 'text-obsidian', 'font-bold', 'shadow-lg');
+            
+            selectedDateStr = dateStr; document.getElementById('admin-selected-date-display').textContent = `${dateStr.split('-')[2]}/${dateStr.split('-')[1]}/${dateStr.split('-')[0]}`;
+            document.getElementById('admin-placeholder').classList.add('hidden'); document.getElementById('admin-time-selection').classList.remove('hidden');
+            deselectAll(); renderAdminTimeSlots(dateStr, true);
+        }
+
+        async function renderAdminTimeSlots(dateStr, showLoader = true) {
+            const container = document.getElementById('admin-time-slots-container');
+            if (showLoader) container.innerHTML = '<div class="text-center py-10"><i class="ph-light ph-spinner animate-spin text-3xl text-muted"></i></div>';
+            let occupiedData = [];
+            const { data } = await supabaseClient.from('citas').select('*').eq('fecha', dateStr); if (data) occupiedData = data;
+            const categorias = { 'Madrugada': [], 'Mañana': [], 'Mediodía y Tarde': [], 'Noche': [] };
+            ALL_HOURS.forEach(t => { const h = parseInt(t.split(':')[0]); if (h < 6) categorias['Madrugada'].push(t); else if (h < 12) categorias['Mañana'].push(t); else if (h < 18) categorias['Mediodía y Tarde'].push(t); else categorias['Noche'].push(t); });
+            
+            let htmlFinal = '';
+            for (const [catName, times] of Object.entries(categorias)) {
+                if(times.length === 0) continue;
+                let bloqueHtml = `<div class="mb-10"><h4 class="text-[10px] font-display uppercase tracking-luxury text-muted mb-4 border-b border-slateborder pb-2">${catName}</h4><div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">`;
+                times.forEach(time => {
+                    const dbSlot = occupiedData.find(row => row.hora === time); const isSelected = selectedSlotsMap.has(time); const isBlocked = !!dbSlot;
+                    
+                    let baseCls = "time-slot-btn relative p-4 rounded-arch text-left font-sans cursor-pointer transition-all duration-200 border overflow-hidden group ";
+                    let ringCls = isSelected ? "border-white bg-white/5 scale-[0.98]" : "border-transparent hover:border-slateborder hover:bg-obsidian";
+                    
+                    let contentHtml = "", slotDataStr = "null";
+                    if (isBlocked) {
+                        baseCls += "bg-[#251515] border-[#3B1C1C] text-[#FCA5A5]"; slotDataStr = encodeURIComponent(JSON.stringify(dbSlot));
+                        const name = dbSlot.cliente === "BLOQUEADO (Admin)" ? "BLOQUEO" : dbSlot.cliente.split(' ')[0];
+                        contentHtml = `<div class="flex justify-between items-start mb-1"><span class="text-lg font-bold">${time}</span><i class="ph-fill ph-x-circle text-[#F87171] text-xl"></i></div><span class="text-[10px] font-display uppercase tracking-widest text-[#FCA5A5] truncate block">${name}</span>`;
+                    } else {
+                        baseCls += "bg-basalt border-slateborder text-platinum";
+                        contentHtml = `<div class="flex justify-between items-start mb-1"><span class="text-lg font-bold">${time}</span><i class="ph-bold ph-check-circle text-white text-xl opacity-0 group-hover:opacity-100 transition-opacity"></i></div><span class="text-[10px] font-display uppercase tracking-widest text-muted truncate block">Libre</span>`;
+                    }
+                    bloqueHtml += `<div id="slot-${time}" onclick="toggleSlot('${time}', ${isBlocked}, '${slotDataStr}')" class="${baseCls} ${ringCls}">${contentHtml}</div>`;
+                });
+                bloqueHtml += `</div></div>`; htmlFinal += bloqueHtml;
+            }
+            container.innerHTML = htmlFinal;
+        }
+
+        function toggleSlot(time, isBlocked, slotDataEncoded) {
+            const el = document.getElementById(`slot-${time}`);
+            if (selectedSlotsMap.has(time)) {
+                selectedSlotsMap.delete(time); el.classList.remove('border-white', 'bg-white/5', 'scale-[0.98]'); el.classList.add('hover:border-slateborder', 'border-transparent');
+            } else {
+                let dbData = null; if (slotDataEncoded !== 'null') dbData = JSON.parse(decodeURIComponent(slotDataEncoded));
+                selectedSlotsMap.set(time, { isBlocked, dbData }); el.classList.add('border-white', 'bg-white/5', 'scale-[0.98]'); el.classList.remove('hover:border-slateborder', 'border-transparent');
+            }
+            updateActionBar();
+        }
+        function selectAllDay() { ALL_HOURS.forEach(time => { if (!selectedSlotsMap.has(time)) { const el = document.getElementById(`slot-${time}`); if (el) el.click(); } }); }
+        function deselectAll() { selectedSlotsMap.clear(); document.querySelectorAll('.time-slot-btn').forEach(el => { el.classList.remove('border-white', 'bg-white/5', 'scale-[0.98]'); el.classList.add('hover:border-slateborder', 'border-transparent'); }); updateActionBar(); }
+        
+        function updateActionBar() {
+            const bar = document.getElementById('action-bar');
+            if(document.getElementById('section-citas').classList.contains('hidden')) return bar.classList.add('translate-y-full'); 
+            document.getElementById('selected-count').textContent = selectedSlotsMap.size;
+            if (selectedSlotsMap.size > 0) bar.classList.remove('translate-y-full'); else bar.classList.add('translate-y-full');
+        }
+
+        function showAdminModal(title, message, onConfirm, isHtml = false) {
+            const modal = document.getElementById('admin-modal'); const box = document.getElementById('admin-modal-box');
+            document.getElementById('admin-modal-title').textContent = title; 
+            if(isHtml) document.getElementById('admin-modal-message').innerHTML = message;
+            else document.getElementById('admin-modal-message').textContent = message;
+            
+            const btnContainer = document.getElementById('admin-modal-buttons'); btnContainer.innerHTML = '';
+            const cleanup = () => { box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0'); setTimeout(() => modal.classList.add('hidden'), 400); };
+            
+            const btnCancel = document.createElement('button'); btnCancel.className = "flex-1 bg-obsidian border border-slateborder text-platinum font-display font-semibold uppercase tracking-cta py-3 rounded-arch transition-colors text-[10px]"; btnCancel.textContent = "Atrás"; btnCancel.onclick = cleanup;
+            const btnConfirm = document.createElement('button'); btnConfirm.className = "flex-1 bg-white text-obsidian font-display font-semibold uppercase tracking-cta py-3 rounded-arch transition-colors text-[10px]"; btnConfirm.textContent = "Confirmar"; btnConfirm.onclick = () => { cleanup(); onConfirm(); };
+            
+            btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnConfirm);
+            modal.classList.remove('hidden'); setTimeout(() => { box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); }, 10);
+        }
+
+        async function executeBulkAction(actionType) {
+            const slots = Array.from(selectedSlotsMap.entries());
+            if (actionType === 'block') {
+                const toBlock = slots.filter(([time, data]) => !data.isBlocked);
+                if (toBlock.length === 0) return showAdminModal("Conflicto", "Franjas ya operativas o bloqueadas.", () => {}, false);
+                showAdminModal("Confirmación", `Asignar bloqueo a ${toBlock.length} franjas.`, async () => {
+                    const inserts = toBlock.map(([time]) => ({ fecha: selectedDateStr, hora: time, cliente: "BLOQUEADO (Admin)", localizacion: "N/A", telefono: "N/A" }));
+                    await supabaseClient.from('citas').insert(inserts); deselectAll(); renderAdminTimeSlots(selectedDateStr, false);
+                }, false);
+            } else if (actionType === 'unblock') {
+                const toUnblock = slots.filter(([time, data]) => data.isBlocked);
+                if (toUnblock.length === 0) return showAdminModal("Conflicto", "Franjas ya liberadas.", () => {}, false);
+                if (toUnblock.length === 1) {
+                    const data = toUnblock[0][1].dbData; const isOwnerBlock = data.cliente === "BLOQUEADO (Admin)";
+                    const msg = isOwnerBlock ? `Liberar franja ${toUnblock[0][0]}` : `INSTRUCCIÓN ACTIVA:\n\n👤 ${data.cliente}\n📞 ${data.telefono}\n📍 ${data.localizacion}\n\nForzar eliminación del sistema.`;
+                    showAdminModal(isOwnerBlock ? "Liberar" : "Revocar Instrucción", msg, async () => {
+                        await supabaseClient.from('citas').delete().eq('id', data.id); deselectAll(); renderAdminTimeSlots(selectedDateStr, false);
+                    }, false);
+                } else {
+                    showAdminModal("Liberación Múltiple", `Purgar ${toUnblock.length} registros del sistema central.`, async () => {
+                        const ids = toUnblock.map(([time, data]) => data.dbData.id); await supabaseClient.from('citas').delete().in('id', ids); deselectAll(); renderAdminTimeSlots(selectedDateStr, false);
+                    }, false);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
